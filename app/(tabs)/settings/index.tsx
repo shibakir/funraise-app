@@ -113,6 +113,7 @@ export default function GitHubSettingsScreen() {
               icon="gear" 
               title="Account" 
               description="Manage your account information"
+              onPress={() => router.push('/settings/account')}
             />
             <SettingItem 
               icon="bell" 
@@ -141,6 +142,7 @@ export default function GitHubSettingsScreen() {
               icon="globe" 
               title="Language" 
               description="Change your preferred language"
+              onPress={() => router.push('/settings/language')}
             />
           </ThemedView>
 

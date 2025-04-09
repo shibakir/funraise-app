@@ -27,7 +27,7 @@ export default function SettingDetailScreen() {
           
           <View style={styles.contentSection}>
             <ThemedText>
-              Page settings for "{title}". Here you will find content for managing these settings.
+              Page  "{title}" will be added soon. Thank you for your patience.
             </ThemedText>
           </View>
         </ThemedView>

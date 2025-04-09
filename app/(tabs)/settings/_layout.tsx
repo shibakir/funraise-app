@@ -14,6 +14,22 @@ export default function SettingsLayout() {
         }} 
       />
       <Stack.Screen 
+        name="language" 
+        options={{ 
+          headerShown: true, 
+          title: 'Language',
+          headerBackTitle: 'Settings' 
+        }} 
+      />
+      <Stack.Screen 
+        name="account" 
+        options={{ 
+          headerShown: true, 
+          title: 'Account',
+          headerBackTitle: 'Settings' 
+        }} 
+      />
+      <Stack.Screen 
         name="detail"
         options={{ 
           headerShown: true,

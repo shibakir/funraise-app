@@ -61,6 +61,7 @@ export const Colors = {
     surfaceHighlight: neutral[50],
     card: '#ffffff',
     divider: neutral[200],
+    placeholder: neutral[400],
   },
   dark: {
     text: neutral[50],
@@ -90,6 +91,7 @@ export const Colors = {
     surfaceHighlight: neutral[700],
     card: neutral[800],
     divider: neutral[700],
+    placeholder: neutral[500],
   },
 };
 

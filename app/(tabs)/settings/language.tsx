@@ -4,22 +4,23 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
-import { useTheme } from '@/lib/context/ThemeContext';
 
-export default function AppearanceScreen() {
-  const { theme, setTheme } = useTheme();
+export default function LanguageScreen() {
+  
+  const currentLanguage = 'english'; // TODO
+  
   const borderColor = useThemeColor({}, 'divider');
   const primaryColor = useThemeColor({}, 'primary');
   const backgroundColor = useThemeColor({}, 'background');
   
-  const ThemeOption = ({ value, label, isLast = false }) => {
-    const isSelected = theme === value;
+  const LanguageOption = ({ value, label, isLast = false }) => {
+    const isSelected = currentLanguage === value;
     
     return (
       <View style={styles.optionWrapper}>
         <TouchableOpacity
           style={styles.optionContainer}
-          onPress={() => setTheme(value)}
+          onPress={() => {/* TODO:: */}}
           activeOpacity={0.7}
         >
           <ThemedText style={styles.optionTitle}>{label}</ThemedText>
@@ -38,9 +39,9 @@ export default function AppearanceScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         <ThemedView style={[styles.card, { backgroundColor }]}>
-          <ThemeOption value="system" label="Automatic" />
-          <ThemeOption value="dark" label="Dark" />
-          <ThemeOption value="light" label="Light" isLast={true} />
+          <LanguageOption value="english" label="English" />
+          <LanguageOption value="czech" label="Čeština" />
+          <LanguageOption value="russian" label="Русский" isLast={true} />
         </ThemedView>
       </ScrollView>
     </SafeAreaView>
