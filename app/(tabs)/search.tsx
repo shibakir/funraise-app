@@ -1,81 +1,92 @@
 import React from 'react';
-import { StyleSheet, View, Text, SafeAreaView } from 'react-native';
-import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
-import { ThemedView } from '@/components/ThemedView';
+import { StyleSheet, TextInput, View, FlatList, TouchableOpacity } from 'react-native';
+import { Stack } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/ThemedView';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useThemeColor } from '@/lib/hooks/useThemeColor';
 
 export default function SearchScreen() {
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const inputBackground = useThemeColor({}, 'surfaceHighlight');
+  const textColor = useThemeColor({}, 'text');
+  const placeholderColor = useThemeColor({}, 'icon');
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ThemedView style={styles.card}>
-        <ThemedText style={styles.title}>Adaptive title</ThemedText>
-        <ThemedText style={styles.text}>
-          THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-        </ThemedText>
-      </ThemedView>
+    <>
+      <Stack.Screen 
+        options={{ 
+          title: 'Search',
+          headerShown: true,
+        }} 
+      />
+      <ThemedView style={styles.container}>
+        <View style={styles.searchContainer}>
+          <View style={[styles.searchBar, { backgroundColor: inputBackground }]}>
+            <IconSymbol name="magnifyingglass" size={20} color={placeholderColor} />
+            <TextInput
+              style={[styles.input, { color: textColor }]}
+              placeholder="Search..."
+              placeholderTextColor={placeholderColor}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity onPress={() => setSearchQuery('')}>
+                <IconSymbol name="chevron.right" size={20} color={placeholderColor} />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
 
-      <ThemedView style={styles.grid}>
-        <ThemedView style={styles.gridItem}>
-          <ThemedText>THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          </ThemedText>
-        </ThemedView>
-        <ThemedView style={styles.gridItem}>
-        <ThemedText>THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          </ThemedText>
-        </ThemedView>
-        <ThemedView style={styles.gridItem}>
-        <ThemedText>THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          THIS text will automatically scale depending on the screen size
-          </ThemedText>
-        </ThemedView>
+        <FlatList
+          data={[]}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <ThemedText style={styles.emptyText}>
+                {searchQuery.length > 0
+                  ? 'Nothing found'
+                  : 'Enter something to search'}
+              </ThemedText>
+            </View>
+          }
+          keyExtractor={(item: any) => item.id}
+          renderItem={({ item }) => <View />}
+        />
       </ThemedView>
-    </SafeAreaView>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    padding: 16,
   },
-  card: {
-    margin: moderateScale(16),
-    padding: moderateScale(20),
-    borderRadius: moderateScale(8),
-    gap: verticalScale(10),
+  searchContainer: {
+    marginBottom: 16,
   },
-  title: {
-    fontSize: moderateScale(24),
-    fontWeight: 'bold',
-  },
-  text: {
-    fontSize: moderateScale(16),
-    lineHeight: moderateScale(24),
-  },
-  grid: {
+  searchBar: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    padding: moderateScale(16),
-    gap: moderateScale(10),
-  },
-  gridItem: {
-    width: horizontalScale(150),
-    height: verticalScale(100),
-    justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: moderateScale(8),
-    marginBottom: verticalScale(10),
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  input: {
+    flex: 1,
+    marginLeft: 8,
+    fontSize: 16,
+    height: 36,
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 100,
+  },
+  emptyText: {
+    opacity: 0.6,
+    fontSize: 16,
   },
 }); 
