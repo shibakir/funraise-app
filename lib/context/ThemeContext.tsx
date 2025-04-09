@@ -46,7 +46,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   
   // Determine the actual theme based on system and user preference
   const resolvedTheme = theme === 'system' 
-    ? deviceTheme || 'light' 
+    ? deviceTheme || 'dark' 
     : theme;
   
   const value = {
