@@ -40,10 +40,24 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="search"
+        options={{
+          title: 'Search',
+          tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="magnifyingglass" color={color} />,
+        }}
+      />
+      <Tabs.Screen
         name="settings"
         options={{
           title: 'Settings',
           tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="gear" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="github-settings"
+        options={{
+          title: 'GitHub',
+          tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="person.circle" color={color} />,
         }}
       />
     </Tabs>
