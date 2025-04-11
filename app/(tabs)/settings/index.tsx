@@ -203,6 +203,7 @@ export default function GitHubSettingsScreen() {
                             icon="bell" 
                             title="Notifications" 
                             description="Configure how you receive notifications"
+                            onPress={() => router.push('/settings/notifications')}
                         />
                     </ThemedView>
                 </ThemedView>
@@ -285,4 +286,4 @@ export default function GitHubSettingsScreen() {
     </SafeAreaView>
     </>
   );
-} 
+}

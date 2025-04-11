@@ -76,6 +76,14 @@ export default function SettingsLayout() {
           headerBackTitle: 'Settings' 
         }}
       />
+      <Stack.Screen 
+        name="notifications"
+        options={{ 
+          headerShown: true,
+          title: 'Notifications',
+          headerBackTitle: 'Settings' 
+        }}
+      />
     </Stack>
   );
 } 
