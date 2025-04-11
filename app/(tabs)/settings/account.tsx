@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TouchableOpacity, SafeAreaView, ScrollView, TextInput, Alert, ActivityIndicator } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  SafeAreaView,
+  ScrollView,
+  TextInput,
+  Alert,
+  ActivityIndicator,
+  KeyboardAvoidingView
+} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
@@ -136,6 +146,7 @@ export default function AccountScreen() {
   
   return (
     <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {/* USERNAME */}
         <ThemedView style={[styles.card, { backgroundColor: surfaceColor }]}>
@@ -318,7 +329,7 @@ export default function AccountScreen() {
                       onPress={handleCancelPassword} 
                       variant="secondary"
                     />
-                    <View style={{ width: horizontalScale(10) }} />
+                    <View style={{ width: horizontalScale(10)}} />
                     <CustomButton 
                       title="Change Password" 
                       onPress={handleUpdatePassword} 
@@ -337,17 +348,20 @@ export default function AccountScreen() {
           )}
         </ThemedView>
       </ScrollView>
-    </SafeAreaView>
+      </KeyboardAvoidingView>
+      </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexGrow: 1,
   },
   contentContainer: {
     padding: moderateScale(16),
     paddingBottom: verticalScale(40),
+    flexGrow: 1,
   },
   card: {
     borderRadius: moderateScale(16),
@@ -373,6 +387,7 @@ const styles = StyleSheet.create({
   },
   form: {
     padding: moderateScale(12),
+    marginBottom: verticalScale(20)
   },
   formGroup: {
     marginBottom: verticalScale(12),
