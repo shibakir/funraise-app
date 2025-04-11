@@ -41,7 +41,7 @@ function AuthRouter({ children }: { children: React.ReactNode }) {
       router.replace('/login');
     } else if (token && isLoginOrRegister) {
       // if user is authenticated and tries to access login or register page
-      router.replace('/(tabs)');
+      router.replace('/(tabs)/home');
     }
   }, [token, segments, isLoading]);
 
