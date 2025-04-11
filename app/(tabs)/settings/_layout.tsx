@@ -36,6 +36,54 @@ export default function SettingsLayout() {
           headerBackTitle: 'Settings' 
         }}
       />
+      <Stack.Screen 
+        name="info"
+        options={{ 
+          headerShown: true,
+          title: 'App Info',
+          headerBackTitle: 'Settings' 
+        }}
+      />
+      <Stack.Screen 
+        name="privacy-policy"
+        options={{ 
+          headerShown: true,
+          title: 'Privacy Policy',
+          headerBackTitle: 'Settings' 
+        }}
+      />
+      <Stack.Screen 
+        name="terms-of-service"
+        options={{ 
+          headerShown: true,
+          title: 'Terms of Service',
+          headerBackTitle: 'Settings' 
+        }}
+      />
+      <Stack.Screen 
+        name="help"
+        options={{ 
+          headerShown: true,
+          title: 'Help & Support',
+          headerBackTitle: 'Settings' 
+        }}
+      />
+      <Stack.Screen 
+        name="privacy-security"
+        options={{ 
+          headerShown: true,
+          title: 'Privacy & Security',
+          headerBackTitle: 'Settings' 
+        }}
+      />
+      <Stack.Screen 
+        name="notifications"
+        options={{ 
+          headerShown: true,
+          title: 'Notifications',
+          headerBackTitle: 'Settings' 
+        }}
+      />
     </Stack>
   );
 } 

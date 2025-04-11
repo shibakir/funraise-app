@@ -35,6 +35,7 @@ const info = '#3b82f6';     // blue-500
 export const Colors = {
   light: {
     text: neutral[900],
+    sectionBackground: '#ffffff',
     background: '#ffffff',
     tint: tintColorLight,
     icon: neutral[500],
@@ -58,13 +59,14 @@ export const Colors = {
     neutral500: neutral[500],
 
     surface: '#ffffff',
-    surfaceHighlight: neutral[50],
+    surfaceHighlight: 'ffffff',
     card: '#ffffff',
     divider: neutral[200],
     placeholder: neutral[400],
   },
   dark: {
     text: neutral[50],
+    sectionBackground: neutral[900],
     background: neutral[900],
     tint: tintColorDark,
     icon: neutral[400],
@@ -95,6 +97,7 @@ export const Colors = {
   },
 };
 
+/*
 export const Palette = {
   primary,
   neutral,
@@ -103,3 +106,4 @@ export const Palette = {
   warning,
   info,
 };
+ */
