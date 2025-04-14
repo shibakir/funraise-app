@@ -296,7 +296,7 @@ export default function HomeScreen() {
           <ThemedView style={styles.mainSection}>
             <TouchableOpacity 
               style={styles.createEventButton}
-              onPress={() => router.push('/settings/appearance')}
+              onPress={() => router.push('/events/create')}
               activeOpacity={0.7}
             >
               <View style={styles.createEventIcon}>
