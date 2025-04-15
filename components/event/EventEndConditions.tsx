@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, View, TextInput, TouchableOpacity, Alert, Modal, Pressable, PanResponder, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { DateTimePickerModal } from './DateTimePickerModal';
 
 // Типы условий
 const conditionTypes = [
@@ -51,7 +51,7 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
     const accentColor = useThemeColor({}, 'primary');
 
     const [showDatePicker, setShowDatePicker] = useState(false);
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [activeCondition, setActiveCondition] = useState<{groupIndex: number, conditionIndex: number} | null>(null);
 
     // Добавление новой группы условий
     const addConditionGroup = () => {
@@ -126,9 +126,12 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
 
     // Обновление значения условия
     const updateConditionValue = (groupIndex: number, conditionIndex: number, value: string) => {
-        const newGroups = [...groups];
-        newGroups[groupIndex].conditions[conditionIndex].value = value;
-        onGroupsChange(newGroups);
+        // check if the value is a number
+        if (value === '' || /^\d+$/.test(value)) {
+            const newGroups = [...groups];
+            newGroups[groupIndex].conditions[conditionIndex].value = value;
+            onGroupsChange(newGroups);
+        }
     };
 
     // Обновление оператора сравнения
@@ -138,24 +141,14 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
         onGroupsChange(newGroups);
     };
 
-    // Обработка выбора даты
-    const onDateChange = (event: any, date?: Date) => {
-        setShowDatePicker(false);
-        if (date) {
-            setSelectedDate(date);
-            // Находим условие с типом time и обновляем его значение
-            const newGroups = [...groups];
-            for (let groupIndex = 0; groupIndex < newGroups.length; groupIndex++) {
-                const conditionIndex = newGroups[groupIndex].conditions.findIndex(
-                    c => c.parameterName === 'time'
-                );
-                if (conditionIndex !== -1) {
-                    newGroups[groupIndex].conditions[conditionIndex].value = date.toISOString();
-                    break;
-                }
-            }
-            onGroupsChange(newGroups);
-        }
+    const formatDateTime = (date: Date) => {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        
+        return `${day}.${month}.${year} ${hours}:${minutes}`;
     };
 
     const styles = StyleSheet.create({
@@ -192,7 +185,6 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
             fontSize: moderateScale(16),
             fontWeight: '600',
             padding: moderateScale(4),
-            backgroundColor: `${primaryColor}10`,
             borderWidth: 0,
             borderRadius: moderateScale(4),
         },
@@ -213,7 +205,7 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
             fontWeight: '500',
         },
         endConditionContainer: {
-            backgroundColor: `${sectionBackground}80`,
+            backgroundColor: sectionBackground,
             padding: moderateScale(12),
             borderRadius: moderateScale(8),
             marginBottom: moderateScale(12),
@@ -224,6 +216,8 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
             flexDirection: 'row',
             marginBottom: moderateScale(8),
             width: '100%',
+            justifyContent: 'space-between',
+            gap: moderateScale(8),
         },
         conditionLabel: {
             fontSize: moderateScale(14),
@@ -242,17 +236,27 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
             borderColor: borderColor,
             borderRadius: moderateScale(6),
             padding: moderateScale(8),
+            flex: 0.45,
+            fontSize: moderateScale(14),
+            color: textColor,
+            backgroundColor: sectionBackground,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+        },
+        dateInputContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: sectionBackground,
+            borderRadius: moderateScale(6),
+            borderWidth: 1,
+            borderColor: borderColor,
+            padding: moderateScale(8),
+        },
+        dateInputText: {
             flex: 1,
             fontSize: moderateScale(14),
             color: textColor,
-        },
-        operatorSelect: {
-            flexDirection: 'row',
-            borderWidth: 1,
-            borderColor: borderColor,
-            borderRadius: moderateScale(6),
-            padding: moderateScale(8),
-            justifyContent: 'center',
         },
         removeButton: {
             marginLeft: moderateScale(8),
@@ -275,13 +279,34 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
             marginLeft: moderateScale(4),
             fontWeight: '500',
         },
+        operatorSelect: {
+            flexDirection: 'row',
+            borderWidth: 1,
+            borderColor: borderColor,
+            borderRadius: moderateScale(6),
+            padding: moderateScale(8),
+            justifyContent: 'center',
+            flex: 0.45,
+        },
+        buttonsContainer: {
+            flexDirection: 'row', 
+            gap: moderateScale(8), 
+            justifyContent: 'space-between',
+            marginBottom: moderateScale(12),
+        },
     });
 
   return (
     <View style={styles.section}>
-        <ThemedText style={styles.sectionTitle}>End conditions (OR groups)</ThemedText>
+        <ThemedText style={styles.sectionTitle}>End conditions</ThemedText>
+        <ThemedText style={{ color: placeholderColor }}>
+            Create one or more groups of conditions! The event will end as soon as one of the groups of conditions is met.
+        </ThemedText>
         <ThemedText style={{ marginBottom: moderateScale(12), color: placeholderColor }}>
-            The event will end when ANY condition group is met
+            You can set the amount of the bank, the number of participants or the end time
+        </ThemedText>
+        <ThemedText style={{ marginBottom: moderateScale(12), color: placeholderColor }}>
+            Feel free to give each group its own name.
         </ThemedText>
       
         {groups.map((group, groupIndex) => (
@@ -305,16 +330,16 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
                 
                 <View style={styles.groupContent}>
                     <ThemedText style={{ marginBottom: moderateScale(8), color: placeholderColor }}>
-                        ALL conditions in this group must be met (AND)
+                        To complete, the conditions of one group must be met simultaneously
                     </ThemedText>
                     
                     {/* Кнопки добавления условий */}
-                    <View>
+                    <View style={styles.buttonsContainer}>
                         {conditionTypes.map(type => (
                             !hasConditionInGroup(groupIndex, type.id) && (
                             <TouchableOpacity
                                 key={type.id}
-                                style={styles.conditionTypeButton}
+                                style={[styles.conditionTypeButton, { flex: 1 }]}
                                 onPress={() => addConditionToGroup(groupIndex, type.id)}
                             >
                                 <ThemedText style={styles.conditionTypeText}>
@@ -330,8 +355,8 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
                         <View key={`condition-${groupIndex}-${conditionIndex}`} style={styles.endConditionContainer}>
                             <View style={styles.conditionRow}>
                             <ThemedText style={styles.conditionLabel}>
-                                {condition.parameterName === 'time' ? 'End date and time:' : 
-                                condition.parameterName === 'bank' ? 'Bank amount:' : 'Number of participants:'}
+                                {condition.parameterName === 'time' ? 'End date and time is:' : 
+                                condition.parameterName === 'bank' ? 'Bank amount is:' : 'Number of participants is:'}
                             </ThemedText>
                             
                             <TouchableOpacity 
@@ -343,39 +368,58 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
                             </View>
                             
                             {condition.parameterName === 'time' ? (
-                            <TouchableOpacity
-                                style={styles.conditionInput}
-                                onPress={() => setShowDatePicker(true)}
-                            >
-                                <ThemedText>
-                                {new Date(condition.value).toLocaleString()}
-                                </ThemedText>
-                            </TouchableOpacity>
+                            <View>
+                                <TouchableOpacity
+                                    style={styles.dateInputContainer}
+                                    onPress={() => {
+                                        setActiveCondition({groupIndex, conditionIndex});
+                                        setShowDatePicker(true);
+                                    }}
+                                >
+                                    <ThemedText style={styles.dateInputText}>
+                                        {formatDateTime(new Date(condition.value))}
+                                    </ThemedText>
+                                    <IconSymbol name="calendar" size={20} color={primaryColor} />
+                                </TouchableOpacity>
+                                <DateTimePickerModal
+                                    visible={showDatePicker && activeCondition?.groupIndex === groupIndex && activeCondition?.conditionIndex === conditionIndex}
+                                    onClose={() => setShowDatePicker(false)}
+                                    value={new Date(condition.value)}
+                                    onChange={(date) => {
+                                        if (activeCondition) {
+                                            const newGroups = [...groups];
+                                            newGroups[activeCondition.groupIndex].conditions[activeCondition.conditionIndex].value = date.toISOString();
+                                            onGroupsChange(newGroups);
+                                        }
+                                    }}
+                                />
+                            </View>
                             ) : (
                             <View style={styles.conditionRow}>
                                 <TouchableOpacity 
-                                style={styles.operatorSelect}
-                                onPress={() => {
-                                    const currentOp = condition.comparisonOp;
-                                    const currentIndex = operators.findIndex(op => op.id === currentOp);
-                                    const nextIndex = (currentIndex + 1) % operators.length;
-                                    updateConditionOperator(groupIndex, conditionIndex, operators[nextIndex].id);
-                                }}
+                                    style={styles.operatorSelect}
+                                    onPress={() => {
+                                        const currentOp = condition.comparisonOp;
+                                        const currentIndex = operators.findIndex(op => op.id === currentOp);
+                                        const nextIndex = (currentIndex + 1) % operators.length;
+                                        updateConditionOperator(groupIndex, conditionIndex, operators[nextIndex].id);
+                                    }}
                                 >
-                                <ThemedText>
-                                    {operators.find(op => op.id === condition.comparisonOp)?.label}
-                                </ThemedText>
+                                    <ThemedText>
+                                        {operators.find(op => op.id === condition.comparisonOp)?.label}
+                                    </ThemedText>
                                 </TouchableOpacity>
                                 
                                 <TextInput
-                                style={styles.conditionInput}
-                                value={condition.value}
-                                onChangeText={(text) => updateConditionValue(groupIndex, conditionIndex, text)}
-                                placeholder={
-                                    condition.parameterName === 'bank' ? 'Amount' : 'Number'
-                                }
-                                placeholderTextColor={placeholderColor}
-                                keyboardType="numeric"
+                                    style={styles.conditionInput}
+                                    value={condition.value}
+                                    onChangeText={(text) => updateConditionValue(groupIndex, conditionIndex, text)}
+                                    placeholder={
+                                        condition.parameterName === 'bank' ? 'Amount' : 'Number'
+                                    }
+                                    placeholderTextColor={placeholderColor}
+                                    keyboardType="numeric"
+                                    maxLength={9}
                                 />
                             </View>
                             )}
@@ -392,15 +436,6 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
             <IconSymbol name="plus.circle.fill" size={20} color={accentColor} />
             <ThemedText style={styles.addGroupText}>Add an alternative condition group (OR)</ThemedText>
         </TouchableOpacity>
-
-        {showDatePicker && (
-            <DateTimePicker
-                value={selectedDate}
-                mode="datetime"
-                display="default"
-                onChange={onDateChange}
-            />
-        )}
     </View>
   );
 }; 
