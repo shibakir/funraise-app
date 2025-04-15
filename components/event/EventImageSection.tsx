@@ -6,11 +6,14 @@ import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
+import * as FileSystem from 'expo-file-system';
 
 interface EventImageSectionProps {
   imageUri: string | null;
-  onImageChange: (uri: string | null) => void;
+  onImageChange: (uri: string | null, file?: { uri: string; type: string; name: string }) => void;
 }
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB в байтах
 
 export const EventImageSection: React.FC<EventImageSectionProps> = ({ imageUri, onImageChange }) => {
   const placeholderColor = useThemeColor({}, 'placeholder');
@@ -37,7 +40,30 @@ export const EventImageSection: React.FC<EventImageSectionProps> = ({ imageUri, 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const selectedImage = result.assets[0];
       console.log('Selected image:', selectedImage);
-      onImageChange(selectedImage.uri);
+
+      // Проверяем размер файла
+      try {
+        const fileInfo = await FileSystem.getInfoAsync(selectedImage.uri);
+        if (fileInfo.exists && fileInfo.size) {
+          if (fileInfo.size > MAX_FILE_SIZE) {
+            Alert.alert('Error', 'Image size should not exceed 5MB');
+            return;
+          }
+        }
+      } catch (error) {
+        console.error('Error checking file size:', error);
+        Alert.alert('Error', 'Failed to check image size');
+        return;
+      }
+      
+      // Создаем объект файла для отправки
+      const file = {
+        uri: selectedImage.uri,
+        type: 'image/jpeg',
+        name: `image-${Date.now()}.jpg`
+      };
+      
+      onImageChange(selectedImage.uri, file);
     }
   };
 

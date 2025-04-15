@@ -24,16 +24,19 @@ export function CustomButton({
   const primaryColor = useThemeColor({}, 'primary');
   const textColor = useThemeColor({}, 'text');
   const surfaceColor = useThemeColor({}, 'surface');
+  const dividerColor = useThemeColor({}, 'divider');
+  const placeholderColor = useThemeColor({}, 'placeholder');
+  const surfaceHighlightColor = useThemeColor({}, 'surfaceHighlight');
   
   const getBackgroundColor = () => {
     if (disabled) {
-      return useThemeColor({}, 'divider');
+      return dividerColor;
     }
     switch (variant) {
       case 'primary':
         return primaryColor;
       case 'secondary':
-        return useThemeColor({}, 'surfaceHighlight');
+        return surfaceHighlightColor;
       case 'outline':
         return 'transparent';
       default:
@@ -43,7 +46,7 @@ export function CustomButton({
   
   const getTextColor = () => {
     if (disabled) {
-      return useThemeColor({}, 'placeholder');
+      return placeholderColor;
     }
     switch (variant) {
       case 'primary':

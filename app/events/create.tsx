@@ -13,6 +13,7 @@ import { EventImageSection } from '@/components/event/EventImageSection';
 import { EventTypeSection } from '@/components/event/EventTypeSection';
 import { EventEndConditions } from '@/components/event/EventEndConditions';
 import { GroupData, EventType } from '@/types/event';
+import { useCreateEvent } from '@/lib/hooks/useCreateEvent';
 
 export default function CreateEventScreen() {
   const textColor = useThemeColor({}, 'text');
@@ -27,10 +28,8 @@ export default function CreateEventScreen() {
   const [description, setDescription] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [loading, setLoading] = useState(false);
   const [imageUri, setImageUri] = useState<string | null>(null);
-
-  // Для условий завершения события (множественные группы)
+  const [imageFile, setImageFile] = useState<{ uri: string; type: string; name: string } | null>(null);
   const [groups, setGroups] = useState<GroupData[]>([
     { 
       name: 'First group',
@@ -38,7 +37,8 @@ export default function CreateEventScreen() {
     }
   ]);
 
-  // Обработка выбора даты
+  const { createEvent, loading } = useCreateEvent();
+
   const onDateChange = (event: any, selectedDate?: Date) => {
     setShowDatePicker(false);
     if (selectedDate) {
@@ -46,58 +46,36 @@ export default function CreateEventScreen() {
     }
   };
 
-  // Выбор типа события
   const handleEventTypeChange = (type: EventType) => {
     setEventType(type);
   };
 
-  // Выбор получателя
   const handleRecipientChange = (name: string) => {
     setRecipient(name);
   };
 
-  // Изменение имени получателя
   const handleRecipientNameChange = (name: string) => {
     //setName(name);
   };
 
-  // Выбор изображения
-  const handleImageChange = (uri: string | null) => {
-    console.log('Image changed:', uri); // Добавим логирование
+  const handleImageChange = (uri: string | null, file?: { uri: string; type: string; name: string }) => {
+    console.log('Image changed:', uri, file);
     setImageUri(uri);
+    if (file) {
+      setImageFile(file);
+    }
   };
 
-  // Отправка формы
   const handleSubmit = async () => {
-    if (!name) {
-      Alert.alert('Error', 'Please enter the event name');
-      return;
-    }
-    if ((eventType === 'DONATION' || eventType === 'FUNDRAISING') && !recipient) {
-      Alert.alert('Error', 'For donations and fundraising, you must specify a recipient');
-      return;
-    }
-    setLoading(true);
-    // Преобразуем группы в формат, ожидаемый API
-    const endConditions: EventEndCondition[] = groups.map(group => ({
-      name: group.name,
-      conditions: group.conditions.map(cond => ({
-        parameterName: cond.parameterName,
-        operator: cond.comparisonOp ? `${cond.comparisonOp.toUpperCase()}_${cond.operator}` : cond.operator,
-        value: cond.value
-      }))
-    }));
-    // Здесь будет вызов API для создания события
-    console.log('Submitting with end conditions:', endConditions);
-    // Сейчас просто симулируем задержку и успешное создание
-    setTimeout(() => {
-      setLoading(false);
-      Alert.alert(
-        'Success',
-        'Event created successfully',
-        [{ text: 'OK', onPress: () => router.back() }]
-      );
-    }, 1000);
+    await createEvent({
+      name,
+      description,
+      eventType,
+      recipient,
+      imageUri,
+      imageFile,
+      groups
+    });
   };
 
   const styles = StyleSheet.create({
