@@ -1,6 +1,6 @@
 import React from 'react';
-import { StyleSheet, Image, Platform } from 'react-native';
-import { Stack } from 'expo-router';
+import { StyleSheet, Image, Platform, TouchableOpacity, View } from 'react-native';
+import { Stack, router } from 'expo-router';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -8,8 +8,16 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { CustomButton } from '@/components/custom/button';
+import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 
 export default function TabTwoScreen() {
+  const primaryColor = useThemeColor({}, 'primary');
+  const borderColor = useThemeColor({}, 'divider');
+  const textSecondary = useThemeColor({}, 'icon');
+  const sectionBackground = useThemeColor({}, 'sectionBackground');
+
   return (
     <>
       <Stack.Screen 
@@ -31,6 +39,21 @@ export default function TabTwoScreen() {
         <ThemedView style={styles.titleContainer}>
           <ThemedText type="title">Explore</ThemedText>
         </ThemedView>
+
+        <ThemedView style={styles.createEventSection}>
+          <TouchableOpacity 
+            style={styles.createEventButton}
+            onPress={() => router.push('/events/create')}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.createEventIcon, { backgroundColor: primaryColor }]}>
+              <IconSymbol name="plus" size={24} color="white" />
+            </View>
+            <ThemedText style={styles.createEventText}>Create New Event</ThemedText>
+            <IconSymbol name="chevron.right" size={20} color={textSecondary} />
+          </TouchableOpacity>
+        </ThemedView>
+
         <ThemedText>This app includes example code to help you get started.</ThemedText>
         <Collapsible title="File-based routing">
           <ThemedText>
@@ -115,5 +138,29 @@ const styles = StyleSheet.create({
   titleContainer: {
     flexDirection: 'row',
     gap: 8,
+  },
+  createEventSection: {
+    marginVertical: moderateScale(16),
+    borderRadius: moderateScale(12),
+    overflow: 'hidden',
+  },
+  createEventButton: {
+    padding: moderateScale(16),
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  createEventIcon: {
+    width: moderateScale(40),
+    height: moderateScale(40),
+    borderRadius: moderateScale(20),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  createEventText: {
+    fontSize: moderateScale(16),
+    fontWeight: '600',
+    flex: 1,
+    marginLeft: horizontalScale(12),
   },
 });

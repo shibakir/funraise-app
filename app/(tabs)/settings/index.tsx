@@ -17,7 +17,7 @@ interface SettingItemProps {
   onPress?: () => void;
 }
 
-export default function GitHubSettingsScreen() {
+export default function SettingsScreen() {
   const { user, logout } = useAuth();
 
   const borderColor = useThemeColor({}, 'divider');
