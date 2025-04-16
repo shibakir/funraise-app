@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
+import { Image as ExpoImage } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -192,10 +193,12 @@ export function UserEvents({ userId, limit = 5 }: UserEventsProps) {
         </View>
         
         {event.imageUrl && (
-          <Image 
-            source={{ uri: event.imageUrl }} 
+          <ExpoImage 
+            source={{ uri: event.imageUrl }}
             style={styles.eventImage}
-            resizeMode="cover"
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            transition={200}
           />
         )}
       </TouchableOpacity>
