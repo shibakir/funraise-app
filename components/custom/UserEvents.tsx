@@ -9,6 +9,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useUserEvents } from '@/lib/hooks/useUserEvents';
+import { useRouteEvents } from '@/lib/hooks/useRouteEvents';
 
 interface UserEventsProps {
   userId: string;
@@ -35,6 +36,9 @@ export function UserEvents({ userId, limit = 5 }: UserEventsProps) {
   const errorColor = useThemeColor({}, 'error');
   const surfaceColor = useThemeColor({}, 'surface');
   const placeholderColor = useThemeColor({}, 'placeholder');
+
+  // Используем хук для обновления данных при изменении маршрута
+  useRouteEvents(userId);
 
   const styles = StyleSheet.create({
     mainSection: {
