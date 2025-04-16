@@ -73,7 +73,7 @@ export const useCreateEvent = () => {
             name: group.name,
             conditions: group.conditions.map(cond => ({
             parameterName: cond.parameterName,
-            operator: cond.comparisonOp ? `${cond.comparisonOp.toUpperCase()}_${cond.operator}` : cond.operator,
+            operator: cond.comparisonOp ? cond.comparisonOp : "",
             value: cond.value
             }))
         }));

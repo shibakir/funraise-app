@@ -164,7 +164,7 @@ export function UserEvents({ userId, limit = 5 }: UserEventsProps) {
       <TouchableOpacity 
         style={styles.eventCard}
         onPress={() => router.push({
-          pathname: '/settings/detail',
+          pathname: '/event/[id]',
           params: { id: event.id }
         })}
         activeOpacity={0.7}
