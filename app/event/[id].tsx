@@ -76,7 +76,7 @@ export default function EventScreen() {
   const sectionBackground = useThemeColor({}, 'sectionBackground');
   const primaryColor = useThemeColor({}, 'primary');
   const borderColor = useThemeColor({}, 'divider');
-  const secondaryTextColor = useThemeColor({}, 'secondaryText');
+  //const secondaryTextColor = useThemeColor({}, 'secondaryText');
   const errorColor = useThemeColor({}, 'error');
   const cardColor = useThemeColor({}, 'card');
 
@@ -105,7 +105,7 @@ export default function EventScreen() {
                 <Ionicons 
                     name={condition.isCompleted ? "checkmark-circle" : "ellipse-outline"} 
                     size={moderateScale(18)} 
-                    color={condition.isCompleted ? primaryColor : secondaryTextColor} 
+                    color={condition.isCompleted ? primaryColor : ""} 
                 />
                 <ThemedText style={[
                     styles.conditionText,
