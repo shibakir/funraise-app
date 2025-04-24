@@ -10,7 +10,7 @@ import { CustomButton } from '@/components/custom/button';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 
 export default function RegisterScreen() {
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,7 +23,7 @@ export default function RegisterScreen() {
   const errorColor = useThemeColor({}, 'error');
   
   const handleRegister = async () => {
-    if (!name || !email || !password || !confirmPassword) {
+    if (!username || !email || !password || !confirmPassword) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -34,7 +34,7 @@ export default function RegisterScreen() {
     }
     
     try {
-      await register(name, email, password);
+      await register(username, email, password);
       router.replace('/(tabs)');
     } catch (error) {
       console.error('Error during registration:', error);
@@ -70,8 +70,8 @@ export default function RegisterScreen() {
           style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
           placeholder="Username"
           placeholderTextColor="#888"
-          value={name}
-          onChangeText={setName}
+          value={username}
+          onChangeText={setUsername}
           autoCapitalize="words"
         />
         

@@ -36,68 +36,68 @@ export default function LoginScreen() {
   
   return (
     <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
-      style={[styles.container, { backgroundColor }]}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
+        style={[styles.container, { backgroundColor }]}
     >
       <StatusBar style="auto" />
       
-      <ThemedView style={styles.logoContainer}>
-        <Image 
-          source={require('../assets/images/react-logo.png')} 
-          style={styles.logo} 
-          resizeMode="contain"
-        />
-        <ThemedText style={styles.appName}>Funraise</ThemedText>
-      </ThemedView>
+        <ThemedView style={styles.logoContainer}>
+            <Image 
+                source={require('../assets/images/react-logo.png')} 
+                style={styles.logo} 
+                resizeMode="contain"
+            />
+            <ThemedText style={styles.appName}>Funraise</ThemedText>
+        </ThemedView>
       
-      <ThemedView style={styles.formContainer}>
-        <ThemedText style={styles.title}>Login</ThemedText>
+        <ThemedView style={styles.formContainer}>
+            <ThemedText style={styles.title}>Login</ThemedText>
         
         {error && (
-          <ThemedText style={[styles.errorText, { color: errorColor }]}>
-            {error}
-          </ThemedText>
+            <ThemedText style={[styles.errorText, { color: errorColor }]}>
+                {error}
+            </ThemedText>
         )}
         
         <TextInput
-          style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
-          placeholder="Email"
-          placeholderTextColor="#888"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          keyboardType="email-address"
+            style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
+            placeholder="Email"
+            placeholderTextColor="#888"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
         />
         
         <TextInput
-          style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
-          placeholder="Password"
-          placeholderTextColor="#888"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
+            style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
+            placeholder="Password"
+            placeholderTextColor="#888"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
         />
         
         {isLoading ? (
-          <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
+            <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
         ) : (
-          <CustomButton
-            title="Login"
-            onPress={handleLogin}
-            variant="primary"
-            size="large"
-          />
+            <CustomButton
+                title="Login"
+                onPress={handleLogin}
+                variant="primary"
+                size="large"
+            />
         )}
         
         <ThemedView style={styles.registerContainer}>
-          <ThemedText>Not registered yet? </ThemedText>
-          <Link href="/register" asChild>
+            <ThemedText>Not registered yet? </ThemedText>
+            <Link href="/register" asChild>
             <TouchableOpacity>
-              <ThemedText style={[styles.registerLink, { color: primaryColor }]}>
-                Register
-              </ThemedText>
+                <ThemedText style={[styles.registerLink, { color: primaryColor }]}>
+                    Register
+                </ThemedText>
             </TouchableOpacity>
-          </Link>
+            </Link>
         </ThemedView>
       </ThemedView>
     </KeyboardAvoidingView>

@@ -7,10 +7,12 @@ import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/M
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { CreateEventSection } from '@/components/custom/createEventSection';
 import { UserEvents } from '@/components/custom/UserEvents';
+import { UserAchievements } from '@/components/custom/UserAchievements';
 
 export default function HomeScreen() {
   const { user } = useAuth();
   const [updateKey, setUpdateKey] = useState(0);
+  const userId = user?.id ? String(user.id) : "1";
   
   useFocusEffect(
     useCallback(() => {
@@ -31,7 +33,7 @@ export default function HomeScreen() {
       overflow: 'hidden',
     },
     sectionHeader: {
-      marginTop: verticalScale(6),
+      marginTop: verticalScale(20),
       paddingVertical: verticalScale(12),
     },
     sectionTitle: {
@@ -63,9 +65,15 @@ export default function HomeScreen() {
           
           {/* MY ACTIVE EVENTS SECTION */}
           <View style={styles.sectionHeader}>
-                    <ThemedText style={styles.sectionTitle}>My recent events</ThemedText>
-                </View>
-                <UserEvents userId="1" key={`events-${updateKey}`} />
+            <ThemedText style={styles.sectionTitle}>My Recent Events</ThemedText>
+          </View>
+          <UserEvents userId={userId} key={`events-${updateKey}`} />
+          
+          {/* ACHIEVEMENTS SECTION */}
+          <View style={styles.sectionHeader}>
+            <ThemedText style={styles.sectionTitle}>My Achievements</ThemedText>
+          </View>
+          <UserAchievements userId={userId} key={`achievements-${updateKey}`} />
         </ScrollView>
       </SafeAreaView>
     </>
