@@ -1,13 +1,12 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, Image, Platform, ScrollView, StatusBar, SafeAreaView, View, TouchableOpacity } from 'react-native';
-import { router, Stack, useFocusEffect } from 'expo-router';
+import { StyleSheet, ScrollView, StatusBar, SafeAreaView, View, TouchableOpacity } from 'react-native';
+import { Stack, useFocusEffect, Redirect } from 'expo-router';
 
 import { CreateEventSection } from '@/components/custom/createEventSection';
 import { UserEvents } from '@/components/custom/UserEvents';
 import { ThemedText } from '@/components/ThemedText';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useAuth } from '@/lib/context/AuthContext';
 
 import { AllEvents } from '@/components/custom/AllEvents';
@@ -17,13 +16,6 @@ export default function ExploreScreen() {
     const [updateKey, setUpdateKey] = useState(0);
     const { user } = useAuth();
 
-    // TODO: replace with 
-    if (!user) {
-        return;
-    }
-
-    const userId = String(user.id);
-    
     // Используем useFocusEffect для обновления при каждом переходе на эту страницу
     useFocusEffect(
         useCallback(() => {
@@ -79,6 +71,13 @@ export default function ExploreScreen() {
             gap: 8,
         },
     });
+
+    // Перенаправляем на страницу входа, если пользователь не авторизован
+    if (!user) {
+        return <Redirect href="/login" />;
+    }
+
+    const userId = String(user.id);
 
     return (
         <>
