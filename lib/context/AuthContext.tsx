@@ -85,15 +85,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // configure axios to use token in headers
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         } catch (error: any) {
-            console.error('Login error details:', error);
-            console.error('Network error:', error.message);
-            if (error.response) {
-                console.error('Response status:', error.response.status);
-                console.error('Response data:', error.response.data);
-            } else if (error.request) {
-                console.error('No response received:', error.request);
-            }
-            const message = error.response?.data?.message || 'Error during login';
+            //const message = error.response?.data?.message || 'Error during login';
+            const message = 'Email or password is bad';
             setError(message);
             throw new Error(message);
         } finally {
@@ -101,109 +94,110 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-  // register function
-  const register = async (username: string, email: string, password: string) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      const response = await axios.post(`${API_URL}/auth/register`, { username, email, password });
-      const { user, token } = response.data;
-      
-      // save data to AsyncStorage
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('user', JSON.stringify(user));
-      
-      // update state
-      setUser(user);
-      setToken(token);
-      
-      // configure axios to use token in headers
-      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Error during registration';
-      setError(message);
-      throw new Error(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // register function
+    const register = async (username: string, email: string, password: string) => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            
+            const response = await axios.post(`${API_URL}/auth/register`, { username, email, password });
+            const { user, token } = response.data;
+            
+            // save data to AsyncStorage
+            await AsyncStorage.setItem('token', token);
+            await AsyncStorage.setItem('user', JSON.stringify(user));
+            
+            // update state
+            setUser(user);
+            setToken(token);
+            
+            // configure axios to use token in headers
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        } catch (error: any) {
+            //const message = error.response?.data?.message || 'Error during registration';
+            const message = 'Probably the user already exists or your data is incorrect';
+            setError(message);
+            throw new Error(message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
   // update profile function
-  const updateProfile = async (data: UpdateProfileData) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      
-      if (!user) {
-        throw new Error('User not authenticated');
-      }
-      
-      const response = await axios.put(`${API_URL}/users/${user.id}`, data);
-      const updatedUser = response.data;
-      
-      // save updated user to AsyncStorage
-      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-      
-      // update state
-      setUser(updatedUser);
-      
-    } catch (error: any) {
-      const message = error.response?.data?.error || 'Error updating profile';
-      setError(message);
-      throw new Error(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    const updateProfile = async (data: UpdateProfileData) => {
+        try {
+        setIsLoading(true);
+        setError(null);
+        
+        if (!user) {
+            throw new Error('User is not authenticated');
+        }
+        
+        const response = await axios.put(`${API_URL}/users/${user.id}`, data);
+        const updatedUser = response.data;
+        
+        // save updated user to AsyncStorage
+        await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+        
+        // update state
+        setUser(updatedUser);
+        
+        } catch (error: any) {
+            const message = error.response?.data?.error || 'Error updating profile';
+            setError(message);
+            throw new Error(message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  // logout function
-  const logout = async () => {
-    try {
-      setIsLoading(true);
-      
-      // remove data from AsyncStorage
-      await AsyncStorage.removeItem('token');
-      await AsyncStorage.removeItem('user');
-      
-      // update state
-      setUser(null);
-      setToken(null);
-      
-      // remove token from request headers
-      delete axios.defaults.headers.common['Authorization'];
-    } catch (error) {
-      console.error('Error during logout:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // logout function
+    const logout = async () => {
+        try {
+            setIsLoading(true);
+            
+            // remove data from AsyncStorage
+            await AsyncStorage.removeItem('token');
+            await AsyncStorage.removeItem('user');
+            
+            // update state
+            setUser(null);
+            setToken(null);
+            
+            // remove token from request headers
+            delete axios.defaults.headers.common['Authorization'];
+        } catch (error) {
+            setError('Error during logout');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        isLoading,
-        error,
-        login,
-        register,
-        logout,
-        updateProfile
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+    return (
+        <AuthContext.Provider
+            value={{
+                user,
+                token,
+                isLoading,
+                error,
+                login,
+                register,
+                logout,
+                updateProfile
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
 }
 
 // auth context hook
 export function useAuth() {
-  const context = useContext(AuthContext);
-  
-  if (context === undefined) {
-    throw new Error('useAuth must be used within AuthProvider');
-  }
-  
-  return context;
+    const context = useContext(AuthContext);
+    
+    if (context === undefined) {
+        throw new Error('useAuth must be used within AuthProvider');
+    }
+    
+    return context;
 } 

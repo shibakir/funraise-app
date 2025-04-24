@@ -7,7 +7,7 @@ import { useUserSearch } from '@/lib/hooks/useUserSearch';
 import { EventType } from '@/types/event';
 import { Ionicons } from '@expo/vector-icons';
 
-const defaultUserImage = require('@/lib/constants/images/logo.png');
+const defaultUserImage = require('@/assets/images/logo.png');
 
 interface EventTypeSectionProps {
   selectedType: EventType;

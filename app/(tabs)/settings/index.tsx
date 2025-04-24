@@ -186,10 +186,10 @@ export default function SettingsScreen() {
                     <ThemedView style={styles.section}>
                         <View style={styles.userHeader}>
                         <View style={styles.avatar}>
-                            <ThemedText style={styles.avatarText}>{user?.name?.charAt(0) || 'X'}</ThemedText>
+                            <ThemedText style={styles.avatarText}>{user?.username?.charAt(0) || 'X'}</ThemedText>
                         </View>
                         <View style={styles.userInfo}>
-                            <ThemedText style={styles.userName}>{user?.name || 'User'}</ThemedText>
+                            <ThemedText style={styles.userName}>{user?.username || 'User'}</ThemedText>
                             <ThemedText style={styles.userEmail}>{user?.email || ''}</ThemedText>
                         </View>
                         </View>

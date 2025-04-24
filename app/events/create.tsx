@@ -6,9 +6,6 @@ import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { CustomButton } from '@/components/custom/button';
 
-import { EventEndCondition } from '@/lib/types';
-import DateTimePicker from '@react-native-community/datetimepicker';
-
 import { EventImageSection } from '@/components/event/EventImageSection';
 import { EventTypeSection } from '@/components/event/EventTypeSection';
 import { EventEndConditions } from '@/components/event/EventEndConditions';
@@ -16,128 +13,119 @@ import { GroupData, EventType } from '@/types/event';
 import { useCreateEvent } from '@/lib/hooks/useCreateEvent';
 
 export default function CreateEventScreen() {
-  const textColor = useThemeColor({}, 'text');
-  const primaryColor = useThemeColor({}, 'primary');
-  const borderColor = useThemeColor({}, 'divider');
-  const placeholderColor = useThemeColor({}, 'placeholder');
-  const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const textColor = useThemeColor({}, 'text');
+    const primaryColor = useThemeColor({}, 'primary');
+    const borderColor = useThemeColor({}, 'divider');
+    const placeholderColor = useThemeColor({}, 'placeholder');
+    const sectionBackground = useThemeColor({}, 'sectionBackground');
 
-  const [eventType, setEventType] = useState<EventType>('DONATION');
-  const [recipient, setRecipient] = useState('');
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [showDatePicker, setShowDatePicker] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [imageUri, setImageUri] = useState<string | null>(null);
-  const [imageFile, setImageFile] = useState<{ uri: string; type: string; name: string } | null>(null);
-  const [groups, setGroups] = useState<GroupData[]>([
-    { 
-      name: 'First group',
-      conditions: []
-    }
-  ]);
+    const [eventType, setEventType] = useState<EventType>('DONATION');
+    const [recipient, setRecipient] = useState('');
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [imageUri, setImageUri] = useState<string | null>(null);
+    const [imageFile, setImageFile] = useState<{ uri: string; type: string; name: string } | null>(null);
+    const [groups, setGroups] = useState<GroupData[]>([
+        { 
+            name: 'First group',
+            conditions: []
+        }
+    ]);
 
-  const { createEvent, loading } = useCreateEvent();
+    const { createEvent, loading } = useCreateEvent();
 
-  const onDateChange = (event: any, selectedDate?: Date) => {
-    setShowDatePicker(false);
-    if (selectedDate) {
-      setSelectedDate(selectedDate);
-    }
-  };
+    const handleEventTypeChange = (type: EventType) => {
+        setEventType(type);
+    };
 
-  const handleEventTypeChange = (type: EventType) => {
-    setEventType(type);
-  };
+    const handleRecipientChange = (name: string) => {
+        setRecipient(name);
+    };
 
-  const handleRecipientChange = (name: string) => {
-    setRecipient(name);
-  };
+    const handleRecipientNameChange = (name: string) => {
+        //setName(name);
+    };
 
-  const handleRecipientNameChange = (name: string) => {
-    //setName(name);
-  };
+    const handleImageChange = (uri: string | null, file?: { uri: string; type: string; name: string }) => {
+        console.log('Image changed:', uri, file);
+        setImageUri(uri);
+        if (file) {
+        setImageFile(file);
+        }
+    };
 
-  const handleImageChange = (uri: string | null, file?: { uri: string; type: string; name: string }) => {
-    console.log('Image changed:', uri, file);
-    setImageUri(uri);
-    if (file) {
-      setImageFile(file);
-    }
-  };
+    const handleSubmit = async () => {
+        await createEvent({
+        name,
+        description,
+        eventType,
+        recipient,
+        imageUri,
+        imageFile,
+        groups
+        });
+    };
 
-  const handleSubmit = async () => {
-    await createEvent({
-      name,
-      description,
-      eventType,
-      recipient,
-      imageUri,
-      imageFile,
-      groups
+    const styles = StyleSheet.create({
+        container: {
+        flex: 1,
+        },
+        content: {
+        padding: moderateScale(16),
+        paddingTop: verticalScale(40),
+        paddingBottom: verticalScale(120),
+        flexGrow: 1,
+        },
+        section: {
+        marginTop: moderateScale(8),
+        marginBottom: moderateScale(8),
+        flex: 1,
+        },
+        doubleSection: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: moderateScale(16),
+        marginBottom: moderateScale(32),
+        gap: moderateScale(32),
+        },
+        sectionTitle: {
+        fontSize: moderateScale(18),
+        fontWeight: '600',
+        marginBottom: moderateScale(8),
+        },
+        sectionDescription: {
+        fontSize: moderateScale(14),
+        color: placeholderColor,
+        marginBottom: moderateScale(8),
+        marginTop: moderateScale(8),
+        lineHeight: moderateScale(20),
+        },
+        input: {
+        borderWidth: 1,
+        borderColor: borderColor,
+        borderRadius: moderateScale(8),
+        padding: moderateScale(12),
+        fontSize: moderateScale(16),
+        color: textColor,
+        backgroundColor: sectionBackground,
+        marginBottom: moderateScale(16),
+        },
+        largeInput: {
+        height: moderateScale(120),
+        textAlignVertical: 'top',
+        },
+        row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: moderateScale(16),
+        width: '100%',
+        },
+        submitButton: {
+        marginTop: moderateScale(20),
+        marginBottom: moderateScale(20),
+        width: '100%',
+        },
     });
-  };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-    },
-    content: {
-      padding: moderateScale(16),
-      paddingTop: verticalScale(40),
-      paddingBottom: verticalScale(120),
-      flexGrow: 1,
-    },
-    section: {
-      marginTop: moderateScale(8),
-      marginBottom: moderateScale(8),
-      flex: 1,
-    },
-    doubleSection: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginVertical: moderateScale(16),
-      marginBottom: moderateScale(32),
-      gap: moderateScale(32),
-    },
-    sectionTitle: {
-      fontSize: moderateScale(18),
-      fontWeight: '600',
-      marginBottom: moderateScale(8),
-    },
-    sectionDescription: {
-      fontSize: moderateScale(14),
-      color: placeholderColor,
-      marginBottom: moderateScale(8),
-      marginTop: moderateScale(8),
-      lineHeight: moderateScale(20),
-    },
-    input: {
-      borderWidth: 1,
-      borderColor: borderColor,
-      borderRadius: moderateScale(8),
-      padding: moderateScale(12),
-      fontSize: moderateScale(16),
-      color: textColor,
-      backgroundColor: sectionBackground,
-      marginBottom: moderateScale(16),
-    },
-    largeInput: {
-      height: moderateScale(120),
-      textAlignVertical: 'top',
-    },
-    row: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: moderateScale(16),
-      width: '100%',
-    },
-    submitButton: {
-      marginTop: moderateScale(20),
-      marginBottom: moderateScale(20),
-      width: '100%',
-    },
-  });
 
   return (
     <>
@@ -229,15 +217,6 @@ export default function CreateEventScreen() {
           </CustomButton>
         </ScrollView>
       </KeyboardAvoidingView>
-      
-      {showDatePicker && (
-        <DateTimePicker
-          value={selectedDate || new Date()}
-          mode="datetime"
-          display="default"
-          onChange={onDateChange}
-        />
-      )}
     </>
   );
 } 
