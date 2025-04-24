@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  SafeAreaView,
-  ScrollView,
-  TextInput,
-  Alert,
-  ActivityIndicator,
-  KeyboardAvoidingView
+    StyleSheet,
+    View,
+    TouchableOpacity,
+    SafeAreaView,
+    ScrollView,
+    TextInput,
+    Alert,
+    ActivityIndicator,
+    KeyboardAvoidingView
 } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -20,47 +20,47 @@ import { CustomButton } from '@/components/custom/button';
 // TODO: Add data verification + restrictions
 
 export default function AccountScreen() {
-  const { user, updateProfile, error, isLoading } = useAuth();
-  const [name, setName] = useState(user?.name || '');
-  const [email, setEmail] = useState(user?.email || '');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [editingName, setEditingName] = useState(false);
-  const [editingEmail, setEditingEmail] = useState(false);
-  const [editingPassword, setEditingPassword] = useState(false);
+    const { user, updateProfile, error, isLoading } = useAuth();
+    const [name, setName] = useState(user?.username || '');
+    const [email, setEmail] = useState(user?.email || '');
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const [editingName, setEditingName] = useState(false);
+    const [editingEmail, setEditingEmail] = useState(false);
+    const [editingPassword, setEditingPassword] = useState(false);
+    
+    const backgroundColor = useThemeColor({}, 'background');
+    const primaryColor = useThemeColor({}, 'primary');
+    const borderColor = useThemeColor({}, 'divider');
+    const textColor = useThemeColor({}, 'text');
+    const errorColor = useThemeColor({}, 'error');
+    const surfaceColor = useThemeColor({}, 'surface');
+    const placeholderColor = useThemeColor({}, 'placeholder');
   
-  const backgroundColor = useThemeColor({}, 'background');
-  const primaryColor = useThemeColor({}, 'primary');
-  const borderColor = useThemeColor({}, 'divider');
-  const textColor = useThemeColor({}, 'text');
-  const errorColor = useThemeColor({}, 'error');
-  const surfaceColor = useThemeColor({}, 'surface');
-  const placeholderColor = useThemeColor({}, 'placeholder');
-  
-  const handleUpdateName = async () => {
-    try {
-      if (!name.trim()) {
-        Alert.alert('Error', 'Name cannot be empty');
-        return;
-      }
-      
-      if (name === user?.name) {
-        setEditingName(false);
-        return;
-      }
-      
-      const updateData = { name };
-      
-      await updateProfile(updateData);
-      setEditingName(false);
-      
-      Alert.alert('Success', 'Name updated successfully');
-    } catch (error: any) {
-      console.error('Error updating name:', error);
-      Alert.alert('Error', error.message || 'Failed to update name');
-    }
-  };
+    const handleUpdateName = async () => {
+        try {
+            if (!name.trim()) {
+                Alert.alert('Error', 'Name cannot be empty');
+                return;
+            }
+            
+            if (name === user?.username) {
+                setEditingName(false);
+                return;
+            }
+            
+            const updateData = { name };
+            
+            await updateProfile(updateData);
+            setEditingName(false);
+            
+            Alert.alert('Success', 'Name updated successfully');
+        } catch (error: any) {
+            console.error('Error updating name:', error);
+            Alert.alert('Error', error.message || 'Failed to update name');
+        }
+    };
   
   const handleUpdateEmail = async () => {
     try {
@@ -128,7 +128,7 @@ export default function AccountScreen() {
   };
   
   const handleCancelName = () => {
-    setName(user?.name || '');
+    setName(user?.username || '');
     setEditingName(false);
   };
   

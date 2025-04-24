@@ -126,21 +126,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // update profile function
     const updateProfile = async (data: UpdateProfileData) => {
         try {
-        setIsLoading(true);
-        setError(null);
+            setIsLoading(true);
+            setError(null);
         
-        if (!user) {
-            throw new Error('User is not authenticated');
-        }
-        
-        const response = await axios.put(`${API_URL}/users/${user.id}`, data);
-        const updatedUser = response.data;
-        
-        // save updated user to AsyncStorage
-        await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-        
-        // update state
-        setUser(updatedUser);
+            if (!user) {
+                throw new Error('User is not authenticated');
+            }
+            
+            const response = await axios.put(`${API_URL}/users/${user.id}`, data);
+            const updatedUser = response.data;
+            
+            // save updated user to AsyncStorage
+            await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+            
+            // update state
+            setUser(updatedUser);
         
         } catch (error: any) {
             const message = error.response?.data?.error || 'Error updating profile';
