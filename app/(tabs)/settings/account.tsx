@@ -163,12 +163,12 @@ export default function AccountScreen() {
             {editingName ? (
               <>
                 <View style={styles.formGroup}>
-                  <ThemedText style={styles.label}>Name</ThemedText>
+                  <ThemedText style={styles.label}>New username</ThemedText>
                   <TextInput
                     style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
                     value={name}
                     onChangeText={setName}
-                    placeholder="Your name"
+                    placeholder="Your new username"
                     placeholderTextColor={placeholderColor}
                   />
                 </View>
@@ -200,7 +200,7 @@ export default function AccountScreen() {
                 </View>
               </>
             ) : (
-              <ThemedText style={styles.value}>{user?.name || 'Not set'}</ThemedText>
+              <ThemedText style={styles.value}>{user?.username || 'Not set'}</ThemedText>
             )}
           </View>
         </ThemedView>
