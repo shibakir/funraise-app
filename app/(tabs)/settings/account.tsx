@@ -349,7 +349,7 @@ export default function AccountScreen() {
         </ThemedView>
       </ScrollView>
       </KeyboardAvoidingView>
-      </SafeAreaView>
+    </SafeAreaView>
   );
 }
 

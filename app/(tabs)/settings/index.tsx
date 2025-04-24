@@ -23,6 +23,7 @@ export default function SettingsScreen() {
   const borderColor = useThemeColor({}, 'divider');
   const textSecondary = useThemeColor({}, 'icon');
   const sectionBackground = useThemeColor({}, 'sectionBackground');
+  const primaryColor = useThemeColor({}, 'primary');
   
   const styles = StyleSheet.create({
     container: {
@@ -198,6 +199,12 @@ export default function SettingsScreen() {
                             title="Account" 
                             description="Manage your account information"
                             onPress={() => router.push('/settings/account')}
+                        />
+                        <SettingItem 
+                            icon="dollarsign.circle" 
+                            title="Balance" 
+                            description="Add funds to your account"
+                            onPress={() => router.push('/settings/balance')}
                         />
                         <SettingItem 
                             icon="bell" 
