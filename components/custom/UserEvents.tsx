@@ -38,8 +38,10 @@ export function UserEvents({ userId, limit = 5 }: UserEventsProps) {
   const surfaceColor = useThemeColor({}, 'surface');
   const placeholderColor = useThemeColor({}, 'placeholder');
 
-  // Используем хук для обновления данных при изменении маршрута
-  useRouteEvents(userId);
+  // Загружаем данные при каждом рендере компонента
+  React.useEffect(() => {
+    fetchUserEvents(userId, limit);
+  }, []);
 
   const styles = StyleSheet.create({
     mainSection: {
@@ -128,10 +130,6 @@ export function UserEvents({ userId, limit = 5 }: UserEventsProps) {
         elevation: 5,
     },
   });
-
-  React.useEffect(() => {
-    fetchUserEvents(userId, limit);
-  }, [userId, limit]);
 
   const EventCard = ({ event }: { event: EventInterface }) => {
     // animation for active indicator

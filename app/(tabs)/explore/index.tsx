@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, Image, Platform, ScrollView, StatusBar, SafeAreaView, View } from 'react-native';
+import { Stack, useFocusEffect } from 'expo-router';
 
 import { CreateEventSection } from '@/components/custom/createEventSection';
 import { UserEvents } from '@/components/custom/UserEvents';
 import { ThemedText } from '@/components/ThemedText';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
-import { Stack } from 'expo-router';
 
 export default function ExploreScreen() {
-    const primaryColor = useThemeColor({}, 'primary');
-    const borderColor = useThemeColor({}, 'divider');
-    const textSecondary = useThemeColor({}, 'icon');
-    const sectionBackground = useThemeColor({}, 'sectionBackground');
+    // Добавляем forceUpdate для обновления компонента
+    const [updateKey, setUpdateKey] = useState(0);
+    
+    // Используем useFocusEffect для обновления при каждом переходе на эту страницу
+    useFocusEffect(
+        useCallback(() => {
+            // Обновляем ключ, чтобы заставить компоненты перерендериться
+            setUpdateKey(prev => prev + 1);
+        }, [])
+    );
 
     return (
         <>
@@ -32,13 +37,13 @@ export default function ExploreScreen() {
                     <View style={styles.sectionHeader}>
                         <ThemedText style={styles.sectionTitle}>Create your new event!</ThemedText>
                     </View>
-                    <CreateEventSection />
+                    <CreateEventSection key={`create-${updateKey}`} />
 
                     {/* MY ACTIVE EVENTS SECTION */}
                     <View style={styles.sectionHeader}>
                         <ThemedText style={styles.sectionTitle}>My recent events</ThemedText>
                     </View>
-                    <UserEvents userId="1" limit={5} />
+                    <UserEvents userId="1" limit={5} key={`events-${updateKey}`} />
                 </ScrollView>
             </SafeAreaView>
         </>

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { StyleSheet, ScrollView, SafeAreaView, StatusBar, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { router, Stack } from 'expo-router';
+import { router, Stack, useFocusEffect } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { useAuth } from '@/lib/context/AuthContext';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
@@ -10,17 +10,14 @@ import { UserEvents } from '@/components/custom/UserEvents';
 
 export default function HomeScreen() {
   const { user } = useAuth();
-
-  const borderColor = useThemeColor({}, 'divider');
-  const textSecondary = useThemeColor({}, 'icon');
-  const sectionBackground = useThemeColor({}, 'sectionBackground');
-  const backgroundColor = useThemeColor({}, 'background');
-  const primaryColor = useThemeColor({}, 'primary');
-  const textColor = useThemeColor({}, 'text');
-  const errorColor = useThemeColor({}, 'error');
-  const surfaceColor = useThemeColor({}, 'surface');
-  const placeholderColor = useThemeColor({}, 'placeholder');
+  const [updateKey, setUpdateKey] = useState(0);
   
+  useFocusEffect(
+    useCallback(() => {
+      setUpdateKey(prev => prev + 1);
+    }, [])
+  );
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -62,13 +59,13 @@ export default function HomeScreen() {
             <View style={styles.sectionHeader}>
                 <ThemedText style={styles.sectionTitle}>New Event</ThemedText>
             </View>
-            <CreateEventSection />
+            <CreateEventSection key={`create-${updateKey}`} />
           
           {/* MY ACTIVE EVENTS SECTION */}
           <View style={styles.sectionHeader}>
                     <ThemedText style={styles.sectionTitle}>My recent events</ThemedText>
                 </View>
-                <UserEvents userId="1" />
+                <UserEvents userId="1" key={`events-${updateKey}`} />
         </ScrollView>
       </SafeAreaView>
     </>

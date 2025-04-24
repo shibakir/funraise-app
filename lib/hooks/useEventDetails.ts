@@ -66,6 +66,8 @@ export const useEventDetails = (eventId: string | null) => {
         })) || []
       };
 
+      //console.log(formattedEvent);
+
       setEvent(formattedEvent);
     } catch (err) {
       console.error('Error fetching event details:', err);
