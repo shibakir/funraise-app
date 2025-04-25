@@ -1,16 +1,21 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, ScrollView, SafeAreaView, StatusBar, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { Stack, useFocusEffect, Redirect } from 'expo-router';
+import { Stack, useFocusEffect, Redirect, router } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
+import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { useAuth } from '@/lib/context/AuthContext';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { CreateEventSection } from '@/components/custom/createEventSection';
 import { UserEvents } from '@/components/custom/UserEvents';
 import { UserAchievements } from '@/components/custom/UserAchievements';
+import { ThemedView } from '@/components/ThemedView';
 
 export default function HomeScreen() {
     const [updateKey, setUpdateKey] = useState(0);
     const { user } = useAuth();
+
+    const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const primaryColor = useThemeColor({}, 'primary');
     
     useFocusEffect(
         useCallback(() => {
@@ -18,6 +23,12 @@ export default function HomeScreen() {
             setUpdateKey(prev => prev + 1);
         }, [])
     );
+
+    const navigateToProfile = () => {
+        if (user) {
+            router.push(`/profile/${user.id}`);
+        }
+    };
 
     const styles = StyleSheet.create({
         container: {
@@ -39,6 +50,17 @@ export default function HomeScreen() {
             fontSize: moderateScale(20),
             fontWeight: '600',
             marginBottom: verticalScale(4),
+        },
+        profileButton: {
+            paddingVertical: verticalScale(12),
+            paddingHorizontal: horizontalScale(20),
+            borderRadius: moderateScale(8),
+            alignItems: 'center',
+            marginTop: verticalScale(16),
+        },
+        profileButtonText: {
+            fontSize: moderateScale(16),
+            fontWeight: '600',
         },
     });
 
@@ -63,6 +85,14 @@ export default function HomeScreen() {
                     style={styles.container}
                     contentContainerStyle={styles.contentContainer}
                 >
+                    {/* PROFILE BUTTON */}
+                    <TouchableOpacity 
+                        style={[styles.profileButton, { backgroundColor: sectionBackground }]}
+                        onPress={navigateToProfile}
+                    >
+                        <ThemedText style={styles.profileButtonText}>Show Profile</ThemedText>
+                    </TouchableOpacity>
+                    
                     {/* NEW EVENT SECTION */}
                     <View style={styles.sectionHeader}>
                         <ThemedText style={styles.sectionTitle}>New Event</ThemedText>

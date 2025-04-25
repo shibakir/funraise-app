@@ -11,9 +11,10 @@ import { EventCard } from '@/components/EventCard';
 interface UserEventsProps {
   limit?: number;
   userId: string;
+  eventType?: 'created' | 'participating';
 }
 
-export function UserEvents({ limit = 5, userId }: UserEventsProps) {
+export function UserEvents({ limit = 5, userId, eventType }: UserEventsProps) {
     const { events, isLoading, error, fetchUserEvents, resetEvents } = useUserEvents();
     const borderColor = useThemeColor({}, 'divider');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
@@ -22,8 +23,8 @@ export function UserEvents({ limit = 5, userId }: UserEventsProps) {
 
     // Загружаем данные при первом рендере компонента
     useEffect(() => {
-        fetchUserEvents(userId, limit);
-    }, [userId]);
+        fetchUserEvents(userId, limit, eventType);
+    }, [userId, eventType]);
 
     const styles = StyleSheet.create({
         mainSection: {

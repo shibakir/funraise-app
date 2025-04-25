@@ -25,7 +25,7 @@ export const useUserEvents = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUserEvents = async (userId: string, limit: number = 0) => {
+  const fetchUserEvents = async (userId: string, limit: number = 0, eventType?: 'created' | 'participating') => {
     if (!userId) {
       setEvents([]);
       return;
@@ -35,7 +35,14 @@ export const useUserEvents = () => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3000/users/${userId}/events?limit=${limit}`, {
+      let url = `http://localhost:3000/users/${userId}/events?limit=${limit}`;
+      
+      // Добавляем параметр типа, если он указан
+      if (eventType) {
+        url += `&type=${eventType}`;
+      }
+      
+      const response = await fetch(url, {
         method: 'GET',
         headers: {
             //  'Authorization': `Bearer ${localStorage.getItem('token')}`,
