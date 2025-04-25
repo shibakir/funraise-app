@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, SafeAreaView, ScrollView } from 'react-native';
-import { Stack } from 'expo-router';
+import { Stack, Redirect } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
@@ -12,18 +12,21 @@ import { useUserBalance } from '@/lib/hooks/useUserBalance';
 import { useUpdateBalance } from '@/lib/hooks/useUpdateBalance';
 
 export default function BalanceScreen() {
-  const { user } = useAuth();
-  const [amount, setAmount] = useState('');
-  
-  const primaryColor = useThemeColor({}, 'primary');
-  const borderColor = useThemeColor({}, 'divider');
-  const placeholderColor = useThemeColor({}, 'placeholder');
-  const textColor = useThemeColor({}, 'text');
-  const errorColor = useThemeColor({}, 'error');
+    const { user } = useAuth();
+    const [amount, setAmount] = useState('');
+    
+    const primaryColor = useThemeColor({}, 'primary');
+    const borderColor = useThemeColor({}, 'divider');
+    const placeholderColor = useThemeColor({}, 'placeholder');
+    const textColor = useThemeColor({}, 'text');
+    const errorColor = useThemeColor({}, 'error');
 
-  const userId = user?.id ? String(user.id) : null;
-  const { balance, loading: loadingBalance, refresh: refreshBalance, error: balanceError } = useUserBalance(userId);
-  const { updateBalance, loading: loadingUpdate, error: updateError } = useUpdateBalance();
+    if (!user) {
+        return <Redirect href="/login" />;
+    }
+    const userId = String(user.id);
+    const { balance, loading: loadingBalance, refresh: refreshBalance, error: balanceError } = useUserBalance(userId);
+    const { updateBalance, loading: loadingUpdate, error: updateError } = useUpdateBalance();
 
     const handleAddBalance = async () => {
         if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
@@ -145,13 +148,13 @@ export default function BalanceScreen() {
                     <View style={[styles.inputContainer, { borderColor }]}>
 
                         <TextInput
-                        style={[styles.input, { color: textColor }]}
-                        placeholder="Enter amount"
-                        placeholderTextColor={textColor + '80'}
-                        keyboardType="decimal-pad"
-                        value={amount}
-                        onChangeText={setAmount}
-                        maxLength={10}
+                            style={[styles.input, { color: textColor }]}
+                            placeholder="Enter amount"
+                            placeholderTextColor={textColor + '80'}
+                            keyboardType="numeric"
+                            value={amount}
+                            onChangeText={setAmount}
+                            maxLength={10}
                         />
                     </View>
 
