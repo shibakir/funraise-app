@@ -71,7 +71,7 @@ export default function HomeScreen() {
                     
                     {/* MY ACTIVE EVENTS SECTION */}
                     <View style={styles.sectionHeader}>
-                        <ThemedText style={styles.sectionTitle}>My Recent Events</ThemedText>
+                        <ThemedText style={styles.sectionTitle}>My recent events</ThemedText>
                     </View>
                     <UserEvents userId={userId} key={`events-${updateKey}`} />
                     
