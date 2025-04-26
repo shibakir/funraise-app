@@ -1,47 +1,52 @@
 import { useState, useEffect, useCallback } from 'react';
 
 interface EventBankInfo {
-  bankAmount: number;
+    bankAmount: number;
+    status: string;
 }
 
 export const useEventBank = (eventId: string | null) => {
-  const [bankAmount, setBankAmount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+    const [bankAmount, setBankAmount] = useState(0);
+    const [eventStatus, setEventStatus] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  const fetchBankInfo = useCallback(async () => {
-    if (!eventId) {
-      setBankAmount(0);
-      return;
-    }
+    const fetchBankInfo = useCallback(async () => {
+        if (!eventId) {
+            setBankAmount(0);
+            return;
+        }
 
-    setLoading(true);
-    setError(null);
+        setLoading(true);
+        setError(null);
 
-    try {
-      const response = await fetch(`http://localhost:3000/events/${eventId}/bank`);
+        try {
+            const response = await fetch(`http://localhost:3000/events/${eventId}/bank`);
 
-      if (!response.ok) {
-        throw new Error('Failed to load bank info');
-      }
+            if (!response.ok) {
+                throw new Error('Failed to load bank info');
+            }
 
-      const data = await response.json();
-      setBankAmount(data.bankAmount || 0);
-    } catch (err) {
-      console.error('Error fetching bank info:', err);
-      setError('Failed to load bank info. Please try again later.');
-    } finally {
-      setLoading(false);
-    }
-  }, [eventId]);
+            const data = await response.json();
+            setBankAmount(data.bankAmount);
+            setEventStatus(data.status);
 
-  useEffect(() => {
-    fetchBankInfo();
-  }, [fetchBankInfo]);
+            console.log('data', data);
+        } catch (err) {
+            console.error('Error fetching bank info:', err);
+            setError('Failed to load bank info. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    }, [eventId]);
 
-  const refresh = useCallback(() => {
-    fetchBankInfo();
-  }, [fetchBankInfo]);
+    useEffect(() => {
+        fetchBankInfo();
+    }, [fetchBankInfo]);
 
-  return { bankAmount, loading, error, refresh };
+    const refresh = useCallback(() => {
+        fetchBankInfo();
+    }, [fetchBankInfo]);
+
+    return { bankAmount, eventStatus, loading, error, refresh };
 }; 

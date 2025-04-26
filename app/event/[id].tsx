@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, ScrollView, ActivityIndicator, TouchableOpacity, Alert, StatusBar } from 'react-native';
+import { StyleSheet, View, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -18,202 +18,205 @@ import { EventDescription } from '@/components/EventDescription';
 import { EventConditionsList, EventConditionsListHandle } from '@/components/EventConditionsList';
 
 export default function EventScreen() {
-  const { id } = useLocalSearchParams();
-  const router = useRouter();
-  const { event, loading, error, refresh } = useEventDetails(id as string);
-  const { user } = useAuth();
-  
-  // Состояние для хранения выбранной суммы
-  const [depositAmount, setDepositAmount] = useState(1);
-  
-  // Состояние для отслеживания первой загрузки
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  
-  // Реф для доступа к методам компонента EventDepositPanel
-  const depositPanelRef = useRef<{
-    handleCreateParticipation: () => Promise<void>;
-    handleUpdateParticipation: () => Promise<void>;
-    hasParticipation: boolean;
-  } | null>(null);
-  
-  // Реф для доступа к методам компонента EventBankInfo
-  const bankInfoRef = useRef<EventBankInfoHandle>(null);
+    const { id } = useLocalSearchParams();
+    const router = useRouter();
+    const { event, loading, error, refresh } = useEventDetails(id as string);
+    const { user } = useAuth();
+    
+    console.log('event', event);
 
-  // Реф для доступа к методам компонента EventConditionsList
-  const conditionsListRef = useRef<EventConditionsListHandle>(null);
-  
-  // Обновляем флаг первой загрузки
-  useEffect(() => {
-    if (!loading && !initialLoadComplete) {
-      setInitialLoadComplete(true);
-    }
-  }, [loading]);
-  
-  const handleDepositChange = (value: number) => {
-    setDepositAmount(value);
-  };
-  
-  const handleParticipationUpdated = () => {
-    refresh();
-    // Обновляем информацию о банке события
-    if (bankInfoRef.current) {
-      bankInfoRef.current.refresh();
-    }
-    // Обновляем информацию об условиях события
-    if (conditionsListRef.current) {
-      conditionsListRef.current.refresh();
-    }
-  };
-  
-  // Обработчик нажатия на изображение события
-  const handleImagePress = async () => {
-    // Если пользователь авторизован
-    if (user && event && depositPanelRef.current) {
-      if (depositPanelRef.current.hasParticipation) {
-        // Если уже есть участие, обновляем его
-        await depositPanelRef.current.handleUpdateParticipation();
-      } else {
-        // Если участия еще нет, создаем новое
-        await depositPanelRef.current.handleCreateParticipation();
-      }
-    } else if (!user) {
-      Alert.alert('Error', 'You must be logged in to participate');
-    }
-  };
+    // Состояние для хранения выбранной суммы
+    const [depositAmount, setDepositAmount] = useState(1);
+    
+    // Состояние для отслеживания первой загрузки
+    const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+    
+    // Реф для доступа к методам компонента EventDepositPanel
+    const depositPanelRef = useRef<{
+        handleCreateParticipation: () => Promise<void>;
+        handleUpdateParticipation: () => Promise<void>;
+        hasParticipation: boolean;
+    } | null>(null);
+    
+    // Реф для доступа к методам компонента EventBankInfo
+    const bankInfoRef = useRef<EventBankInfoHandle>(null);
 
-  const backgroundColor = useThemeColor({}, 'background');
-  const primaryColor = useThemeColor({}, 'primary');
-  const errorColor = useThemeColor({}, 'error');
+    // Реф для доступа к методам компонента EventConditionsList
+    const conditionsListRef = useRef<EventConditionsListHandle>(null);
+    
+    // Обновляем флаг первой загрузки
+    useEffect(() => {
+        if (!loading && !initialLoadComplete) {
+        setInitialLoadComplete(true);
+        }
+    }, [loading]);
+    
+    const handleDepositChange = (value: number) => {
+        setDepositAmount(value);
+    };
+  
+    const handleParticipationUpdated = () => {
+        refresh();
+        // Обновляем информацию о банке события
+        if (bankInfoRef.current) {
+        bankInfoRef.current.refresh();
+        }
+        // Обновляем информацию об условиях события
+        if (conditionsListRef.current) {
+        conditionsListRef.current.refresh();
+        }
+    };
+    
+    // Обработчик нажатия на изображение события
+    const handleImagePress = async () => {
+        // Если пользователь авторизован
+        if (user && event && depositPanelRef.current) {
+        if (depositPanelRef.current.hasParticipation) {
+            // Если уже есть участие, обновляем его
+            await depositPanelRef.current.handleUpdateParticipation();
+        } else {
+            // Если участия еще нет, создаем новое
+            await depositPanelRef.current.handleCreateParticipation();
+        }
+        } else if (!user) {
+        Alert.alert('Error', 'You must be logged in to participate');
+        }
+    };
 
-  // Отображаем индикатор загрузки только при первой загрузке страницы
-  if (loading && !initialLoadComplete) {
+    const backgroundColor = useThemeColor({}, 'background');
+    const primaryColor = useThemeColor({}, 'primary');
+    const errorColor = useThemeColor({}, 'error');
+
+    // Отображаем индикатор загрузки только при первой загрузке страницы
+    if (loading && !initialLoadComplete) {
+        return (
+        <View style={[styles.loadingContainer, { backgroundColor }]}>
+            <ActivityIndicator size="large" color={primaryColor} />
+            <ThemedText style={styles.loadingText}>Event loading...</ThemedText>
+        </View>
+        );
+    }
+
+    // Показываем экран с ошибкой только если есть ошибка или событие не найдено
+    if (error || (!loading && !event)) {
+        return (
+        <View style={[styles.errorContainer, { backgroundColor }]}>
+            <Ionicons name="alert-circle-outline" size={moderateScale(48)} color={errorColor} />
+            <ThemedText style={styles.errorText}>
+            {error || 'Event not found'}
+            </ThemedText>
+            <TouchableOpacity 
+            style={[styles.headerButton, { marginTop: verticalScale(16) }]}
+            onPress={() => router.back()}
+            >
+            <ThemedText style={{ color: primaryColor }}>Go Back</ThemedText>
+            </TouchableOpacity>
+        </View>
+        );
+    }
+
+    // Если данные еще загружаются при перезагрузке (не первая загрузка)
+    // или если данные уже есть, показываем основной контент
     return (
-      <View style={[styles.loadingContainer, { backgroundColor }]}>
-        <ActivityIndicator size="large" color={primaryColor} />
-        <ThemedText style={styles.loadingText}>Event loading...</ThemedText>
-      </View>
+        <ThemedView style={styles.container}>
+            <Stack.Screen
+                options={{
+                title: event?.name || 'Event',
+                headerShown: true,
+                headerBackTitle: 'Back',
+                }}
+            />      
+            <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1 }}>
+                {loading && initialLoadComplete && (
+                    <View style={styles.refreshIndicator}>
+                        <ActivityIndicator size="small" color={primaryColor} />
+                    </View>
+                )}
+                
+                {event && (
+                    <>
+                        <View style={styles.contentContainer}>
+                            {/* Информация о банке события */}
+                            <EventBankInfo 
+                                ref={bankInfoRef}
+                                eventId={id as string} 
+                            />
+                        </View>
+                        
+                        {/* Изображение события */}
+                        <EventImage 
+                            imageUrl={event.imageUrl} 
+                            onPress={handleImagePress}
+                            disabled={!user}
+                        />
+                    
+                        {/* Секция для внесения депозита */}
+                        {user && event.status === 'active' && (
+                            <View style={styles.depositContainer}>
+                                <EventDepositPanel 
+                                ref={depositPanelRef}
+                                eventId={id as string}
+                                onDepositChange={handleDepositChange}
+                                onParticipationUpdated={handleParticipationUpdated}
+                                />
+                            </View>
+                        )}
+                            
+                        <View style={styles.contentContainer}>
+                            {/* Описание события */}
+                            <EventDescription description={event.description} />
+                            
+                            {/* Условия события */}
+                            <EventConditionsList
+                                ref={conditionsListRef} 
+                                eventId={id as string} 
+                            />
+                        </View>
+                    </>
+                )}
+            </ScrollView>
+        </ThemedView>
     );
-  }
-
-  // Показываем экран с ошибкой только если есть ошибка или событие не найдено
-  if (error || (!loading && !event)) {
-    return (
-      <View style={[styles.errorContainer, { backgroundColor }]}>
-        <Ionicons name="alert-circle-outline" size={moderateScale(48)} color={errorColor} />
-        <ThemedText style={styles.errorText}>
-          {error || 'Event not found'}
-        </ThemedText>
-        <TouchableOpacity 
-          style={[styles.headerButton, { marginTop: verticalScale(16) }]}
-          onPress={() => router.back()}
-        >
-          <ThemedText style={{ color: primaryColor }}>Go Back</ThemedText>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  // Если данные еще загружаются при перезагрузке (не первая загрузка)
-  // или если данные уже есть, показываем основной контент
-  return (
-    <ThemedView style={styles.container}>
-      <Stack.Screen
-        options={{
-          title: event?.name || 'Event',
-          headerShown: true,
-          headerBackTitle: 'Back',
-        }}
-      />      
-      <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1 }}>
-        {loading && initialLoadComplete && (
-          <View style={styles.refreshIndicator}>
-            <ActivityIndicator size="small" color={primaryColor} />
-          </View>
-        )}
-        
-        {event && (
-          <>
-            <View style={styles.contentContainer}>
-              {/* Информация о банке события */}
-              <EventBankInfo 
-                ref={bankInfoRef}
-                eventId={id as string} 
-              />
-            </View>
-            
-            {/* Изображение события */}
-            <EventImage 
-              imageUrl={event.imageUrl} 
-              onPress={handleImagePress}
-              disabled={!user}
-            />
-            
-            {/* Секция для внесения депозита */}
-            {user && (
-              <View style={styles.depositContainer}>
-                <EventDepositPanel 
-                  ref={depositPanelRef}
-                  eventId={id as string}
-                  onDepositChange={handleDepositChange}
-                  onParticipationUpdated={handleParticipationUpdated}
-                />
-              </View>
-            )}
-            
-            <View style={styles.contentContainer}>
-              {/* Описание события */}
-              <EventDescription description={event.description} />
-              
-              {/* Условия события */}
-              <EventConditionsList
-                ref={conditionsListRef} 
-                eventId={id as string} 
-              />
-            </View>
-          </>
-        )}
-      </ScrollView>
-    </ThemedView>
-  );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  contentContainer: {
-    padding: moderateScale(16),
-  },
-  depositContainer: {
-    marginHorizontal: moderateScale(16),
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: verticalScale(10),
-    fontSize: moderateScale(16),
-  },
-  refreshIndicator: {
-    alignItems: 'center',
-    paddingVertical: verticalScale(10),
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: moderateScale(20),
-  },
-  errorText: {
-    fontSize: moderateScale(16),
-    textAlign: 'center',
-  },
-  headerButton: {
-    padding: moderateScale(8),
-  },
+    container: {
+        flex: 1,
+    },
+    scrollView: {
+        flex: 1,
+    },
+    contentContainer: {
+        paddingHorizontal: moderateScale(16),
+        paddingVertical: moderateScale(8),
+    },
+    depositContainer: {
+        marginHorizontal: moderateScale(16),
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: verticalScale(10),
+        fontSize: moderateScale(16),
+    },
+    refreshIndicator: {
+        alignItems: 'center',
+        paddingVertical: verticalScale(10),
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: moderateScale(20),
+    },
+    errorText: {
+        fontSize: moderateScale(16),
+        textAlign: 'center',
+    },
+    headerButton: {
+        padding: moderateScale(8),
+    },
 }); 
