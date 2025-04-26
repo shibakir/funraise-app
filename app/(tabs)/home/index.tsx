@@ -29,6 +29,9 @@ export default function HomeScreen() {
             router.push(`/profile/${user.id}`);
         }
     };
+    const navigateToDocumentation = () => {
+        router.push('/documentation');
+    };
 
     const styles = StyleSheet.create({
         container: {
@@ -58,7 +61,19 @@ export default function HomeScreen() {
             alignItems: 'center',
             marginTop: verticalScale(16),
         },
+        docButton: {
+            paddingVertical: verticalScale(12),
+            paddingHorizontal: horizontalScale(20),
+            borderRadius: moderateScale(8),
+            alignItems: 'center',
+            marginTop: verticalScale(10),
+            backgroundColor: sectionBackground,
+        },
         profileButtonText: {
+            fontSize: moderateScale(16),
+            fontWeight: '600',
+        },
+        docButtonText: {
             fontSize: moderateScale(16),
             fontWeight: '600',
         },
@@ -90,7 +105,7 @@ export default function HomeScreen() {
                         style={[styles.profileButton, { backgroundColor: sectionBackground }]}
                         onPress={navigateToProfile}
                     >
-                        <ThemedText style={styles.profileButtonText}>Show Profile</ThemedText>
+                        <ThemedText style={styles.profileButtonText}>Show My Profile</ThemedText>
                     </TouchableOpacity>
                     
                     {/* NEW EVENT SECTION */}
@@ -98,6 +113,14 @@ export default function HomeScreen() {
                         <ThemedText style={styles.sectionTitle}>New Event</ThemedText>
                     </View>
                     <CreateEventSection key={`create-${updateKey}`} />
+                    {/* DOCUMENTATION BUTTON */}
+                    <TouchableOpacity 
+                        style={styles.docButton}
+                        onPress={navigateToDocumentation}
+                    >
+                        <ThemedText style={styles.docButtonText}>Read out Help & Guides</ThemedText>
+                    </TouchableOpacity>
+                    
                     
                     {/* MY ACTIVE EVENTS SECTION */}
                     <View style={styles.sectionHeader}>

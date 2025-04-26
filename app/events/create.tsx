@@ -11,8 +11,12 @@ import { EventTypeSection } from '@/components/event/EventTypeSection';
 import { EventEndConditions } from '@/components/event/EventEndConditions';
 import { GroupData, EventType } from '@/types/event';
 import { useCreateEvent } from '@/lib/hooks/useCreateEvent';
+import { useAuth } from '@/lib/context/AuthContext';
 
 export default function CreateEventScreen() {
+
+    const { user } = useAuth();
+
     const textColor = useThemeColor({}, 'text');
     const primaryColor = useThemeColor({}, 'primary');
     const borderColor = useThemeColor({}, 'divider');
@@ -20,7 +24,9 @@ export default function CreateEventScreen() {
     const sectionBackground = useThemeColor({}, 'sectionBackground');
 
     const [eventType, setEventType] = useState<EventType>('DONATION');
-    const [recipient, setRecipient] = useState('');
+    const [creatorId, setCreatorId] = useState(String(user?.id));
+    const [recipientId, setRecipientId] = useState('');
+    const [recipientName, setRecipientName] = useState('');
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [imageUri, setImageUri] = useState<string | null>(null);
@@ -38,12 +44,13 @@ export default function CreateEventScreen() {
         setEventType(type);
     };
 
-    const handleRecipientChange = (name: string) => {
-        setRecipient(name);
+    const handleRecipientChange = (id: string) => {
+        setRecipientId(id);
     };
 
     const handleRecipientNameChange = (name: string) => {
         //setName(name);
+        setRecipientName(name);
     };
 
     const handleImageChange = (uri: string | null, file?: { uri: string; type: string; name: string }) => {
@@ -56,13 +63,14 @@ export default function CreateEventScreen() {
 
     const handleSubmit = async () => {
         await createEvent({
-        name,
-        description,
-        eventType,
-        recipient,
-        imageUri,
-        imageFile,
-        groups
+            name,
+            description,
+            eventType,
+            creatorId,
+            recipientId,
+            imageUri,
+            imageFile,
+            groups
         });
     };
 
@@ -163,9 +171,9 @@ export default function CreateEventScreen() {
             <EventTypeSection 
               selectedType={eventType}
               onTypeChange={handleEventTypeChange}
-              recipientId={recipient}
+              recipientId={recipientId}
               onRecipientChange={handleRecipientChange}
-              recipientName={recipient}
+              recipientName={recipientName}
               onRecipientNameChange={handleRecipientNameChange}
             />
           </View>

@@ -4,18 +4,33 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { useEventBank } from '@/lib/hooks/useEventBank';
+import { useEventStatus } from '@/lib/hooks/useEventStatus';
 
-export interface EventBankInfoHandle {
+export interface EventStatusInfoHandle {
     refresh: () => void;
 }
 
-interface EventBankInfoProps {
+interface EventStatusInfoProps {
     eventId: string;
 }
 
-export const EventBankInfo = forwardRef<EventBankInfoHandle, EventBankInfoProps>(({ eventId }, ref) => {
-    const { bankAmount, eventStatus, loading, error, refresh } = useEventBank(eventId);
+const eventTypes = [
+    {
+        id: 'DONATION',
+        title: 'Donation',
+    },
+    {
+        id: 'FUNDRAISING',
+        title: 'Fundraising',
+    },
+    {
+        id: 'JACKPOT',
+        title: 'Jackpot',
+    }
+];
+
+export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfoProps>(({ eventId }, ref) => {
+    const { bankAmount, eventStatus, type, recipientId, loading, error, refresh } = useEventStatus(eventId);
     
     const primaryColor = useThemeColor({}, 'primary');
     const cardColor = useThemeColor({}, 'card');
@@ -36,16 +51,29 @@ export const EventBankInfo = forwardRef<EventBankInfoHandle, EventBankInfoProps>
     return (
         <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
         <View style={styles.infoRow}>
+            <ThemedText style={styles.label}>Event Type:</ThemedText>
+            <ThemedText style={[styles.value, { color: primaryColor }]}>
+                {eventTypes.find(t => t.id === type)?.title || 'Unknown'}
+            </ThemedText>
+        </View>
+        <View style={styles.infoRow}>
             <ThemedText style={styles.label}>Event Status:</ThemedText>
             <ThemedText style={[styles.value, { color: primaryColor }]}>
                 {eventStatus === 'completed' ? 'Completed' : 'Active'}
             </ThemedText>
         </View>
         <View style={styles.infoRow}>
-            <ThemedText style={styles.label}>Current Bank Amount:</ThemedText>
+            <ThemedText style={styles.label}>
+                {eventStatus === 'completed' ? 'Final Bank Amount:' : 'Current Bank Amount:'}
+            </ThemedText>
             <ThemedText style={[styles.value, { color: primaryColor }]}>
                 ${bankAmount.toFixed(2) || '0.00'}
             </ThemedText>
+            {eventStatus === 'completed' && recipientId && (
+                <ThemedText style={styles.label}>
+                    Recipient: {recipientId}
+                </ThemedText>
+            )}
         </View>
         </ThemedView>
     );

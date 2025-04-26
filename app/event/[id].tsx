@@ -10,7 +10,7 @@ import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useEventDetails } from '@/lib/hooks/useEventDetails';
 import { useAuth } from '@/lib/context/AuthContext';
 
-import { EventBankInfo, EventBankInfoHandle } from '@/components/EventBankInfo';
+import { EventStatusInfo, EventStatusInfoHandle } from '@/components/EventStatusInfo';
 import { EventImage } from '@/components/EventImage';
 import { EventDepositPanel } from '@/components/EventDepositPanel';
 import { EventDescription } from '@/components/EventDescription';
@@ -37,8 +37,8 @@ export default function EventScreen() {
         hasParticipation: boolean;
     } | null>(null);
     
-    // Реф для доступа к методам компонента EventBankInfo
-    const bankInfoRef = useRef<EventBankInfoHandle>(null);
+    // Реф для доступа к методам компонента EventStatusInfo
+    const statusInfoRef = useRef<EventStatusInfoHandle>(null);
 
     // Реф для доступа к методам компонента EventConditionsList
     const conditionsListRef = useRef<EventConditionsListHandle>(null);
@@ -57,8 +57,8 @@ export default function EventScreen() {
     const handleParticipationUpdated = () => {
         refresh();
         // Обновляем информацию о банке события
-        if (bankInfoRef.current) {
-        bankInfoRef.current.refresh();
+        if (statusInfoRef.current) {
+        statusInfoRef.current.refresh();
         }
         // Обновляем информацию об условиях события
         if (conditionsListRef.current) {
@@ -135,9 +135,9 @@ export default function EventScreen() {
                 {event && (
                     <>
                         <View style={styles.contentContainer}>
-                            {/* Информация о банке события */}
-                            <EventBankInfo 
-                                ref={bankInfoRef}
+                            {/* Информация о статусе события */}
+                            <EventStatusInfo 
+                                ref={statusInfoRef}
                                 eventId={id as string} 
                             />
                         </View>

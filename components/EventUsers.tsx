@@ -38,9 +38,6 @@ export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) =
         );
     }
 
-    console.log('creator', creator);
-    console.log('recipient', recipient);
-
     return (
         <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
             <ThemedText style={styles.title}>Associated users</ThemedText>
@@ -111,7 +108,7 @@ const styles = StyleSheet.create({
     userRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: verticalScale(12),
+        //marginBottom: verticalScale(12),
         paddingVertical: verticalScale(8),
         borderRadius: moderateScale(8),
     },

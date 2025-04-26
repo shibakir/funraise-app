@@ -1,19 +1,24 @@
 import { useState, useEffect, useCallback } from 'react';
 
-interface EventBankInfo {
+interface EventStatusInfo {
     bankAmount: number;
     status: string;
 }
 
-export const useEventBank = (eventId: string | null) => {
+export const useEventStatus = (eventId: string | null) => {
     const [bankAmount, setBankAmount] = useState(0);
     const [eventStatus, setEventStatus] = useState('');
+    const [type, setType] = useState<string | null>(null);
+    const [recipientId, setRecipientId] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchBankInfo = useCallback(async () => {
+    const fetchStatusInfo = useCallback(async () => {
         if (!eventId) {
             setBankAmount(0);
+            setEventStatus('active');
+            setType(null);
+            setRecipientId(null);
             return;
         }
 
@@ -21,17 +26,19 @@ export const useEventBank = (eventId: string | null) => {
         setError(null);
 
         try {
-            const response = await fetch(`http://localhost:3000/events/${eventId}/bank`);
+            const response = await fetch(`http://localhost:3000/events/${eventId}/status`);
 
             if (!response.ok) {
                 throw new Error('Failed to load bank info');
             }
 
             const data = await response.json();
+
             setBankAmount(data.bankAmount);
             setEventStatus(data.status);
+            setType(data.type);
+            setRecipientId(data.recipientId);
 
-            console.log('data', data);
         } catch (err) {
             console.error('Error fetching bank info:', err);
             setError('Failed to load bank info. Please try again later.');
@@ -41,12 +48,12 @@ export const useEventBank = (eventId: string | null) => {
     }, [eventId]);
 
     useEffect(() => {
-        fetchBankInfo();
-    }, [fetchBankInfo]);
+        fetchStatusInfo();
+    }, [fetchStatusInfo]);
 
     const refresh = useCallback(() => {
-        fetchBankInfo();
-    }, [fetchBankInfo]);
+        fetchStatusInfo();
+    }, [fetchStatusInfo]);
 
-    return { bankAmount, eventStatus, loading, error, refresh };
+    return { bankAmount, eventStatus, type, recipientId, loading, error, refresh };
 }; 

@@ -15,7 +15,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function ProfileScreen() {
-    const { id } = useLocalSearchParams<{ id: string }>();
+    const { id } = useLocalSearchParams<{ id: string }>(); // TODO: id - userId
     const [refreshing, setRefreshing] = useState(false);
     const [activeSection, setActiveSection] = useState('createdEvents');
     

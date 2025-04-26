@@ -8,7 +8,8 @@ interface CreateEventParams {
   name: string;
   description: string;
   eventType: EventType;
-  recipient?: string;
+  creatorId: string;
+  recipientId?: string;
   imageUri?: string | null;
   imageFile?: { uri: string; type: string; name: string } | null;
   groups: GroupData[];
@@ -21,7 +22,8 @@ export const useCreateEvent = () => {
     name,
     description,
     eventType,
-    recipient,
+    creatorId,
+    recipientId,
     imageUri,
     imageFile,
     groups
@@ -35,7 +37,7 @@ export const useCreateEvent = () => {
         Alert.alert('Oops!', 'Please enter the event name');
         return;
     }
-    if ((eventType === 'DONATION' || eventType === 'FUNDRAISING') && !recipient) {
+    if ((eventType === 'DONATION' || eventType === 'FUNDRAISING') && !recipientId) {
         Alert.alert('Oops!', 'For donations and fundraising, you must specify a recipient');
         return;
     }
@@ -82,12 +84,15 @@ export const useCreateEvent = () => {
         const formData = new FormData();
         formData.append('name', name);
         formData.append('type', eventType);
-        if (recipient) {
-            formData.append('recipientId', recipient);
+        formData.append('creatorId', creatorId);
+        if (recipientId) {
+            formData.append('recipientId', recipientId);
         }
         formData.append('description', description);
         formData.append('image', imageFile as any);
         formData.append('endConditions', JSON.stringify(endConditions));
+
+        console.log('formData', formData);
 
         // Отправляем запрос на сервер
         const response = await fetch('http://localhost:3000/events', {
