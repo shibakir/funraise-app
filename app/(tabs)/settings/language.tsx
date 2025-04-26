@@ -1,17 +1,41 @@
-import React from 'react';
-import { StyleSheet, View, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, View, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import { Stack } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
+import { useTranslation } from 'react-i18next';
+import { changeLanguage } from '@/lib/localization/i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LanguageScreen() {
-  
-  const currentLanguage = 'english'; // TODO
+  const { t, i18n } = useTranslation();
+  const [currentLanguage, setCurrentLanguage] = useState('en');
   
   const borderColor = useThemeColor({}, 'divider');
   const primaryColor = useThemeColor({}, 'primary');
-  const backgroundColor = useThemeColor({}, 'background');
+  const sectionBackground = useThemeColor({}, 'sectionBackground');
+
+  useEffect(() => {
+    const loadLanguage = async () => {
+      try {
+        const storedLanguage = await AsyncStorage.getItem('app_language');
+        if (storedLanguage) {
+          setCurrentLanguage(storedLanguage);
+        }
+      } catch (error) {
+        console.error('Error loading language:', error);
+      }
+    };
+    
+    loadLanguage();
+  }, []);
+  
+  const handleLanguageChange = (lang: string) => {
+    setCurrentLanguage(lang);
+    changeLanguage(lang);
+  };
   
   const LanguageOption = ({ value, label, isLast = false }) => {
     const isSelected = currentLanguage === value;
@@ -20,7 +44,7 @@ export default function LanguageScreen() {
       <View style={styles.optionWrapper}>
         <TouchableOpacity
           style={styles.optionContainer}
-          onPress={() => {/* TODO:: */}}
+          onPress={() => handleLanguageChange(value)}
           activeOpacity={0.7}
         >
           <ThemedText style={styles.optionTitle}>{label}</ThemedText>
@@ -36,15 +60,31 @@ export default function LanguageScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <ThemedView style={[styles.card, { backgroundColor }]}>
-          <LanguageOption value="english" label="English" />
-          <LanguageOption value="czech" label="Čeština" />
-          <LanguageOption value="russian" label="Русский" isLast={true} />
+    <>
+      <Stack.Screen 
+        options={{ 
+          title: t('settings.language') || 'Language',
+          headerShown: true,
+        }} 
+      />
+      <SafeAreaView style={styles.container}>
+        <ThemedView style={styles.container}>
+          <StatusBar barStyle="default" />
+          <ScrollView 
+            style={styles.container}
+            contentContainerStyle={styles.contentContainer}
+          >
+            <View style={styles.sectionHeader}>
+              <ThemedText style={styles.sectionTitle}>{t('settings.language') || 'Language'}</ThemedText>
+            </View>
+            <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
+              <LanguageOption value="en" label={t('settings.english')} />
+              <LanguageOption value="cs" label={t('settings.czech')} isLast={true} />
+            </ThemedView>
+          </ScrollView>
         </ThemedView>
-      </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -56,13 +96,19 @@ const styles = StyleSheet.create({
     padding: moderateScale(16),
     paddingBottom: verticalScale(40),
   },
-  card: {
-    borderRadius: moderateScale(16),
+  mainSection: {
+    borderRadius: moderateScale(8),
     overflow: 'hidden',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    marginBottom: verticalScale(16),
+  },
+  sectionHeader: {
+    marginTop: verticalScale(20),
+    paddingVertical: verticalScale(12),
+  },
+  sectionTitle: {
+    fontSize: moderateScale(20),
+    fontWeight: '600',
+    marginBottom: verticalScale(4),
   },
   optionWrapper: {
     width: '100%',

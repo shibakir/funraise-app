@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, LogBox } from 'react-native';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { useAuth } from '@/lib/context/AuthContext';
@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { CustomButton } from '@/components/custom/button';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useTranslation } from 'react-i18next';
 
 import { LogoBox } from '@/components/auth/LogoBox';
 
@@ -15,6 +16,7 @@ export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { login, isLoading, error } = useAuth();
+    const { t } = useTranslation();
     
     const primaryColor = useThemeColor({}, 'primary');
     const textColor = useThemeColor({}, 'text');
@@ -24,7 +26,7 @@ export default function LoginScreen() {
     
     const handleLogin = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Please fill in all fields');
+            Alert.alert(t('auth.error'), t('auth.fillAllFields'));
             return;
         }
         
@@ -32,16 +34,21 @@ export default function LoginScreen() {
             await login(email, password);
             router.replace('/(tabs)/home');
         } catch (error: any) {
-            Alert.alert('Error', error.message || 'Failed to login');
+            Alert.alert(t('auth.error'), error.message || t('auth.failedToLogin'));
         }
     };
+    
+    // handler for register page
+    const navigateToRegister = () => {
+        router.push('/register');
+    };
   
-  return (
+    return (
         <KeyboardAvoidingView 
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
             style={[styles.container, { backgroundColor }]}
         >
-        <StatusBar style="auto" />
+            <StatusBar style="auto" />
 
             <LogoBox/>
         
@@ -56,7 +63,7 @@ export default function LoginScreen() {
                 
                 <TextInput
                     style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
-                    placeholder="Email"
+                    placeholder={t('auth.email')}
                     placeholderTextColor="#888"
                     value={email}
                     onChangeText={setEmail}
@@ -66,7 +73,7 @@ export default function LoginScreen() {
                 
                 <TextInput
                     style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
-                    placeholder="Password"
+                    placeholder={t('auth.password')}
                     placeholderTextColor="#888"
                     value={password}
                     onChangeText={setPassword}
@@ -77,7 +84,7 @@ export default function LoginScreen() {
                     <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
                 ) : (
                     <CustomButton
-                        title="Login"
+                        title={t('auth.login')}
                         onPress={handleLogin}
                         variant="primary"
                         size="large"
@@ -85,14 +92,12 @@ export default function LoginScreen() {
                 )}
                 
                 <ThemedView style={styles.registerContainer}>
-                    <ThemedText>Not registered yet? </ThemedText>
-                    <Link href="/register" asChild>
-                        <TouchableOpacity>
-                            <ThemedText style={[styles.registerLink, { color: primaryColor }]}>
-                                Register
-                            </ThemedText>
-                        </TouchableOpacity>
-                    </Link>
+                    <ThemedText>{t('auth.notRegistered')} </ThemedText>
+                    <TouchableOpacity onPress={navigateToRegister}>
+                        <ThemedText style={[styles.registerLink, { color: primaryColor }]}>
+                            {t('auth.register')}
+                        </ThemedText>
+                    </TouchableOpacity>
                 </ThemedView>
             </ThemedView>
         </KeyboardAvoidingView>

@@ -1,16 +1,19 @@
 import React from 'react';
-import { StyleSheet, View, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from 'react-native';
+import { Stack } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useTheme } from '@/lib/context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 export default function AppearanceScreen() {
   const { theme, setTheme } = useTheme();
+  const { t } = useTranslation();
   const borderColor = useThemeColor({}, 'divider');
   const primaryColor = useThemeColor({}, 'primary');
-  const backgroundColor = useThemeColor({}, 'background');
+  const sectionBackground = useThemeColor({}, 'sectionBackground');
   
   const ThemeOption = ({ value, label, isLast = false }) => {
     const isSelected = theme === value;
@@ -35,15 +38,29 @@ export default function AppearanceScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <ThemedView style={[styles.card, { backgroundColor }]}>
-          <ThemeOption value="system" label="Automatic" />
-          <ThemeOption value="dark" label="Dark" />
-          <ThemeOption value="light" label="Light" isLast={true} />
+    <>
+      <Stack.Screen 
+        options={{ 
+          title: t('settings.appearance') || 'Appearance',
+          headerShown: true,
+        }} 
+      />
+      <SafeAreaView style={styles.container}>
+        <ThemedView style={styles.container}>
+          <StatusBar barStyle="default" />
+          <ScrollView contentContainerStyle={styles.contentContainer}>
+            <View style={styles.sectionHeader}>
+              <ThemedText style={styles.sectionTitle}>{t('settings.appearance') || 'Appearance'}</ThemedText>
+            </View>
+            <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
+              <ThemeOption value="system" label={t('settings.automatic') || 'Automatic'} />
+              <ThemeOption value="dark" label={t('settings.dark') || 'Dark'} />
+              <ThemeOption value="light" label={t('settings.light') || 'Light'} isLast={true} />
+            </ThemedView>
+          </ScrollView>
         </ThemedView>
-      </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </>
   );
 }
 
@@ -55,13 +72,19 @@ const styles = StyleSheet.create({
     padding: moderateScale(16),
     paddingBottom: verticalScale(40),
   },
-  card: {
+  mainSection: {
     borderRadius: moderateScale(16),
     overflow: 'hidden',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
+    marginBottom: verticalScale(16),
+  },
+  sectionHeader: {
+    marginTop: verticalScale(20),
+    paddingVertical: verticalScale(12),
+  },
+  sectionTitle: {
+    fontSize: moderateScale(20),
+    fontWeight: '600',
+    marginBottom: verticalScale(4),
   },
   optionWrapper: {
     width: '100%',

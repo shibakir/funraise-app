@@ -28,7 +28,7 @@ export default function AppInfoScreen() {
     },
     section: {
       padding: moderateScale(16),
-      borderRadius: moderateScale(8),
+      borderRadius: moderateScale(16),
       overflow: 'hidden',
     },
     title: {

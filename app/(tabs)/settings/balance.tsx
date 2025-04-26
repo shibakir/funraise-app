@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, View, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { Stack, Redirect } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -10,9 +10,11 @@ import { useAuth } from '@/lib/context/AuthContext';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useUserBalance } from '@/lib/hooks/useUserBalance';
 import { useUpdateBalance } from '@/lib/hooks/useUpdateBalance';
+import { useTranslation } from 'react-i18next';
 
 export default function BalanceScreen() {
     const { user } = useAuth();
+    const { t } = useTranslation();
     const [amount, setAmount] = useState('');
     
     const primaryColor = useThemeColor({}, 'primary');
@@ -20,6 +22,7 @@ export default function BalanceScreen() {
     const placeholderColor = useThemeColor({}, 'placeholder');
     const textColor = useThemeColor({}, 'text');
     const errorColor = useThemeColor({}, 'error');
+    const sectionBackground = useThemeColor({}, 'sectionBackground');
 
     if (!user) {
         return <Redirect href="/login" />;
@@ -45,139 +48,157 @@ export default function BalanceScreen() {
         }
     };
 
-    const styles = StyleSheet.create({
-        container: {
-            flex: 1,
-            flexGrow: 1,
-        },
-        contentContainer: {
-            padding: moderateScale(16),
-            paddingBottom: verticalScale(40),
-            flexGrow: 1,
-        },
-        balanceContainer: {
-            alignItems: 'center',
-            marginVertical: verticalScale(30),
-        },
-        balanceLabel: {
-            fontSize: moderateScale(18),
-            marginBottom: verticalScale(8),
-        },
-        balanceAmount: {
-            marginTop: verticalScale(20),
-            fontSize: moderateScale(36),
-            fontWeight: 'bold',
-            lineHeight: moderateScale(44),
-        },
-        inputContainer: {
-            flexDirection: 'row',
-            alignItems: 'center',
-            borderWidth: 1,
-            borderRadius: moderateScale(10),
-            marginBottom: verticalScale(24),
-            paddingHorizontal: horizontalScale(12),
-        },
-        dollarSign: {
-            fontSize: moderateScale(24),
-            fontWeight: 'bold',
-            marginRight: horizontalScale(8),
-        },
-        input: {
-            flex: 1,
-            height: verticalScale(50),
-            fontSize: moderateScale(18),
-            borderWidth: 0,
-        },
-        header: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: moderateScale(12),
-            borderBottomWidth: 1,
-        },
-        headerTitle: {
-            fontSize: moderateScale(18),
-            fontWeight: '600',
-        },
-        submitButton: {
-            marginTop: moderateScale(20),
-            marginBottom: moderateScale(20),
-            width: '100%',
-        },
-        sectionDescription: {
-            fontSize: moderateScale(14),
-            color: placeholderColor,
-            lineHeight: moderateScale(20),
-        },
-        errorText: {
-            color: errorColor,
-            fontSize: moderateScale(14),
-            marginVertical: verticalScale(10),
-        },
-    }); 
-
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <KeyboardAvoidingView 
-                style={styles.container} 
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
-                <Stack.Screen
-                    options={{
-                        title: 'Balance',
-                        headerShown: true,
-                    }}
-                />
-                <ThemedView style={styles.contentContainer}>
+        <>
+            <Stack.Screen
+                options={{
+                    title: t('settings.balance') || 'Balance',
+                    headerShown: true,
+                }}
+            />
+            <SafeAreaView style={styles.container}>
+                <ThemedView style={styles.container}>
+                    <StatusBar barStyle="default" />
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                        <KeyboardAvoidingView 
+                            style={styles.container} 
+                            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                        >
+                            <ScrollView
+                                style={styles.container}
+                                contentContainerStyle={styles.contentContainer}
+                            >
+                                <View style={styles.sectionHeader}>
+                                    <ThemedText style={styles.sectionTitle}>{t('settings.balanceTitle') || 'Account Balance'}</ThemedText>
+                                </View>
+                                
+                                <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
+                                    <View style={styles.balanceContainer}>
+                                        {loadingBalance ? (
+                                            <ActivityIndicator size="small" color={primaryColor} />
+                                        ) : (
+                                            <>
+                                                <ThemedText style={styles.balanceAmount}>
+                                                    ${balance !== null ? balance.toFixed(2) : '0.00'}
+                                                </ThemedText>
+                                                {balanceError && (
+                                                    <ThemedText style={styles.errorText}>{balanceError}</ThemedText>
+                                                )}
+                                            </>
+                                        )}
+                                    </View>
+                                </ThemedView>
 
-                    <View style={styles.balanceContainer}>
-                        {loadingBalance ? (
-                        <ActivityIndicator size="small" color={primaryColor} />
-                        ) : (
-                        <>
-                            <ThemedText style={styles.balanceAmount}>
-                                ${balance !== null ? balance.toFixed(2) : '0.00'}
-                            </ThemedText>
-                            {balanceError && (
-                                <ThemedText style={styles.errorText}>{balanceError}</ThemedText>
-                            )}
-                        </>
-                        )}
-                    </View>
+                                <View style={styles.sectionHeader}>
+                                    <ThemedText style={styles.sectionTitle}>{t('settings.addFunds') || 'Add Funds'}</ThemedText>
+                                </View>
+                                <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
+                                    <View style={styles.formContainer}>
+                                        
+                                        <View style={[styles.inputContainer, { borderColor }]}>
+                                            <ThemedText style={styles.dollarSign}>$</ThemedText>
+                                            <TextInput
+                                                style={[styles.input, { color: textColor }]}
+                                                placeholder={t('settings.amount') || 'Enter amount'}
+                                                placeholderTextColor={placeholderColor}
+                                                keyboardType="numeric"
+                                                value={amount}
+                                                onChangeText={setAmount}
+                                                maxLength={10}
+                                            />
+                                        </View>
 
-                    <View style={[styles.inputContainer, { borderColor }]}>
+                                        {updateError && (
+                                            <ThemedText style={styles.errorText}>{updateError}</ThemedText>
+                                        )}
 
-                        <TextInput
-                            style={[styles.input, { color: textColor }]}
-                            placeholder="Enter amount"
-                            placeholderTextColor={textColor + '80'}
-                            keyboardType="numeric"
-                            value={amount}
-                            onChangeText={setAmount}
-                            maxLength={10}
-                        />
-                    </View>
-
-                    {updateError && (
-                        <ThemedText style={styles.errorText}>{updateError}</ThemedText>
-                    )}
-
-                    <ThemedText style={styles.sectionDescription}>
-                        { updateError ? updateError :
-                            "Enter the amount to refill your account balance."
-                        }
-                    </ThemedText>
-                    <CustomButton 
-                        onPress={handleAddBalance}
-                        disabled={loadingUpdate || !amount || isNaN(Number(amount)) || Number(amount) <= 0}
-                        style={styles.submitButton}
-                    >
-                        <ThemedText style={{ color: 'white', fontWeight: '600', fontSize: moderateScale(16) }}>
-                            {loadingUpdate ? 'Processing...' : 'Add Balance'}
-                        </ThemedText>
-                    </CustomButton>
+                                        <CustomButton 
+                                            title={loadingUpdate ? t('settings.processing') || 'Processing...' : t('settings.addFunds') || 'Add Funds'}
+                                            onPress={handleAddBalance}
+                                            disabled={loadingUpdate || !amount || isNaN(Number(amount)) || Number(amount) <= 0}
+                                            style={styles.submitButton}
+                                            variant="primary"
+                                        />
+                                    </View>
+                                </ThemedView>
+                            </ScrollView>
+                        </KeyboardAvoidingView>
+                    </TouchableWithoutFeedback>
                 </ThemedView>
-            </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+            </SafeAreaView>
+        </>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+    },
+    contentContainer: {
+        padding: moderateScale(16),
+        paddingBottom: verticalScale(40),
+    },
+    mainSection: {
+        borderRadius: moderateScale(16),
+        overflow: 'hidden',
+        marginBottom: verticalScale(16),
+    },
+    sectionHeader: {
+        marginTop: verticalScale(20),
+        paddingVertical: verticalScale(12),
+    },
+    sectionTitle: {
+        fontSize: moderateScale(20),
+        fontWeight: '600',
+        marginBottom: verticalScale(4),
+    },
+    balanceContainer: {
+        alignItems: 'center',
+        padding: moderateScale(20),
+    },
+    balanceLabel: {
+        fontSize: moderateScale(18),
+        marginBottom: verticalScale(8),
+    },
+    balanceAmount: {
+        //marginTop: verticalScale(12),
+        fontSize: moderateScale(36),
+        fontWeight: 'bold',
+        lineHeight: moderateScale(44),
+    },
+    formContainer: {
+        padding: moderateScale(16),
+    },
+    label: {
+        fontSize: moderateScale(16),
+        marginBottom: verticalScale(8),
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderRadius: moderateScale(8),
+        marginBottom: verticalScale(20),
+        paddingHorizontal: horizontalScale(12),
+    },
+    dollarSign: {
+        fontSize: moderateScale(24),
+        fontWeight: 'bold',
+        marginRight: horizontalScale(8),
+    },
+    input: {
+        flex: 1,
+        height: verticalScale(50),
+        fontSize: moderateScale(18),
+        borderWidth: 0,
+    },
+    submitButton: {
+        marginTop: moderateScale(16),
+        width: '100%',
+    },
+    errorText: {
+        color: 'red',
+        fontSize: moderateScale(14),
+        marginBottom: verticalScale(16),
+    },
+});

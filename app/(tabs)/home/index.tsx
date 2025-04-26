@@ -9,10 +9,12 @@ import { CreateEventSection } from '@/components/custom/createEventSection';
 import { UserEvents } from '@/components/custom/UserEvents';
 import { UserAchievements } from '@/components/custom/UserAchievements';
 import { ThemedView } from '@/components/ThemedView';
+import { useTranslation } from 'react-i18next';
 
 export default function HomeScreen() {
     const [updateKey, setUpdateKey] = useState(0);
     const { user } = useAuth();
+    const { t } = useTranslation();
 
     const sectionBackground = useThemeColor({}, 'sectionBackground');
     const primaryColor = useThemeColor({}, 'primary');
@@ -42,7 +44,7 @@ export default function HomeScreen() {
             paddingBottom: verticalScale(40),
         },
         section: {
-            borderRadius: moderateScale(8),
+            borderRadius: moderateScale(16),
             overflow: 'hidden',
         },
         sectionHeader: {
@@ -57,14 +59,14 @@ export default function HomeScreen() {
         profileButton: {
             paddingVertical: verticalScale(12),
             paddingHorizontal: horizontalScale(20),
-            borderRadius: moderateScale(8),
+            borderRadius: moderateScale(16),
             alignItems: 'center',
             marginTop: verticalScale(16),
         },
         docButton: {
             paddingVertical: verticalScale(12),
             paddingHorizontal: horizontalScale(20),
-            borderRadius: moderateScale(8),
+            borderRadius: moderateScale(16),
             alignItems: 'center',
             marginTop: verticalScale(10),
             backgroundColor: sectionBackground,
@@ -79,7 +81,7 @@ export default function HomeScreen() {
         },
     });
 
-    // Перенаправляем на страницу входа, если пользователь не авторизован
+    // redirect to login page if user is not authenticated
     if (!user) {
         return <Redirect href="/login" />;
     }
@@ -90,50 +92,52 @@ export default function HomeScreen() {
         <>
             <Stack.Screen 
                 options={{ 
-                    title: 'Home',
+                    title: t('home.title'),
                     headerShown: true,
                 }} 
             />
             <SafeAreaView style={[styles.container, { flex: 1 }]}>
-                <StatusBar barStyle="default" />
-                <ScrollView 
-                    style={styles.container}
-                    contentContainerStyle={styles.contentContainer}
-                >
-                    {/* PROFILE BUTTON */}
-                    <TouchableOpacity 
-                        style={[styles.profileButton, { backgroundColor: sectionBackground }]}
-                        onPress={navigateToProfile}
+                <ThemedView style={styles.container}>
+                    <StatusBar barStyle="default" />
+                    <ScrollView 
+                        style={styles.container}
+                        contentContainerStyle={styles.contentContainer}
                     >
-                        <ThemedText style={styles.profileButtonText}>Show My Profile</ThemedText>
-                    </TouchableOpacity>
-                    
-                    {/* NEW EVENT SECTION */}
-                    <View style={styles.sectionHeader}>
-                        <ThemedText style={styles.sectionTitle}>New Event</ThemedText>
-                    </View>
-                    <CreateEventSection key={`create-${updateKey}`} />
-                    {/* DOCUMENTATION BUTTON */}
-                    <TouchableOpacity 
-                        style={styles.docButton}
-                        onPress={navigateToDocumentation}
-                    >
-                        <ThemedText style={styles.docButtonText}>Read out Help & Guides</ThemedText>
-                    </TouchableOpacity>
-                    
-                    
-                    {/* MY ACTIVE EVENTS SECTION */}
-                    <View style={styles.sectionHeader}>
-                        <ThemedText style={styles.sectionTitle}>My recent events</ThemedText>
-                    </View>
-                    <UserEvents userId={userId} key={`events-${updateKey}`} />
-                    
-                    {/* ACHIEVEMENTS SECTION */}
-                    <View style={styles.sectionHeader}>
-                        <ThemedText style={styles.sectionTitle}>My Achievements</ThemedText>
-                    </View>
-                    <UserAchievements userId={userId} key={`achievements-${updateKey}`} />
-                </ScrollView>
+                        {/* PROFILE BUTTON */}
+                        <TouchableOpacity 
+                            style={[styles.profileButton, { backgroundColor: sectionBackground }]}
+                            onPress={navigateToProfile}
+                        >
+                            <ThemedText style={styles.profileButtonText}>{t('home.showMyProfile')}</ThemedText>
+                        </TouchableOpacity>
+                        
+                        {/* NEW EVENT SECTION */}
+                        <View style={styles.sectionHeader}>
+                            <ThemedText style={styles.sectionTitle}>{t('home.newEvent')}</ThemedText>
+                        </View>
+                        <CreateEventSection key={`create-${updateKey}`} />
+                        {/* DOCUMENTATION BUTTON */}
+                        <TouchableOpacity 
+                            style={styles.docButton}
+                            onPress={navigateToDocumentation}
+                        >
+                            <ThemedText style={styles.docButtonText}>{t('home.readHelp')}</ThemedText>
+                        </TouchableOpacity>
+                        
+                        
+                        {/* MY ACTIVE EVENTS SECTION */}
+                        <View style={styles.sectionHeader}>
+                            <ThemedText style={styles.sectionTitle}>{t('home.myRecentEvents')}</ThemedText>
+                        </View>
+                        <UserEvents userId={userId} key={`events-${updateKey}`} />
+                        
+                        {/* ACHIEVEMENTS SECTION */}
+                        <View style={styles.sectionHeader}>
+                            <ThemedText style={styles.sectionTitle}>{t('home.myAchievements')}</ThemedText>
+                        </View>
+                        <UserAchievements userId={userId} key={`achievements-${updateKey}`} />
+                    </ScrollView>
+                </ThemedView>
             </SafeAreaView>
         </>
     );

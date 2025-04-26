@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { useAuth } from '@/lib/context/AuthContext';
@@ -8,6 +8,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { CustomButton } from '@/components/custom/button';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useTranslation } from 'react-i18next';
 
 import { LogoBox } from '@/components/auth/LogoBox';
 
@@ -17,6 +18,7 @@ export default function RegisterScreen() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const { register, isLoading, error } = useAuth();
+    const { t } = useTranslation();
     
     const primaryColor = useThemeColor({}, 'primary');
     const textColor = useThemeColor({}, 'text');
@@ -26,12 +28,12 @@ export default function RegisterScreen() {
   
   const handleRegister = async () => {
     if (!username || !email || !password || !confirmPassword) {
-        Alert.alert('Error', 'Please fill in all fields');
+        Alert.alert(t('auth.error'), t('auth.fillAllFields'));
         return;
     }
     
     if (password !== confirmPassword) {
-        Alert.alert('Error', 'Passwords do not match');
+        Alert.alert(t('auth.error'), t('auth.passwordsNotMatch'));
         return;
     }
     
@@ -39,8 +41,13 @@ export default function RegisterScreen() {
         await register(username, email, password);
         router.replace('/(tabs)/home');
     } catch (error: any) {
-        Alert.alert('Error', error.message || 'Failed to register');
+        Alert.alert(t('auth.error'), error.message || t('auth.failedToRegister'));
     }
+  };
+  
+  // handler for login page
+  const navigateToLogin = () => {
+    router.push('/login');
   };
   
     return (
@@ -64,7 +71,7 @@ export default function RegisterScreen() {
 
         <TextInput
             style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
-            placeholder="Username"
+            placeholder={t('auth.username')}
             placeholderTextColor="#888"
             value={username}
             onChangeText={setUsername}
@@ -73,7 +80,7 @@ export default function RegisterScreen() {
         
         <TextInput
             style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
-            placeholder="Email"
+            placeholder={t('auth.email')}
             placeholderTextColor="#888"
             value={email}
             onChangeText={setEmail}
@@ -83,7 +90,7 @@ export default function RegisterScreen() {
         
         <TextInput
             style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
-            placeholder="Password"
+            placeholder={t('auth.password')}
             placeholderTextColor="#888"
             value={password}
             onChangeText={setPassword}
@@ -92,7 +99,7 @@ export default function RegisterScreen() {
         
         <TextInput
             style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
-            placeholder="Confirm password"
+            placeholder={t('auth.confirmPassword')}
             placeholderTextColor="#888"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
@@ -103,7 +110,7 @@ export default function RegisterScreen() {
             <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
         ) : (
             <CustomButton
-                title="Register"
+                title={t('auth.register')}
                 onPress={handleRegister}
                 variant="primary"
                 size="large"
@@ -111,14 +118,12 @@ export default function RegisterScreen() {
         )}
         
         <ThemedView style={styles.loginContainer}>
-            <ThemedText>Have an account? </ThemedText>
-            <Link href="/login" asChild>
-                <TouchableOpacity>
-                    <ThemedText style={[styles.loginLink, { color: primaryColor }]}>
-                        Login
-                    </ThemedText>
-                </TouchableOpacity>
-            </Link>
+            <ThemedText>{t('auth.haveAccount')} </ThemedText>
+            <TouchableOpacity onPress={navigateToLogin}>
+                <ThemedText style={[styles.loginLink, { color: primaryColor }]}>
+                    {t('auth.login')}
+                </ThemedText>
+            </TouchableOpacity>
             </ThemedView>
       </ThemedView>
     </KeyboardAvoidingView>
