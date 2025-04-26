@@ -10,12 +10,12 @@ import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useEventDetails } from '@/lib/hooks/useEventDetails';
 import { useAuth } from '@/lib/context/AuthContext';
 
-// Импортируем новые компоненты
 import { EventBankInfo, EventBankInfoHandle } from '@/components/EventBankInfo';
 import { EventImage } from '@/components/EventImage';
 import { EventDepositPanel } from '@/components/EventDepositPanel';
 import { EventDescription } from '@/components/EventDescription';
 import { EventConditionsList, EventConditionsListHandle } from '@/components/EventConditionsList';
+import { EventUsers } from '@/components/EventUsers';
 
 export default function EventScreen() {
     const { id } = useLocalSearchParams();
@@ -25,7 +25,6 @@ export default function EventScreen() {
     
     console.log('event', event);
 
-    // Состояние для хранения выбранной суммы
     const [depositAmount, setDepositAmount] = useState(1);
     
     // Состояние для отслеживания первой загрузки
@@ -165,6 +164,12 @@ export default function EventScreen() {
                         <View style={styles.contentContainer}>
                             {/* Описание события */}
                             <EventDescription description={event.description} />
+
+                            {/* Создатель и получатель */}
+                            <EventUsers 
+                                userId={event.userId} 
+                                recipientId={event.recipientId} 
+                            />
                             
                             {/* Условия события */}
                             <EventConditionsList
