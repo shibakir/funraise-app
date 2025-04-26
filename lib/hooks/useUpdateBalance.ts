@@ -31,7 +31,8 @@ export const useUpdateBalance = () => {
                 },
                 body: JSON.stringify({
                     id: userId,
-                    amount: amount
+                    amount: amount,
+                    type: 'INCOME_BALANCE'
                 }),
             });
 
