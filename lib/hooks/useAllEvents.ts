@@ -24,7 +24,7 @@ export const useAllEvents = () => {
         setError(null);
 
         try {
-            const response = await fetch(`http://localhost:3000/events?page=${page}&limit=${limit}${userId ? `&userId=${userId}` : ''}`, {
+            const response = await fetch(`http://localhost:3000/events?page=${page}&limit=${limit}${userId === '' ? `&userId=${userId}` : ''}`, {
                 method: 'GET',
                 headers: {
                 'Content-Type': 'application/json',

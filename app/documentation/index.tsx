@@ -99,7 +99,7 @@ export default function EventDocumentationScreen() {
                             of using our platform and interacting with other users, as well as some useful tips.
                         </ThemedText>
                         
-                        <ThemedText style={styles.subtitle}>📎 Types of Events You Can Create</ThemedText>
+                        <ThemedText style={styles.subtitle}>📎 Types of Events You Can Create And Follow</ThemedText>
                         
                         <ThemedText style={styles.sectionTitle}>💡 Donation</ThemedText>
                         <ThemedText style={styles.description}>

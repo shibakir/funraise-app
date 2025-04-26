@@ -99,17 +99,18 @@ export default function ExploreScreen() {
                     </View>
                     <CreateEventSection key={`create-${updateKey}`} />
 
+                    {/* ALL EVENTS SECTION */}
+                    <View style={styles.sectionHeader}>
+                        <ThemedText style={styles.sectionTitle}>Discover other events</ThemedText>
+                    </View>
+                    <AllEvents limit={5} userId={userId} key={`all-events-${updateKey}`} />
+
                     {/* MY ACTIVE EVENTS SECTION */}
                     <View style={styles.sectionHeader}>
                         <ThemedText style={styles.sectionTitle}>My recent events</ThemedText>
                     </View>
                     <UserEvents userId={userId} limit={5} key={`events-${updateKey}`} />
                     
-                    {/* ALL EVENTS SECTION */}
-                    <View style={styles.sectionHeader}>
-                        <ThemedText style={styles.sectionTitle}>Discover other events</ThemedText>
-                    </View>
-                    <AllEvents limit={5} userId={userId} key={`all-events-${updateKey}`} />
                 </ScrollView>
             </SafeAreaView>
         </>
