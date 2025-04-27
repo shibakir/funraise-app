@@ -1,4 +1,10 @@
 {
+    "tabs": {
+        "home": "Home",
+        "explore": "Explore",
+        "search": "Search",
+        "settings": "Settings"
+    },
     "home": {
         "title": "Home",
         "showMyProfile": "Show My Profile",
