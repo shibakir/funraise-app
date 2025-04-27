@@ -88,7 +88,7 @@ export default function EventDocumentationScreen() {
                     title: t('documentation.title'),
                     headerTitleStyle: { fontWeight: '600' },
                     headerShown: true,
-                    headerBackTitle: 'Back',
+                    headerBackTitle: t('documentation.backTitle'),
                 }}
             />
             <SafeAreaView style={styles.container}>

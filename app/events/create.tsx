@@ -148,7 +148,7 @@ export default function CreateEventScreen() {
                 options={{ 
                     title: t('createEvent.title'),
                     headerShown: true,
-                    headerBackTitle: 'Back',
+                    headerBackTitle: t('createEvent.backTitle'),
                 }}
             />
             <KeyboardAvoidingView style={styles.container}>

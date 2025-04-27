@@ -14,6 +14,7 @@
         "myRecentEvents": "My recent events"
     },
     "createEvent": {
+        "backTitle": "Back",
         "title": "Create event",
         "imageTitle": "Your event clicker!",
         "eventTitle": "New event",
@@ -72,7 +73,16 @@
             "inputPlaceholder2": "Amount"
         }
     },
+    "profile": {
+        "backTitle": "Back",
+        "title": "Profile",
+        "createdEvents": "Events",
+        "winnedEvents": "Success",
+        "achievements": "Achievements",
+        "participatingEvents": "Joining"
+    },
     "documentation": {
+        "backTitle": "Back",
         "title": "Help & Guides",
         "ourBestGuide": "Our best guide!",
         "welcome": "Welcome to our guide on events! Here you will find an explanation of the most important aspects of using our platform and interacting with other users, as well as some useful tips.",

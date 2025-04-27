@@ -14,17 +14,18 @@
     "myRecentEvents": "Moje nedávné události"
   },
   "createEvent": {
-        "title": "Vytvořit událost",
+        "backTitle": "Zpět",
+        "title": "Vytvořit event",
         "imageTitle": "Vaš clicker!",
-        "eventTitle": "Nová událost",
+        "eventTitle": "Nový event",
         "eventDescription": "Jste na stránce pro vytváření nové události. Zde musíte nastavit její typ, název a popis. Nastavte obrázek klikacího prvku a nastavte jednu nebo více podmínek pro jeho dokončení.",
-        "eventType": "Typ události",
-        "eventName": "Název události",
-        "eventNamePlaceholder": "Zadejte název události",
+        "eventType": "Typ eventu",
+        "eventName": "Název eventu",
+        "eventNamePlaceholder": "Zadejte název eventu",
         "description": "Popis",
-        "descriptionPlaceholder": "Zadejte popis události",
+        "descriptionPlaceholder": "Zadejte popis eventu",
         "endConditions": "Podmínky ukončení",
-        "createButton": "Vytvořit událost",
+        "createButton": "Vytvořit event",
         "eventImageSection": {
             "imageText": "Vyberte clicker",
             "changeImage": "Změňte clicker"
@@ -72,7 +73,16 @@
             "inputPlaceholder2": "Počet"
         }
     },
+    "profile": {
+        "backTitle": "Zpět",
+        "title": "Osobní profil",
+        "createdEvents": "Události",
+        "winnedEvents": "Úspěchy",
+        "achievements": "Úspěchy",
+        "participatingEvents": "Účast"
+    },
   "documentation": {
+    "backTitle": "Zpět",
     "title": "Nápověda a průvodce",
     "ourBestGuide": "Náš nejlepší průvodce!",
     "welcome": "Vítejte v našem průvodci událostmi! Zde najdete vysvětlení nejdůležitějších aspektů používání naší platformy a interakce s ostatními uživateli, stejně jako několik užitečných tipů.",

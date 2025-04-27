@@ -10,11 +10,14 @@ import { UserEvents } from '@/components/custom/UserEvents';
 import { UserAchievements } from '@/components/custom/UserAchievements';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-
+import { useTranslation } from 'react-i18next';
 // Получаем ширину экрана для распределения элементов навигации
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function ProfileScreen() {
+
+    const { t } = useTranslation();
+
     const { id } = useLocalSearchParams<{ id: string }>(); // TODO: id - userId
     const [refreshing, setRefreshing] = useState(false);
     const [activeSection, setActiveSection] = useState('createdEvents');
@@ -26,12 +29,11 @@ export default function ProfileScreen() {
     const backgroundColor = useThemeColor({}, 'background');
     const borderColor = useThemeColor({}, 'divider');
     
-    // Определение разделов навигации с эмодзи
     const navigationSections = [
-        { key: 'createdEvents', title: 'Events', emoji: '🎉' },
-        { key: 'WinnedEvents', title: 'Success', emoji: '🔥' },
-        { key: 'achievements', title: 'Achievements', emoji: '🏆' },
-        { key: 'participatingEvents', title: 'Joining', emoji: '👥' },
+        { key: 'createdEvents', title: t('profile.createdEvents'), emoji: '🎉' },
+        { key: 'WinnedEvents', title: t('profile.winnedEvents'), emoji: '🔥' },
+        { key: 'achievements', title: t('profile.achievements'), emoji: '🏆' },
+        { key: 'participatingEvents', title: t('profile.participatingEvents'), emoji: '👥' },
     ];
 
     const setSection = (sectionName) => {
@@ -124,6 +126,9 @@ export default function ProfileScreen() {
 }
 
 function ProfileHeader({ user, balance }) {
+
+    const { t } = useTranslation();
+    
     const borderColor = useThemeColor({}, 'divider');
     const placeholderColor = useThemeColor({}, 'placeholder');
     
@@ -131,9 +136,9 @@ function ProfileHeader({ user, balance }) {
         <ThemedView style={[styles.headerContainer, { borderBottomColor: borderColor }]}>
             <Stack.Screen
                 options={{
-                title: 'Personal profile',
+                title: t('profile.title'),
                 headerShown: true,
-                headerBackTitle: 'Back',
+                headerBackTitle: t('profile.backTitle'),
                 }}
             /> 
             <View style={styles.profileHeader}>
