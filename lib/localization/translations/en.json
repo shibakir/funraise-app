@@ -19,6 +19,10 @@
         "discoverEvents": "Discover other events",
         "myRecentEvents": "My recent events"
     },
+    "search": {
+        "title": "Search",
+        "backTitle": "Back"
+    },
     "createEvent": {
         "backTitle": "Back",
         "title": "Create event",

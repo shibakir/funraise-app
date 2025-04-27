@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next';
 export default function EventDocumentationScreen() {
     const { t } = useTranslation();
     const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
   
     const styles = StyleSheet.create({
         container: {
@@ -86,9 +88,12 @@ export default function EventDocumentationScreen() {
             <Stack.Screen
                 options={{
                     title: t('documentation.title'),
-                    headerTitleStyle: { fontWeight: '600' },
+                    headerTitleStyle: { fontWeight: '600', color: headerText },
                     headerShown: true,
                     headerBackTitle: t('documentation.backTitle'),
+                    headerStyle: {
+                        backgroundColor: headerBackground,
+                    },
                 }}
             />
             <SafeAreaView style={styles.container}>

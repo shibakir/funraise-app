@@ -29,6 +29,8 @@ export default function ExploreScreen() {
 
     const primaryColor = useThemeColor({}, 'primary');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
     
     const styles = StyleSheet.create({
         container: {
@@ -77,6 +79,8 @@ export default function ExploreScreen() {
                 options={{ 
                     title: t('explore.title'),
                     headerShown: true,
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }} 
             />
             <SafeAreaView style={[styles.container, { flex: 1 }]}>

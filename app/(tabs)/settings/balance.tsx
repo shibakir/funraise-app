@@ -23,6 +23,8 @@ export default function BalanceScreen() {
     const textColor = useThemeColor({}, 'text');
     const errorColor = useThemeColor({}, 'error');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
 
     if (!user) {
         return <Redirect href="/login" />;
@@ -54,6 +56,8 @@ export default function BalanceScreen() {
                 options={{
                     title: t('settings.balance') || 'Balance',
                     headerShown: true,
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }}
             />
             <SafeAreaView style={styles.container}>

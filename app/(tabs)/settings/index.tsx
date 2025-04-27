@@ -26,6 +26,8 @@ export default function SettingsScreen() {
     const textSecondary = useThemeColor({}, 'icon');
     const surfaceColor = useThemeColor({}, 'surface');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
     const primaryColor = useThemeColor({}, 'primary');
         
     const styles = StyleSheet.create({
@@ -184,6 +186,8 @@ export default function SettingsScreen() {
                 options={{ 
                     title: t('settings.title') || 'Settings',
                     headerShown: true,
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }} 
             />
             <SafeAreaView style={[styles.container, { flex: 1 }]}>

@@ -19,6 +19,10 @@
         "discoverEvents": "Objevte další události",
         "myRecentEvents": "Moje nedávné události"
     },
+    "search": {
+        "title": "Vyhledávání",
+        "backTitle": "Zpět"
+    },
     "createEvent": {
         "backTitle": "Zpět",
         "title": "Vytvořit event",
@@ -209,7 +213,7 @@
         "language": "Jazyk",
         "languageDesc": "Změňte preferovaný jazyk",
         "support": "Podpora",
-        "help": "Nápověda a zpětná vazba",
+        "help": "Nápověda",
         "helpDesc": "Získejte pomoc nebo poskytněte zpětnou vazbu",
         "terms": "Podmínky služby",
         "termsDesc": "Přečtěte si naše podmínky služby",

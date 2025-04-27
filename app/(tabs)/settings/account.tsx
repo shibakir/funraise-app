@@ -40,6 +40,8 @@ export default function AccountScreen() {
     const textColor = useThemeColor({}, 'text');
     const errorColor = useThemeColor({}, 'error');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
     const placeholderColor = useThemeColor({}, 'placeholder');
 
     const handleUpdateName = async () => {
@@ -152,8 +154,10 @@ export default function AccountScreen() {
         <>
             <Stack.Screen 
                 options={{ 
-                title: t('settings.account') || 'Account',
-                headerShown: true,
+                    title: t('settings.account') || 'Account',
+                    headerShown: true,
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }} 
             />
             <SafeAreaView style={styles.container}>

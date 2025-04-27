@@ -27,6 +27,8 @@ export default function NotificationsScreen() {
     const [loading, setLoading] = useState<boolean>(true);
 
     const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
     const primaryColor = useThemeColor({}, 'primary');
     const textColor = useThemeColor({}, 'text');
 
@@ -112,6 +114,8 @@ export default function NotificationsScreen() {
                 options={{ 
                     title: t('settings.notifications') || 'Notifications',
                     headerShown: true,
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }} 
             />
             <SafeAreaView style={styles.container}>

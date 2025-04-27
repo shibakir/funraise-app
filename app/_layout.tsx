@@ -8,12 +8,16 @@ import { AuthProvider } from '@/lib/context/AuthContext';
 import '@/lib/localization/i18n';
 
 export default function Layout() {
-  return (
-    <ThemeProvider>
-      <AuthProvider>
-        <StatusBar style="auto" />
-        <Stack screenOptions={{ headerShown: false }} />
-      </AuthProvider>
-    </ThemeProvider>
-  );
+    return (
+        <ThemeProvider>
+            <AuthProvider>
+                <StatusBar style="auto" />
+                <Stack 
+                    screenOptions={{
+                        headerShown: false,
+                    }}
+                />
+            </AuthProvider>
+        </ThemeProvider>
+    );
 }

@@ -11,7 +11,7 @@ import { UserAchievements } from '@/components/custom/UserAchievements';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from 'react-i18next';
-// Получаем ширину экрана для распределения элементов навигации
+
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function ProfileScreen() {
@@ -28,7 +28,7 @@ export default function ProfileScreen() {
     const textColor = useThemeColor({}, 'text');
     const backgroundColor = useThemeColor({}, 'background');
     const borderColor = useThemeColor({}, 'divider');
-    
+
     const navigationSections = [
         { key: 'createdEvents', title: t('profile.createdEvents'), emoji: '🎉' },
         { key: 'WinnedEvents', title: t('profile.winnedEvents'), emoji: '🔥' },
@@ -61,7 +61,6 @@ export default function ProfileScreen() {
                 user={profile.user} 
                 balance={profile.balance} 
             />
-
             {/* Фиксированное навигационное меню с равномерным распределением */}
             <ThemedView style={[styles.stickyNav, { borderBottomColor: borderColor }]}>
                 <View style={styles.navContainer}>
@@ -131,6 +130,8 @@ function ProfileHeader({ user, balance }) {
     
     const borderColor = useThemeColor({}, 'divider');
     const placeholderColor = useThemeColor({}, 'placeholder');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
     
     return (
         <ThemedView style={[styles.headerContainer, { borderBottomColor: borderColor }]}>
@@ -139,6 +140,8 @@ function ProfileHeader({ user, balance }) {
                 title: t('profile.title'),
                 headerShown: true,
                 headerBackTitle: t('profile.backTitle'),
+                headerStyle: { backgroundColor: headerBackground },
+                headerTitleStyle: { color: headerText },
                 }}
             /> 
             <View style={styles.profileHeader}>

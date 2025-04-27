@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Stack, router } from 'expo-router';
 import { StyleSheet, TextInput, View, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 
 import { ThemedText } from '@/components/ThemedText';
@@ -9,11 +10,18 @@ import { SearchFilterPanel } from '@/components/SearchFilterPanel';
 import { useEventSearch } from '@/lib/hooks/useEventSearch';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { EventCard } from '@/components/EventCard';
+import { useTranslation } from 'react-i18next';
 
 export default function SearchScreen() {
+
+    const { t } = useTranslation();
+
     const inputBackground = useThemeColor({}, 'surfaceHighlight');
     const borderColor = useThemeColor({}, 'divider');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
+
     const primaryColor = useThemeColor({}, 'primary');
     const placeholderColor = useThemeColor({}, 'placeholder');
     const textColor = useThemeColor({}, 'text');
@@ -210,21 +218,33 @@ export default function SearchScreen() {
     };
 
     return (
-        <ThemedView style={styles.container}>
-            {renderSearchBar()}
-            <ScrollView 
-                contentContainerStyle={styles.scrollContainer}
-                showsVerticalScrollIndicator={false}
-            >
-                {renderErrorContent() || renderEventsList()}
-            </ScrollView>
+        <>
+            <Stack.Screen 
+                    options={{ 
+                        title: t('search.title'),
+                        headerShown: true,
+                        headerBackTitle: t('search.backTitle'),
+                        headerStyle: { backgroundColor: headerBackground },
+                        headerTitleStyle: { color: headerText },
+                    }}
+                />
             
-            <SearchFilterPanel 
-                filters={filters} 
-                onApplyFilters={updateFilters}
-                isVisible={showFilterPanel}
-                onClose={() => setShowFilterPanel(false)}
-            />
-        </ThemedView>
+            <ThemedView style={styles.container}>
+                {renderSearchBar()}
+                <ScrollView 
+                    contentContainerStyle={styles.scrollContainer}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {renderErrorContent() || renderEventsList()}
+                </ScrollView>
+                
+                <SearchFilterPanel 
+                    filters={filters} 
+                    onApplyFilters={updateFilters}
+                    isVisible={showFilterPanel}
+                    onClose={() => setShowFilterPanel(false)}
+                />
+            </ThemedView>
+        </>
     );
 } 

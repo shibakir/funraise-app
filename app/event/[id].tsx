@@ -46,7 +46,7 @@ export default function EventScreen() {
     // Обновляем флаг первой загрузки
     useEffect(() => {
         if (!loading && !initialLoadComplete) {
-        setInitialLoadComplete(true);
+            setInitialLoadComplete(true);
         }
     }, [loading]);
     
@@ -58,11 +58,11 @@ export default function EventScreen() {
         refresh();
         // Обновляем информацию о банке события
         if (statusInfoRef.current) {
-        statusInfoRef.current.refresh();
+            statusInfoRef.current.refresh();
         }
         // Обновляем информацию об условиях события
         if (conditionsListRef.current) {
-        conditionsListRef.current.refresh();
+            conditionsListRef.current.refresh();
         }
     };
     
@@ -70,21 +70,24 @@ export default function EventScreen() {
     const handleImagePress = async () => {
         // Если пользователь авторизован
         if (user && event && depositPanelRef.current) {
-        if (depositPanelRef.current.hasParticipation) {
-            // Если уже есть участие, обновляем его
-            await depositPanelRef.current.handleUpdateParticipation();
-        } else {
-            // Если участия еще нет, создаем новое
-            await depositPanelRef.current.handleCreateParticipation();
-        }
+            if (depositPanelRef.current.hasParticipation) {
+                // Если уже есть участие, обновляем его
+                await depositPanelRef.current.handleUpdateParticipation();
+            } else {
+                // Если участия еще нет, создаем новое
+                await depositPanelRef.current.handleCreateParticipation();
+            }
         } else if (!user) {
-        Alert.alert('Error', 'You must be logged in to participate');
+            Alert.alert('Error', 'You must be logged in to participate');
         }
     };
 
     const backgroundColor = useThemeColor({}, 'background');
     const primaryColor = useThemeColor({}, 'primary');
     const errorColor = useThemeColor({}, 'error');
+
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
 
     // Отображаем индикатор загрузки только при первой загрузке страницы
     if (loading && !initialLoadComplete) {
@@ -99,18 +102,18 @@ export default function EventScreen() {
     // Показываем экран с ошибкой только если есть ошибка или событие не найдено
     if (error || (!loading && !event)) {
         return (
-        <View style={[styles.errorContainer, { backgroundColor }]}>
-            <Ionicons name="alert-circle-outline" size={moderateScale(48)} color={errorColor} />
-            <ThemedText style={styles.errorText}>
-            {error || 'Event not found'}
-            </ThemedText>
-            <TouchableOpacity 
-            style={[styles.headerButton, { marginTop: verticalScale(16) }]}
-            onPress={() => router.back()}
-            >
-            <ThemedText style={{ color: primaryColor }}>Go Back</ThemedText>
-            </TouchableOpacity>
-        </View>
+            <View style={[styles.errorContainer, { backgroundColor }]}>
+                <Ionicons name="alert-circle-outline" size={moderateScale(48)} color={errorColor} />
+                <ThemedText style={styles.errorText}>
+                    {error || 'Event not found'}
+                </ThemedText>
+                <TouchableOpacity 
+                    style={[styles.headerButton, { marginTop: verticalScale(16) }]}
+                    onPress={() => router.back()}
+                >
+                    <ThemedText style={{ color: primaryColor }}>Go Back</ThemedText>
+                </TouchableOpacity>
+            </View>
         );
     }
 
@@ -120,9 +123,11 @@ export default function EventScreen() {
         <ThemedView style={styles.container}>
             <Stack.Screen
                 options={{
-                title: event?.name || 'Event',
-                headerShown: true,
-                headerBackTitle: 'Back',
+                    title: event?.name || 'Event',
+                    headerShown: true,
+                    headerBackTitle: 'Back',
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }}
             />      
             <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1 }}>

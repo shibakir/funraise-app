@@ -18,6 +18,8 @@ export default function HomeScreen() {
 
     const sectionBackground = useThemeColor({}, 'sectionBackground');
     const primaryColor = useThemeColor({}, 'primary');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
     
     useFocusEffect(
         useCallback(() => {
@@ -94,6 +96,8 @@ export default function HomeScreen() {
                 options={{ 
                     title: t('home.title'),
                     headerShown: true,
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }} 
             />
             <SafeAreaView style={[styles.container, { flex: 1 }]}>

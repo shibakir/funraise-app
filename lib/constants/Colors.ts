@@ -36,6 +36,8 @@ export const Colors = {
     light: {
         text: neutral[900],
         sectionBackground: '#ffffff',
+        headerBackground: '#ffffff',
+        headerText: '#000000',
         background: neutral[200],
         tint: tintColorLight,
         icon: neutral[500],
@@ -67,6 +69,8 @@ export const Colors = {
     dark: {
         text: neutral[50],
         sectionBackground: neutral[900],
+        headerBackground: neutral[900],
+        headerText: '#ffffff',
         background: '#000000',
         tint: tintColorDark,
         icon: neutral[400],

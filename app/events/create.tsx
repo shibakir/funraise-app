@@ -21,6 +21,8 @@ export default function CreateEventScreen() {
     const { t } = useTranslation();
 
     const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
 
     const textColor = useThemeColor({}, 'text');
     const primaryColor = useThemeColor({}, 'primary');
@@ -149,6 +151,8 @@ export default function CreateEventScreen() {
                     title: t('createEvent.title'),
                     headerShown: true,
                     headerBackTitle: t('createEvent.backTitle'),
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }}
             />
             <KeyboardAvoidingView style={styles.container}>
