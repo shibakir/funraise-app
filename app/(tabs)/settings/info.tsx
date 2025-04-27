@@ -58,8 +58,8 @@ export default function AppInfoScreen() {
         <>
             <Stack.Screen 
                 options={{ 
-                    title: t('settings.info') || 'Info',
-                    
+                    title: t('settings.infoPage.title'),
+                    headerBackTitle: t('settings.infoPage.backTitle'),
                     headerShown: true,
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
@@ -72,7 +72,7 @@ export default function AppInfoScreen() {
                         <ThemedView style={styles.mainSection}>
                             <ThemedView style={styles.section}>
                         <ThemedText style={styles.title}>FunRaise</ThemedText>
-                        <ThemedText style={styles.version}>Version 1.0.1</ThemedText>
+                        <ThemedText style={styles.version}>{t('settings.infoPage.version')} 1.0.1</ThemedText>
                         <ThemedText style={styles.description}>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
                             Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
@@ -80,7 +80,7 @@ export default function AppInfoScreen() {
                             non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                         </ThemedText>
                         <ThemedText style={styles.diplomaInfo}>
-                            This project was developed as part of a bachelor thesis at FIT CVUT in Prague in 2025.
+                            {t('settings.infoPage.diplomaInfo')}
                         </ThemedText>
                     </ThemedView>
                         </ThemedView>

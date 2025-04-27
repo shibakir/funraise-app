@@ -154,7 +154,8 @@ export default function AccountScreen() {
         <>
             <Stack.Screen 
                 options={{ 
-                    title: t('settings.account') || 'Account',
+                    title: t('settings.accountPage.title'),
+                    headerBackTitle: t('settings.accountPage.backTitle'),
                     headerShown: true,
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
@@ -165,211 +166,203 @@ export default function AccountScreen() {
                     <StatusBar barStyle="default" />
                     <KeyboardAvoidingView style={styles.container}>
                         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-                            <View style={styles.sectionHeader}>
-                                <ThemedText style={styles.sectionTitle}>{t('settings.account') || 'Account'}</ThemedText>
-                            </View>
-                            
                             {/* USERNAME */}
                             <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
                                 <View style={[styles.header, { borderBottomColor: borderColor }]}>
-                                <ThemedText style={styles.headerTitle}>{t('auth.username') || 'Username'}</ThemedText>
+                                <ThemedText style={styles.headerTitle}>{t('settings.accountPage.username')}</ThemedText>
                                 {!editingName && (
                                     <TouchableOpacity onPress={() => setEditingName(true)} style={styles.editButton}>
-                                    <ThemedText style={{ color: primaryColor }}>{t('settings.edit') || 'Edit'}</ThemedText>
+                                    <ThemedText style={{ color: primaryColor }}>{t('settings.accountPage.edit')}</ThemedText>
                                     </TouchableOpacity>
                                 )}
                                 </View>
                                 
                                 <View style={styles.form}>
-                                {editingName ? (
-                                    <>
-                                    <View style={styles.formGroup}>
-                                        <ThemedText style={styles.label}>{t('settings.newUsername') || 'New username'}</ThemedText>
-                                        <TextInput
-                                        style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
-                                        value={name}
-                                        onChangeText={setName}
-                                        placeholder={t('settings.yourNewUsername') || 'Your new username'}
-                                        placeholderTextColor={placeholderColor}
-                                        />
-                                    </View>
-                                    
-                                    {error && (
-                                        <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                                        {error}
-                                        </ThemedText>
-                                    )}
-                                    
-                                    <View style={styles.buttonContainer}>
-                                        {isLoading ? (
-                                        <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
-                                        ) : (
+                                    {editingName ? (
                                         <>
-                                            <CustomButton 
-                                            title={t('cancel') || 'Cancel'} 
-                                            onPress={handleCancelName} 
-                                            variant="secondary"
+                                        <View style={styles.formGroup}>
+                                            <ThemedText style={styles.label}>{t('settings.accountPage.newUsername')}</ThemedText>
+                                            <TextInput
+                                                style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
+                                                value={name}
+                                                onChangeText={setName}
+                                                placeholder={t('settings.accountPage.newUsernamePlaceholder')}
+                                                placeholderTextColor={placeholderColor}
                                             />
-                                            <View style={{ width: horizontalScale(10) }} />
-                                            <CustomButton 
-                                            title={t('save') || 'Save'} 
-                                            onPress={handleUpdateName} 
-                                            variant="primary"
-                                            />
-                                        </>
+                                        </View>
+                                        
+                                        {error && (
+                                            <ThemedText style={[styles.errorText, { color: errorColor }]}>
+                                                {error}
+                                            </ThemedText>
                                         )}
-                                    </View>
-                                    </>
-                                ) : (
-                                    <ThemedText style={styles.value}>{user?.username || 'Not set'}</ThemedText>
-                                )}
+                                        
+                                        <View style={styles.buttonContainer}>
+                                            {isLoading ? (
+                                                <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
+                                                ) : (
+                                                    <>
+                                                        <CustomButton 
+                                                            title={t('settings.accountPage.cancel')} 
+                                                            onPress={handleCancelName} 
+                                                            variant="secondary"
+                                                        />
+                                                        <View style={{ width: horizontalScale(10) }} />
+                                                        <CustomButton 
+                                                            title={t('settings.accountPage.save')} 
+                                                            onPress={handleUpdateName} 
+                                                            variant="primary"
+                                                        />
+                                                    </>
+                                                )
+                                            }
+                                        </View>
+                                        </>
+                                    ) : (
+                                        <ThemedText style={styles.value}>{user?.username || t('settings.accountPage.notSet')}</ThemedText>
+                                    )}
                                 </View>
                             </ThemedView>
                             
                             {/* EMAIL */}
-                            <View style={styles.sectionHeader}>
-                                <ThemedText style={styles.sectionTitle}>{t('settings.email') || 'Email'}</ThemedText>
-                            </View>
                             <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
                                 <View style={[styles.header, { borderBottomColor: borderColor }]}>
-                                <ThemedText style={styles.headerTitle}>{t('auth.email') || 'Email'}</ThemedText>
-                                {!editingEmail && (
-                                    <TouchableOpacity onPress={() => setEditingEmail(true)} style={styles.editButton}>
-                                    <ThemedText style={{ color: primaryColor }}>{t('settings.edit') || 'Edit'}</ThemedText>
-                                    </TouchableOpacity>
-                                )}
+                                    <ThemedText style={styles.headerTitle}>{t('settings.accountPage.email')}</ThemedText>
+                                    {!editingEmail && (
+                                        <TouchableOpacity onPress={() => setEditingEmail(true)} style={styles.editButton}>
+                                        <ThemedText style={{ color: primaryColor }}>{t('settings.accountPage.edit')}</ThemedText>
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                                 
                                 <View style={styles.form}>
-                                {editingEmail ? (
-                                    <>
-                                    <View style={styles.formGroup}>
-                                        <ThemedText style={styles.label}>{t('settings.emailAddress') || 'Email Address'}</ThemedText>
-                                        <TextInput
-                                        style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
-                                        value={email}
-                                        onChangeText={setEmail}
-                                        placeholder={t('settings.yourEmail') || 'Your email'}
-                                        keyboardType="email-address"
-                                        autoCapitalize="none"
-                                        placeholderTextColor={placeholderColor}
-                                        />
-                                    </View>
-                                    
-                                    {error && (
-                                        <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                                        {error}
-                                        </ThemedText>
-                                    )}
-                                    
-                                    <View style={styles.buttonContainer}>
-                                        {isLoading ? (
-                                        <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
-                                        ) : (
+                                    {editingEmail ? (
                                         <>
-                                            <CustomButton 
-                                            title={t('cancel') || 'Cancel'} 
-                                            onPress={handleCancelEmail} 
-                                            variant="secondary"
-                                            />
-                                            <View style={{ width: horizontalScale(10) }} />
-                                            <CustomButton 
-                                            title={t('save') || 'Save'} 
-                                            onPress={handleUpdateEmail} 
-                                            variant="primary"
-                                            />
+                                            <View style={styles.formGroup}>
+                                                <ThemedText style={styles.label}>{t('settings.accountPage.newEmail')}</ThemedText>
+                                                <TextInput
+                                                    style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
+                                                    value={email}
+                                                    onChangeText={setEmail}
+                                                    placeholder={t('settings.accountPage.newEmailPlaceholder')}
+                                                    keyboardType="email-address"
+                                                    autoCapitalize="none"
+                                                    placeholderTextColor={placeholderColor}
+                                                />
+                                            </View>
+                                            
+                                            {error && (
+                                                <ThemedText style={[styles.errorText, { color: errorColor }]}>
+                                                    {error}
+                                                </ThemedText>
+                                            )}
+                                            
+                                            <View style={styles.buttonContainer}>
+                                                {isLoading ? (
+                                                <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
+                                                    ) : (
+                                                    <>
+                                                        <CustomButton 
+                                                            title={t('settings.accountPage.cancel')} 
+                                                            onPress={handleCancelEmail} 
+                                                            variant="secondary"
+                                                        />
+                                                        <View style={{ width: horizontalScale(10) }} />
+                                                        <CustomButton 
+                                                            title={t('settings.accountPage.save')} 
+                                                            onPress={handleUpdateEmail} 
+                                                            variant="primary"
+                                                        />
+                                                    </>
+                                                    )
+                                                }
+                                            </View>
                                         </>
-                                        )}
-                                    </View>
-                                    </>
-                                ) : (
-                                    <ThemedText style={styles.value}>{user?.email || 'Not set'}</ThemedText>
-                                )}
+                                    ) : (
+                                        <ThemedText style={styles.value}>{user?.email || t('settings.accountPage.notSet')}</ThemedText>
+                                    )}
                                 </View>
                             </ThemedView>
                             
                             {/* PASSWORD */}
-                            <View style={styles.sectionHeader}>
-                                <ThemedText style={styles.sectionTitle}>{t('settings.password') || 'Password'}</ThemedText>
-                            </View>
                             <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
                                 <View style={[styles.header, { borderBottomColor: borderColor }]}>
-                                <ThemedText style={styles.headerTitle}>{t('auth.password') || 'Password'}</ThemedText>
-                                {!editingPassword && (
-                                    <TouchableOpacity onPress={() => setEditingPassword(true)} style={styles.editButton}>
-                                    <ThemedText style={{ color: primaryColor }}>{t('settings.edit') || 'Edit'}</ThemedText>
-                                    </TouchableOpacity>
-                                )}
+                                    <ThemedText style={styles.headerTitle}>{t('settings.accountPage.password')}</ThemedText>
+                                    {!editingPassword && (
+                                        <TouchableOpacity onPress={() => setEditingPassword(true)} style={styles.editButton}>
+                                            <ThemedText style={{ color: primaryColor }}>{t('settings.accountPage.edit')}</ThemedText>
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                                 
                                 <View style={styles.form}>
-                                {editingPassword ? (
-                                    <>
-                                    <View style={styles.formGroup}>
-                                        <ThemedText style={styles.label}>{t('settings.currentPassword') || 'Current Password'}</ThemedText>
-                                        <TextInput
-                                        style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
-                                        value={currentPassword}
-                                        onChangeText={setCurrentPassword}
-                                        placeholder="••••••••"
-                                        secureTextEntry
-                                        placeholderTextColor={placeholderColor}
-                                        />
-                                    </View>
-                                    
-                                    <View style={styles.formGroup}>
-                                        <ThemedText style={styles.label}>{t('settings.newPassword') || 'New Password'}</ThemedText>
-                                        <TextInput
-                                        style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
-                                        value={newPassword}
-                                        onChangeText={setNewPassword}
-                                        placeholder="••••••••"
-                                        secureTextEntry
-                                        placeholderTextColor={placeholderColor}
-                                        />
-                                    </View>
-                                    
-                                    <View style={styles.formGroup}>
-                                        <ThemedText style={styles.label}>{t('settings.confirmPassword') || 'Confirm New Password'}</ThemedText>
-                                        <TextInput
-                                        style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
-                                        value={confirmPassword}
-                                        onChangeText={setConfirmPassword}
-                                        placeholder="••••••••"
-                                        secureTextEntry
-                                        placeholderTextColor={placeholderColor}
-                                        />
-                                    </View>
-                                    
-                                    {error && (
-                                        <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                                        {error}
-                                        </ThemedText>
-                                    )}
-                                    
-                                    <View style={styles.buttonContainer}>
-                                        {isLoading ? (
-                                        <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
-                                        ) : (
+                                    {editingPassword ? (
                                         <>
-                                            <CustomButton 
-                                            title={t('cancel') || 'Cancel'}
-                                            onPress={handleCancelPassword}
-                                            variant="secondary"
+                                        <View style={styles.formGroup}>
+                                            <ThemedText style={styles.label}>{t('settings.accountPage.currentPassword')}</ThemedText>
+                                            <TextInput
+                                                style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
+                                                value={currentPassword}
+                                                onChangeText={setCurrentPassword}
+                                                placeholder="••••••••"
+                                                secureTextEntry
+                                                placeholderTextColor={placeholderColor}
                                             />
-                                            <View style={{ width: horizontalScale(10) }} />
-                                            <CustomButton 
-                                            title={t('save') || 'Save'}
-                                            onPress={handleUpdatePassword}
-                                            variant="primary"
+                                        </View>
+                                        
+                                        <View style={styles.formGroup}>
+                                            <ThemedText style={styles.label}>{t('settings.accountPage.newPassword')}</ThemedText>
+                                            <TextInput
+                                                style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
+                                                value={newPassword}
+                                                onChangeText={setNewPassword}
+                                                placeholder="••••••••"
+                                                secureTextEntry
+                                                placeholderTextColor={placeholderColor}
                                             />
-                                        </>
+                                        </View>
+                                        
+                                        <View style={styles.formGroup}>
+                                            <ThemedText style={styles.label}>{t('settings.accountPage.confirmPassword')}</ThemedText>
+                                            <TextInput
+                                                style={[styles.input, { color: textColor, backgroundColor, borderColor: borderColor }]}
+                                                value={confirmPassword}
+                                                onChangeText={setConfirmPassword}
+                                                placeholder="••••••••"
+                                                secureTextEntry
+                                                placeholderTextColor={placeholderColor}
+                                            />
+                                        </View>
+                                        
+                                        {error && (
+                                            <ThemedText style={[styles.errorText, { color: errorColor }]}>
+                                                {error}
+                                            </ThemedText>
                                         )}
-                                    </View>
-                                    </>
-                                ) : (
-                                    <ThemedText style={styles.value}>••••••••</ThemedText>
-                                )}
+                                        
+                                        <View style={styles.buttonContainer}>
+                                            {isLoading ? (
+                                            <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
+                                            ) : (
+                                                <>
+                                                    <CustomButton 
+                                                        title={t('settings.accountPage.cancel')}
+                                                        onPress={handleCancelPassword}
+                                                        variant="secondary"
+                                                    />
+                                                    <View style={{ width: horizontalScale(10) }} />
+                                                    <CustomButton 
+                                                        title={t('settings.accountPage.save')}
+                                                        onPress={handleUpdatePassword}
+                                                        variant="primary"
+                                                    />
+                                                </>
+                                            )}
+                                        </View>
+                                        </>
+                                    ) : (
+                                        <ThemedText style={styles.value}>••••••••</ThemedText>
+                                    )}
                                 </View>
                             </ThemedView>
                         </ScrollView>
@@ -389,6 +382,7 @@ const styles = StyleSheet.create({
         paddingBottom: verticalScale(40),
     },
     mainSection: {
+        marginBottom: verticalScale(26),
         borderRadius: moderateScale(16),
         overflow: 'hidden',
     },

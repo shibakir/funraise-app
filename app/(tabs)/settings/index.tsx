@@ -184,7 +184,7 @@ export default function SettingsScreen() {
         <>
             <Stack.Screen 
                 options={{ 
-                    title: t('settings.title') || 'Settings',
+                    title: t('settings.title'),
                     headerShown: true,
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
@@ -202,12 +202,12 @@ export default function SettingsScreen() {
                             style={styles.profileButton}
                             onPress={() => router.push(`/profile/${user?.id}`)}
                         >
-                            <ThemedText style={styles.profileButtonText}>{t('home.showMyProfile') || 'Show My Profile'}</ThemedText>
+                            <ThemedText style={styles.profileButtonText}>{t('settings.showMyProfile')}</ThemedText>
                         </TouchableOpacity>
 
                         {/* PROFILE SECTION */}
                         <View style={styles.sectionHeader}>
-                            <ThemedText style={styles.sectionTitle}>{t('settings.profile') || 'Profile'}</ThemedText>
+                            <ThemedText style={styles.sectionTitle}>{t('settings.profile')}</ThemedText>
                         </View>
                         <ThemedView style={styles.mainSection}>
                             <View style={styles.userHeader}>
@@ -222,82 +222,82 @@ export default function SettingsScreen() {
                                 
                             <SettingItem 
                                 icon="gear" 
-                                title={t('settings.account') || 'Account'} 
-                                description={t('settings.accountDesc') || 'Manage your account information'}
+                                title={t('settings.account')} 
+                                description={t('settings.accountDesc')}
                                 onPress={() => router.push('/settings/account')}
                             />
                             <SettingItem 
                                 icon="dollarsign.circle" 
-                                title={t('settings.balance') || 'Balance'} 
-                                description={t('settings.balanceDesc') || 'Add funds to your account'}
+                                title={t('settings.balance')} 
+                                description={t('settings.balanceDesc')}
                                 onPress={() => router.push('/settings/balance')}
                             />
                             <SettingItem 
                                 icon="bell" 
-                                title={t('settings.notifications') || 'Notifications'} 
-                                description={t('settings.notificationsDesc') || 'Configure how you receive notifications'}
+                                title={t('settings.notifications')} 
+                                description={t('settings.notificationsDesc')}
                                 onPress={() => router.push('/settings/notifications')}
                             />
                         </ThemedView>
 
                         {/* APP SECTION */}
                         <View style={styles.sectionHeader}>
-                            <ThemedText style={styles.sectionTitle}>{t('settings.app') || 'App'}</ThemedText>
+                            <ThemedText style={styles.sectionTitle}>{t('settings.app')}</ThemedText>
                         </View> 
                         <ThemedView style={styles.mainSection}>
                             <SettingItem 
                                 icon="lock" 
-                                title={t('settings.privacy') || 'Privacy & Security'} 
-                                description={t('settings.privacyDesc') || 'Manage your data and privacy settings'}
+                                title={t('settings.privacyPolicy')} 
+                                description={t('settings.privacyPolicyDesc')}
                                 onPress={() => router.push('/settings/privacy-security')}
                             />
                             <SettingItem 
                                 icon="eye" 
-                                title={t('settings.appearance') || 'Appearance'} 
-                                description={t('settings.appearanceDesc') || 'Customize how the app looks'}
+                                title={t('settings.appearance')} 
+                                description={t('settings.appearanceDesc')}
                                 onPress={() => router.push('/settings/appearance')}
                             />
                             <SettingItem 
                                 icon="globe" 
-                                title={t('settings.language') || 'Language'} 
-                                description={t('settings.languageDesc') || 'Change your preferred language'}
+                                title={t('settings.language')} 
+                                description={t('settings.languageDesc')}
                                 onPress={() => router.push('/settings/language')}
                             />
                         </ThemedView>
 
                         {/* SUPPORT SECTION */}
                         <View style={styles.sectionHeader}>
-                            <ThemedText style={styles.sectionTitle}>{t('settings.support') || 'Support'}</ThemedText>
+                            <ThemedText style={styles.sectionTitle}>{t('settings.support')}</ThemedText>
                         </View>
                         <ThemedView style={styles.mainSection}>
                             <SettingItem 
                                 icon="questionmark.circle" 
-                                title={t('settings.help') || 'Help & Feedback'} 
-                                description={t('settings.helpDesc') || 'Get assistance or provide feedback'}
+                                title={t('settings.helpAndFeedback')} 
+                                description={t('settings.helpAndFeedbackDesc')}
                                 onPress={() => router.push('/settings/help')}
                             />
                             <SettingItem 
                                 icon="doc.text" 
-                                title={t('settings.terms') || 'Terms of Service'} 
-                                description={t('settings.termsDesc') || 'Read our terms of service'}
+                                title={t('settings.termsOfService')} 
+                                description={t('settings.termsOfServiceDesc')}
                                 onPress={() => router.push('/settings/terms-of-service')}
                             />
                             <SettingItem 
                                 icon="shield"
-                                title={t('settings.privacy') || 'Privacy Policy'} 
-                                description={t('settings.privacyDesc') || 'Read our privacy policy'}
+                                title={t('settings.privacyPolicy')} 
+                                description={t('settings.privacyPolicyDesc')}
                                 onPress={() => router.push('/settings/privacy-policy')}
                             />
                         </ThemedView>
 
                         {/* ABOUT SECTION */}
                         <View style={styles.sectionHeader}>
-                            <ThemedText style={styles.sectionTitle}>{t('settings.about') || 'About'}</ThemedText>
+                            <ThemedText style={styles.sectionTitle}>{t('settings.about')}</ThemedText>
                         </View>
                         <ThemedView style={styles.mainSection}>
-                            <SettingItem 
+                            <SettingItem
                                 icon="info.circle" 
-                                title={t('settings.info') || 'App Info'} 
+                                title={t('settings.appInfo')} 
                                 description="FunRaise v1.0.1"
                                 showChevron={false}
                                 onPress={() => router.push('/settings/info')}
@@ -309,7 +309,7 @@ export default function SettingsScreen() {
                             style={[styles.profileButton, { marginTop: verticalScale(10) }]}
                             onPress={handleLogout}
                         >
-                            <ThemedText style={styles.profileButtonText}>{t('settings.logout') || 'Logout'}</ThemedText>
+                            <ThemedText style={styles.profileButtonText}>{t('settings.logout')}</ThemedText>
                         </TouchableOpacity>
                     </ScrollView>
                 </ThemedView>

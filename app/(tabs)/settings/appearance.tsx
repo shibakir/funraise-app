@@ -45,7 +45,8 @@ export default function AppearanceScreen() {
         <>
             <Stack.Screen 
                 options={{ 
-                    title: t('settings.appearance') || 'Appearance',
+                    title: t('settings.appearancePage.title'),
+                    headerBackTitle: t('settings.appearancePage.backTitle'),
                     headerShown: true,
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
@@ -56,9 +57,9 @@ export default function AppearanceScreen() {
                 <StatusBar barStyle="default" />
                 <ScrollView contentContainerStyle={styles.contentContainer}>
                     <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
-                    <ThemeOption value="system" label={t('settings.automatic') || 'Automatic'} />
-                    <ThemeOption value="dark" label={t('settings.dark') || 'Dark'} />
-                    <ThemeOption value="light" label={t('settings.light') || 'Light'} isLast={true} />
+                    <ThemeOption value="system" label={t('settings.appearancePage.automatic') || 'Automatic'} />
+                    <ThemeOption value="dark" label={t('settings.appearancePage.dark') || 'Dark'} />
+                    <ThemeOption value="light" label={t('settings.appearancePage.light') || 'Light'} isLast={true} />
                     </ThemedView>
                 </ScrollView>
                 </ThemedView>
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     mainSection: {
         borderRadius: moderateScale(16),
         overflow: 'hidden',
-        marginBottom: verticalScale(16),
+        marginVertical: verticalScale(16),
     },
     sectionHeader: {
         marginTop: verticalScale(20),

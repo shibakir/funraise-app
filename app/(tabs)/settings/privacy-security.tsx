@@ -49,7 +49,8 @@ export default function PrivacySecurityScreen() {
         <>
             <Stack.Screen 
                 options={{ 
-                    title: t('settings.privacy') || 'Privacy & Security',
+                    title: t('settings.privacyAndSecurityPage.title'),
+                    headerBackTitle: t('settings.privacyAndSecurityPage.backTitle'),
                     headerShown: true,
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },

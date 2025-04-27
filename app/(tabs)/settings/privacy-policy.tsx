@@ -8,6 +8,7 @@ import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useTranslation } from 'react-i18next';
 
 export default function PrivacyPolicyScreen() {
+    
     const { t } = useTranslation();
     const sectionBackground = useThemeColor({}, 'sectionBackground');
     const headerBackground = useThemeColor({}, 'headerBackground');
@@ -15,45 +16,43 @@ export default function PrivacyPolicyScreen() {
 
     return (
         <>
-        <Stack.Screen 
-            options={{ 
-                title: t('settings.privacyPolicy') || 'Privacy Policy',
-                headerShown: true,
-                headerStyle: { backgroundColor: headerBackground },
-                headerTitleStyle: { color: headerText },
-            }} 
-        />
-        <SafeAreaView style={styles.container}>
-            <ThemedView style={styles.container}>
-                <StatusBar barStyle="default" />
-                <ScrollView 
-                    style={styles.container}
-                    contentContainerStyle={styles.contentContainer}
-                >
-                    <View style={styles.sectionHeader}>
-                        <ThemedText style={styles.sectionTitle}>{t('settings.privacyPolicy') || 'Privacy Policy'}</ThemedText>
-                    </View>
-                    
-                    <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
-                        <ThemedText style={styles.description}>
-                            {t('settings.privacyContent') || 'Privacy Policy content will be displayed here.'}
-                        </ThemedText>
-                        <ThemedText style={styles.description}>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-                            Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
-                            dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat 
-                            non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                        </ThemedText>
-                        <ThemedText style={styles.description}>
-                            Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, 
-                            nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. 
-                            Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula eu tempor congue, eros est euismod turpis, id tincidunt sapien 
-                            risus a quam.
-                        </ThemedText>
-                    </ThemedView>
-                </ScrollView>
-            </ThemedView>
-        </SafeAreaView>
+            <Stack.Screen 
+                options={{ 
+                    title: t('settings.privacyPolicyPage.title'),
+                    headerBackTitle: t('settings.privacyPolicyPage.backTitle'),
+                    headerShown: true,
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
+                }} 
+            />
+            <SafeAreaView style={styles.container}>
+                <ThemedView style={styles.container}>
+                    <StatusBar barStyle="default" />
+                    <ScrollView 
+                        style={styles.container}
+                        contentContainerStyle={styles.contentContainer}
+                    >
+                        <View style={styles.sectionHeader}>
+                            <ThemedText style={styles.sectionTitle}>{t('settings.privacyPolicyPage.privacyPolicy')}</ThemedText>
+                        </View>
+                        
+                        <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
+                            <ThemedText style={styles.description}>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure 
+                                dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat 
+                                non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                            </ThemedText>
+                            <ThemedText style={styles.description}>
+                                Curabitur pretium tincidunt lacus. Nulla gravida orci a odio. Nullam varius, turpis et commodo pharetra, est eros bibendum elit, 
+                                nec luctus magna felis sollicitudin mauris. Integer in mauris eu nibh euismod gravida. Duis ac tellus et risus vulputate vehicula. 
+                                Donec lobortis risus a elit. Etiam tempor. Ut ullamcorper, ligula eu tempor congue, eros est euismod turpis, id tincidunt sapien 
+                                risus a quam.
+                            </ThemedText>
+                        </ThemedView>
+                    </ScrollView>
+                </ThemedView>
+            </SafeAreaView>
         </>
     );
 }

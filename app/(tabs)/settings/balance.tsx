@@ -54,7 +54,8 @@ export default function BalanceScreen() {
         <>
             <Stack.Screen
                 options={{
-                    title: t('settings.balance') || 'Balance',
+                    title: t('settings.balancePage.title'),
+                    headerBackTitle: t('settings.balancePage.backTitle'),
                     headerShown: true,
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
@@ -73,7 +74,7 @@ export default function BalanceScreen() {
                                 contentContainerStyle={styles.contentContainer}
                             >
                                 <View style={styles.sectionHeader}>
-                                    <ThemedText style={styles.sectionTitle}>{t('settings.balanceTitle') || 'Account Balance'}</ThemedText>
+                                    <ThemedText style={styles.sectionTitle}>{t('settings.balancePage.balance')}</ThemedText>
                                 </View>
                                 
                                 <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
@@ -94,7 +95,7 @@ export default function BalanceScreen() {
                                 </ThemedView>
 
                                 <View style={styles.sectionHeader}>
-                                    <ThemedText style={styles.sectionTitle}>{t('settings.addFunds') || 'Add Funds'}</ThemedText>
+                                    <ThemedText style={styles.sectionTitle}>{t('settings.balancePage.addFunds')}</ThemedText>
                                 </View>
                                 <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
                                     <View style={styles.formContainer}>
@@ -103,7 +104,7 @@ export default function BalanceScreen() {
                                             <ThemedText style={styles.dollarSign}>$</ThemedText>
                                             <TextInput
                                                 style={[styles.input, { color: textColor }]}
-                                                placeholder={t('settings.amount') || 'Enter amount'}
+                                                placeholder={t('settings.balancePage.amount')}
                                                 placeholderTextColor={placeholderColor}
                                                 keyboardType="numeric"
                                                 value={amount}
@@ -117,7 +118,7 @@ export default function BalanceScreen() {
                                         )}
 
                                         <CustomButton 
-                                            title={loadingUpdate ? t('settings.processing') || 'Processing...' : t('settings.addFunds') || 'Add Funds'}
+                                            title={loadingUpdate ? t('settings.balancePage.processing') : t('settings.balancePage.addFunds')}
                                             onPress={handleAddBalance}
                                             disabled={loadingUpdate || !amount || isNaN(Number(amount)) || Number(amount) <= 0}
                                             style={styles.submitButton}

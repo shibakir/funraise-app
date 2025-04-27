@@ -66,10 +66,11 @@ export default function LanguageScreen() {
         <>
             <Stack.Screen 
                 options={{ 
-                title: t('settings.language') || 'Language',
-                headerShown: true,
-                headerStyle: { backgroundColor: headerBackground },
-                headerTitleStyle: { color: headerText },
+                    title: t('settings.languagePage.title'),
+                    headerBackTitle: t('settings.languagePage.backTitle'),
+                    headerShown: true,
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }} 
             />
             <SafeAreaView style={styles.container}>
@@ -79,12 +80,9 @@ export default function LanguageScreen() {
                         style={styles.container}
                         contentContainerStyle={styles.contentContainer}
                     >
-                        <View style={styles.sectionHeader}>
-                            <ThemedText style={styles.sectionTitle}>{t('settings.language') || 'Language'}</ThemedText>
-                        </View>
                         <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
-                            <LanguageOption value="en" label={t('settings.english')} />
-                            <LanguageOption value="cs" label={t('settings.czech')} isLast={true} />
+                            <LanguageOption value="en" label={t('settings.languagePage.language.english')} />
+                            <LanguageOption value="cs" label={t('settings.languagePage.language.czech')} isLast={true} />
                         </ThemedView>
                     </ScrollView>
                 </ThemedView>
@@ -104,7 +102,7 @@ const styles = StyleSheet.create({
     mainSection: {
         borderRadius: moderateScale(8),
         overflow: 'hidden',
-        marginBottom: verticalScale(16),
+        marginVertical: verticalScale(16),
     },
     sectionHeader: {
         marginTop: verticalScale(20),

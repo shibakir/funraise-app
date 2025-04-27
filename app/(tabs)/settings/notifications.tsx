@@ -34,30 +34,30 @@ export default function NotificationsScreen() {
 
     useEffect(() => {
         const fetchNotificationSettings = async () => {
-        try {
-            // TODO: Add API call to fetch notification settings
-            // const response = await fetch('/api/notification-settings');
-            // const data = await response.json();
-            
-            const mockData: NotificationSetting[] = [
-            { id: 'push-1', name: t('settings.pushNotifications'), enabled: true, category: 'push' },
-            { id: 'push-2', name: t('settings.eventsReminders'), enabled: true, category: 'push' },
-            { id: 'push-3', name: t('settings.newMessages'), enabled: true, category: 'push' },
-            { id: 'push-4', name: t('settings.systemUpdates'), enabled: false, category: 'push' },
-            
-            { id: 'email-1', name: t('settings.emailNotifications'), enabled: true, category: 'email' },
-            { id: 'email-2', name: t('settings.marketingEmails'), enabled: false, category: 'email' },
-            { id: 'email-3', name: t('settings.eventsReminders'), enabled: true, category: 'email' },
-            ];
-            
-            setTimeout(() => {
-            setNotificationSettings(mockData);
-            setLoading(false);
-            }, 500);
-        } catch (error) {
-            console.error('Error fetching notification settings:', error);
-            setLoading(false);
-        }
+            try {
+                // TODO: Add API call to fetch notification settings
+                // const response = await fetch('/api/notification-settings');
+                // const data = await response.json();
+                
+                const mockData: NotificationSetting[] = [
+                    { id: 'push-1', name: t('settings.notificationsPage.pushNotificationsArray.pushNotifications'), enabled: true, category: 'push' },
+                    { id: 'push-2', name: t('settings.notificationsPage.pushNotificationsArray.eventsReminders'), enabled: true, category: 'push' },
+                    { id: 'push-3', name: t('settings.notificationsPage.pushNotificationsArray.newMessages'), enabled: true, category: 'push' },
+                    { id: 'push-4', name: t('settings.notificationsPage.pushNotificationsArray.systemUpdates'), enabled: false, category: 'push' },
+                    
+                    { id: 'email-1', name: t('settings.notificationsPage.emailNotificationsArray.marketingEmails'), enabled: true, category: 'email' },
+                    { id: 'email-2', name: t('settings.notificationsPage.emailNotificationsArray.eventsReminders'), enabled: false, category: 'email' },
+                    { id: 'email-3', name: t('settings.notificationsPage.emailNotificationsArray.newMessages'), enabled: true, category: 'email' },
+                ];
+                
+                setTimeout(() => {
+                    setNotificationSettings(mockData);
+                    setLoading(false);
+                }, 500);
+            } catch (error) {
+                console.error('Error fetching notification settings:', error);
+                setLoading(false);
+            }
         };
 
         fetchNotificationSettings();
@@ -65,16 +65,16 @@ export default function NotificationsScreen() {
 
     const handleToggleChange = (id: string, newValue: boolean) => {
         setNotificationSettings(prevSettings => 
-        prevSettings.map(setting => 
-            setting.id === id ? { ...setting, enabled: newValue } : setting
-        )
+            prevSettings.map(setting => 
+                setting.id === id ? { ...setting, enabled: newValue } : setting
+            )
         );
         //console.log(`Setting ${id} changed to ${newValue}`);
     };
 
     const categorizedSettings: NotificationCategory[] = [
-        { title: t('settings.pushNotifications') || 'Push Notifications', type: 'push', settings: [] },
-        { title: t('settings.emailNotifications') || 'Email Notifications', type: 'email', settings: [] },
+        { title: t('settings.notificationsPage.pushNotifications'), type: 'push', settings: [] },
+        { title: t('settings.notificationsPage.emailNotifications'), type: 'email', settings: [] },
     ];
 
     notificationSettings.forEach(setting => {
@@ -112,7 +112,8 @@ export default function NotificationsScreen() {
         <>
             <Stack.Screen 
                 options={{ 
-                    title: t('settings.notifications') || 'Notifications',
+                    title: t('settings.notificationsPage.title'),
+                    headerBackTitle: t('settings.notificationsPage.backTitle'),
                     headerShown: true,
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
@@ -133,7 +134,7 @@ export default function NotificationsScreen() {
                                 <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
                                     {category.settings.length === 0 ? (
                                         <ThemedText style={styles.emptyText}>
-                                        {t('settings.noSettingsAvailable') || 'No settings available'}
+                                            {t('settings.notificationsPage.noSettingsAvailable')}
                                         </ThemedText>
                                     ) : (
                                         category.settings.map((setting) => (
