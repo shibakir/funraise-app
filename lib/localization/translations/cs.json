@@ -13,6 +13,65 @@
     "discoverEvents": "Objevte další události",
     "myRecentEvents": "Moje nedávné události"
   },
+  "createEvent": {
+        "title": "Vytvořit událost",
+        "imageTitle": "Vaš clicker!",
+        "eventTitle": "Nová událost",
+        "eventDescription": "Jste na stránce pro vytváření nové události. Zde musíte nastavit její typ, název a popis. Nastavte obrázek klikacího prvku a nastavte jednu nebo více podmínek pro jeho dokončení.",
+        "eventType": "Typ události",
+        "eventName": "Název události",
+        "eventNamePlaceholder": "Zadejte název události",
+        "description": "Popis",
+        "descriptionPlaceholder": "Zadejte popis události",
+        "endConditions": "Podmínky ukončení",
+        "createButton": "Vytvořit událost",
+        "eventImageSection": {
+            "imageText": "Vyberte clicker",
+            "changeImage": "Změňte clicker"
+        },
+        "eventTypeSection": {
+            "eventType": {
+                "donation": "Donation",
+                "donationDesc": "Sbírejte dary pro konkrétní účel nebo osobu. Ideální pro charitativní akce a osobní získávání finančních prostředků.",
+                "fundraising": "Fundraising",
+                "fundraisingDesc": "Získejte finanční prostředky na projekt nebo organizaci. Skvělé pro komunitní iniciativy a neziskové kampaně.",
+                "jackpot": "Jackpot",
+                "jackpotDesc": "Vytvořte si cenový fond, kde účastníci mohou vyhrát odměny. Ideální pro soutěže a dárky."
+            },
+            "recipient": "Příjemce",
+            "recipientDescription": "Zvolený typ události vyžaduje příjemce:",
+            "searchRecipient": "Vyhledat příjemce...",
+            "searchPlaceholder": "Vyhledat příjemce...",
+            "noResults": "Nebyli nalezeni žádní uživatelé"
+        },
+        "eventEndConditionsSection": {
+            "endConditionsDesc": "Vytvořte jednu nebo více skupin podmínek! Událost se dokončí, jakmile je splněna alespoň jedna skupina podmínek.",
+            "endConditionsDesc2": "Můžete nastavit částku banky, počet účastníků nebo časový limit.",
+            "endConditionsDesc3": "Volně dávejte každé skupině vlastní název.",
+            "groupDesc": "K dokončení je nutné splnit všechny podmínky jedné skupiny současně.",
+            "operator": {
+                "lt": "méně",
+                "lte": "méně nebo rovno",
+                "gt": "více",
+                "gte": "více nebo rovno"
+            },
+            "conditionLabel": {
+                "time": "ČAS",
+                "bank": "BANKA",
+                "people": "HRÁČI"
+            },
+            "conditionType": {
+                "time": "Časový limit je:",
+                "bank": "Částka banky je:",
+                "people": "Počet hráčů je:"
+            },
+            "group": "Skupina",
+            "groupNamePlaceholder": "Název skupiny",
+            "addGroup": "Přidejte alternativní skupinu podmínek (NEBO)",
+            "inputPlaceholder": "Číslo",
+            "inputPlaceholder2": "Počet"
+        }
+    },
   "documentation": {
     "title": "Nápověda a průvodce",
     "ourBestGuide": "Náš nejlepší průvodce!",

@@ -6,7 +6,7 @@ import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/M
 import { useUserSearch } from '@/lib/hooks/useUserSearch';
 import { EventType } from '@/types/event';
 import { Ionicons } from '@expo/vector-icons';
-
+import { useTranslation } from 'react-i18next';
 const defaultUserImage = require('@/assets/images/logo.png');
 
 interface EventTypeSectionProps {
@@ -26,6 +26,9 @@ export const EventTypeSection: React.FC<EventTypeSectionProps> = ({
     recipientName,
     onRecipientNameChange,
 }) => {
+
+    const { t } = useTranslation();
+
     const primaryColor = useThemeColor({}, 'primary');
     const borderColor = useThemeColor({}, 'divider');
     const textColor = useThemeColor({}, 'text');
@@ -45,7 +48,7 @@ export const EventTypeSection: React.FC<EventTypeSectionProps> = ({
     } = useUserSearch();
 
     const selectUser = (user: {id: string, name: string, imageUrl?: string}) => {
-        console.log('Selected user:', user);
+        //console.log('Selected user:', user);
         onRecipientChange(user.id);
         onRecipientNameChange(user.name);
         setRecipientImage(user.imageUrl || '');
@@ -61,162 +64,163 @@ export const EventTypeSection: React.FC<EventTypeSectionProps> = ({
 
     const eventTypes = [
         {
-        id: 'DONATION' as EventType,
-        title: 'Donation',
-        description: 'Collect donations for a specific cause or person. Perfect for charity events and personal fundraising.'
+            id: 'DONATION' as EventType,
+            title: t('createEvent.eventTypeSection.eventType.donation'),
+            description: t('createEvent.eventTypeSection.eventType.donationDesc')
         },
         {
         id: 'FUNDRAISING' as EventType,
-        title: 'Fundraising',
-        description: 'Raise funds for a project or organization. Great for community initiatives and non-profit campaigns.'
+        title: t('createEvent.eventTypeSection.eventType.fundraising'),
+        description: t('createEvent.eventTypeSection.eventType.fundraisingDesc')
         },
         {
-        id: 'JACKPOT' as EventType,
-        title: 'Jackpot',
-        description: 'Create a prize pool where participants can win rewards. Ideal for contests and giveaways.'
+            id: 'JACKPOT' as EventType,
+            title: t('createEvent.eventTypeSection.eventType.jackpot'),
+            description: t('createEvent.eventTypeSection.eventType.jackpotDesc')
         }
     ];
 
     const styles = StyleSheet.create({
         section: {
-        marginTop: moderateScale(8),
-        marginBottom: moderateScale(8),
-        flex: 1,
+            marginTop: moderateScale(8),
+            marginBottom: moderateScale(8),
+            flex: 1,
         },
         sectionTitle: {
-        fontSize: moderateScale(18),
-        fontWeight: '600',
-        marginBottom: moderateScale(16),
+            fontSize: moderateScale(18),
+            fontWeight: '600',
+            marginBottom: moderateScale(16),
         },
         typeContainer: {
-        width: '100%',
-        gap: moderateScale(12),
+            width: '100%',
+            gap: moderateScale(12),
         },
         typeButton: {
-        padding: moderateScale(16),
-        borderWidth: 1,
-        borderRadius: moderateScale(8),
-        borderColor: borderColor,
-        backgroundColor: 'transparent',
+            padding: moderateScale(16),
+            borderWidth: 1,
+            borderRadius: moderateScale(8),
+            borderColor: borderColor,
+            backgroundColor: sectionBackground,
         },
         selectedType: {
-        backgroundColor: primaryColor,
-        borderColor: primaryColor,
+            backgroundColor: primaryColor,
+            borderColor: primaryColor,
         },
         typeTitle: {
-        fontSize: moderateScale(18),
-        fontWeight: '600',
-        marginBottom: moderateScale(8),
+            fontSize: moderateScale(18),
+            fontWeight: '600',
+            marginBottom: moderateScale(8),
         },
         typeDescription: {
-        fontSize: moderateScale(14),
-        color: placeholderColor,
-        lineHeight: moderateScale(20),
+            fontSize: moderateScale(14),
+            color: placeholderColor,
+            lineHeight: moderateScale(20),
         },
         selectedTypeText: {
-        color: 'white',
+            color: 'white',
         },
         selectedDescription: {
-        color: 'rgba(255, 255, 255, 0.8)',
+            color: 'rgba(255, 255, 255, 0.8)',
         },
         recipientContainer: {
-        marginTop: moderateScale(16),
+            marginTop: moderateScale(16),
         },
         recipientTitle: {
-        fontSize: moderateScale(16),
-        fontWeight: '600',
-        marginBottom: moderateScale(8),
+            fontSize: moderateScale(16),
+            fontWeight: '600',
+            marginBottom: moderateScale(8),
         },
         recipientDescription: {
-        fontSize: moderateScale(14),
-        color: placeholderColor,
-        marginBottom: moderateScale(8),
+            fontSize: moderateScale(14),
+            color: placeholderColor,
+            marginBottom: moderateScale(8),
         },
         searchContainer: {
-        position: 'relative',
-        marginBottom: moderateScale(8),
+            position: 'relative',
+            marginBottom: moderateScale(8),
         },
         searchInput: {
-        borderWidth: 1,
-        borderColor: borderColor,
-        borderRadius: moderateScale(8),
-        padding: moderateScale(12),
-        fontSize: moderateScale(16),
-        color: textColor,
-        backgroundColor: sectionBackground,
+            borderWidth: 1,
+            borderColor: borderColor,
+            borderRadius: moderateScale(8),
+            padding: moderateScale(12),
+            fontSize: moderateScale(16),
+            color: textColor,
+            backgroundColor: sectionBackground,
         },
         selectedUserContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: moderateScale(12),
-        borderWidth: 1,
-        borderColor: borderColor,
-        borderRadius: moderateScale(8),
-        backgroundColor: sectionBackground,
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: moderateScale(12),
+            borderWidth: 1,
+            borderColor: borderColor,
+            borderRadius: moderateScale(8),
+            backgroundColor: sectionBackground,
         },
         selectedUserImage: {
-        width: moderateScale(25),
-        height: moderateScale(25),
-        borderRadius: moderateScale(16),
-        marginRight: moderateScale(12),
-        borderWidth: 1,
-        borderColor: borderColor,
+            width: moderateScale(25),
+            height: moderateScale(25),
+            borderRadius: moderateScale(16),
+            marginRight: moderateScale(12),
+            borderWidth: 1,
+            borderColor: borderColor,
         },
         selectedUserName: {
-        flex: 1,
-        fontSize: moderateScale(16),
-        color: textColor,
+            flex: 1,
+            fontSize: moderateScale(16),
+            color: textColor,
         },
         searchIndicator: {
-        position: 'absolute',
-        right: moderateScale(8),
-        top: moderateScale(8),
+            position: 'absolute',
+            right: moderateScale(8),
+            top: moderateScale(8),
         },
         trashIcon: {
-        position: 'absolute',
-        right: moderateScale(12),
-        top: moderateScale(12),
+            position: 'absolute',
+            right: moderateScale(12),
+            top: moderateScale(12),
         },
         userList: {
-        maxHeight: moderateScale(200),
-        borderWidth: 1,
-        borderColor: borderColor,
-        borderRadius: moderateScale(8),
-        overflow: 'hidden',
+            maxHeight: moderateScale(200),
+            borderWidth: 1,
+            borderColor: borderColor,
+            borderRadius: moderateScale(8),
+            overflow: 'hidden',
+            backgroundColor: sectionBackground,
         },
         userItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        padding: moderateScale(12),
-        borderBottomWidth: 1,
-        borderBottomColor: borderColor,
+            flexDirection: 'row',
+            alignItems: 'center',
+            padding: moderateScale(12),
+            borderBottomWidth: 1,
+            borderBottomColor: borderColor,
         },
         userImage: {
-        width: moderateScale(30),
-        height: moderateScale(30),
-        borderRadius: moderateScale(20),
-        marginRight: moderateScale(12),
-        backgroundColor: sectionBackground,
-        borderWidth: 2,
-        borderColor: borderColor,
+            width: moderateScale(30),
+            height: moderateScale(30),
+            borderRadius: moderateScale(20),
+            marginRight: moderateScale(12),
+            backgroundColor: sectionBackground,
+            borderWidth: 2,
+            borderColor: borderColor,
         },
         userName: {
-        flex: 1,
-        fontSize: moderateScale(16),
+            flex: 1,
+            fontSize: moderateScale(16),
         },
         noResults: {
-        padding: moderateScale(12),
-        textAlign: 'center',
-        color: placeholderColor,
+            padding: moderateScale(12),
+            textAlign: 'center',
+            color: placeholderColor,
         },
         changeButton: {
-        padding: moderateScale(8),
-        borderRadius: moderateScale(4),
-        backgroundColor: primaryColor,
+            padding: moderateScale(8),
+            borderRadius: moderateScale(4),
+            backgroundColor: primaryColor,
         },
         changeButtonText: {
-        color: 'white',
-        fontSize: moderateScale(14),
+            color: 'white',
+            fontSize: moderateScale(14),
         },
     });
 
@@ -255,9 +259,9 @@ export const EventTypeSection: React.FC<EventTypeSectionProps> = ({
         {/* Получатель средств (только для DONATION и FUNDRAISING) */}
         {(selectedType === 'DONATION' || selectedType === 'FUNDRAISING') && (
             <View style={styles.recipientContainer}>
-                <ThemedText style={styles.recipientTitle}>Recipient</ThemedText>
+                <ThemedText style={styles.recipientTitle}>{t('createEvent.eventTypeSection.recipient')}</ThemedText>
                 <ThemedText style={styles.recipientDescription}>
-                    This type of event requires a recipient. Select the recipient in the field above:
+                    {t('createEvent.eventTypeSection.recipientDescription')}
                 </ThemedText>
                 <View style={styles.searchContainer}>
                     {recipientId ? (
@@ -280,7 +284,7 @@ export const EventTypeSection: React.FC<EventTypeSectionProps> = ({
                                 setSearchQuery(text);
                                 searchUsers(text);
                             }}
-                            placeholder="Search recipient..."
+                            placeholder={t('createEvent.eventTypeSection.searchPlaceholder')}
                             placeholderTextColor={placeholderColor}
                             keyboardType="default"
                             />
@@ -308,7 +312,7 @@ export const EventTypeSection: React.FC<EventTypeSectionProps> = ({
                     </View>
                 )}
                 {!recipientId && showUserList && users.length === 0 && !isSearching && (
-                    <ThemedText style={styles.noResults}>No users found</ThemedText>
+                    <ThemedText style={styles.noResults}>{t('createEvent.eventTypeSection.noResults')}</ThemedText>
                 )}
             </View>
         )}

@@ -5,21 +5,7 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { DateTimePickerModal } from './DateTimePickerModal';
-
-// Типы условий
-const conditionTypes = [
-  { id: 'time', label: 'TIME', operator: 'TIME' },
-  { id: 'bank', label: 'BANK', operator: 'BANK' },
-  { id: 'people', label: 'PEOPLE', operator: 'PEOPLE' }
-];
-
-// Операторы сравнения
-const operators = [
-  { id: 'lt', label: 'less', symbol: '<' },
-  { id: 'lte', label: 'less or equal', symbol: '<=' },
-  { id: 'gt', label: 'greater', symbol: '>' },
-  { id: 'gte', label: 'greater or equal', symbol: '>=' }
-];
+import { useTranslation } from 'react-i18next';
 
 interface Condition {
   parameterName: string;
@@ -42,6 +28,9 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
     groups,
     onGroupsChange,
 }) => {
+
+    const { t } = useTranslation();
+
     const textColor = useThemeColor({}, 'text');
     const primaryColor = useThemeColor({}, 'primary');
     const borderColor = useThemeColor({}, 'divider');
@@ -53,12 +42,27 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [activeCondition, setActiveCondition] = useState<{groupIndex: number, conditionIndex: number} | null>(null);
 
+    // Типы условий
+    const conditionTypes = [
+        { id: 'time', label: t('createEvent.eventEndConditionsSection.conditionLabel.time'), operator: 'TIME' },
+        { id: 'bank', label: t('createEvent.eventEndConditionsSection.conditionLabel.bank'), operator: 'BANK' },
+        { id: 'people', label: t('createEvent.eventEndConditionsSection.conditionLabel.people'), operator: 'PEOPLE' }
+    ];
+    
+    // Операторы сравнения
+    const operators = [
+        { id: 'lt', label: t('createEvent.eventEndConditionsSection.operator.lt'), symbol: '<' },
+        { id: 'lte', label: t('createEvent.eventEndConditionsSection.operator.lte'), symbol: '<=' },
+        { id: 'gt', label: t('createEvent.eventEndConditionsSection.operator.gt'), symbol: '>' },
+        { id: 'gte', label: t('createEvent.eventEndConditionsSection.operator.gte'), symbol: '>=' }
+    ];
+
     // Добавление новой группы условий
     const addConditionGroup = () => {
         onGroupsChange([
         ...groups, 
         { 
-            name: `Group ${groups.length + 1}`,
+            name: `${t('createEvent.eventEndConditionsSection.group')} ${groups.length + 1}`,
             conditions: []
         }
         ]);
@@ -152,7 +156,6 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
 
     const styles = StyleSheet.create({
         section: {
-            marginTop: moderateScale(8),
             marginBottom: moderateScale(8),
             flex: 1,
         },
@@ -286,6 +289,7 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
             padding: moderateScale(8),
             justifyContent: 'center',
             flex: 0.45,
+            backgroundColor: `${primaryColor}20`,
         },
         buttonsContainer: {
             flexDirection: 'row', 
@@ -297,15 +301,14 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
 
   return (
     <View style={styles.section}>
-        <ThemedText style={styles.sectionTitle}>End conditions</ThemedText>
         <ThemedText style={{ color: placeholderColor }}>
-            Create one or more groups of conditions! The event will end as soon as one of the groups of conditions is met.
+            {t('createEvent.eventEndConditionsSection.endConditionsDesc')}
         </ThemedText>
         <ThemedText style={{ marginBottom: moderateScale(12), color: placeholderColor }}>
-            You can set the amount of the bank, the number of participants or the end time
+            {t('createEvent.eventEndConditionsSection.endConditionsDesc2')}
         </ThemedText>
         <ThemedText style={{ marginBottom: moderateScale(12), color: placeholderColor }}>
-            Feel free to give each group its own name.
+            {t('createEvent.eventEndConditionsSection.endConditionsDesc3')}
         </ThemedText>
       
         {groups.map((group, groupIndex) => (
@@ -315,8 +318,10 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
                         style={styles.groupNameInput}
                         value={group.name}
                         onChangeText={(text) => updateGroupName(groupIndex, text)}
-                        placeholder="Group name"
+                        placeholder={t('createEvent.eventEndConditionsSection.groupNamePlaceholder')}
                         placeholderTextColor={placeholderColor}
+                        autoCorrect={false}
+                        autoCapitalize="none"
                     />
                     
                     <TouchableOpacity 
@@ -329,7 +334,7 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
                 
                 <View style={styles.groupContent}>
                     <ThemedText style={{ marginBottom: moderateScale(8), color: placeholderColor }}>
-                        To complete, the conditions of one group must be met simultaneously
+                        {t('createEvent.eventEndConditionsSection.groupDesc')}
                     </ThemedText>
                     
                     {/* Кнопки добавления условий */}
@@ -354,8 +359,8 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
                         <View key={`condition-${groupIndex}-${conditionIndex}`} style={styles.endConditionContainer}>
                             <View style={styles.conditionRow}>
                             <ThemedText style={styles.conditionLabel}>
-                                {condition.parameterName === 'time' ? 'End date and time is:' : 
-                                condition.parameterName === 'bank' ? 'Bank amount is:' : 'Number of participants is:'}
+                                {condition.parameterName === 'time' ? t('createEvent.eventEndConditionsSection.conditionType.time') : 
+                                condition.parameterName === 'bank' ? t('createEvent.eventEndConditionsSection.conditionType.bank') : t('createEvent.eventEndConditionsSection.conditionType.people')}
                             </ThemedText>
                             
                             <TouchableOpacity 
@@ -414,11 +419,13 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
                                     value={condition.value}
                                     onChangeText={(text) => updateConditionValue(groupIndex, conditionIndex, text)}
                                     placeholder={
-                                        condition.parameterName === 'bank' ? 'Amount' : 'Number'
+                                        condition.parameterName === 'bank' ? t('createEvent.eventEndConditionsSection.inputPlaceholder') : t('createEvent.eventEndConditionsSection.inputPlaceholder2')
                                     }
                                     placeholderTextColor={placeholderColor}
                                     keyboardType="numeric"
                                     maxLength={9}
+                                    autoCorrect={false}
+                                    autoCapitalize="none"
                                 />
                             </View>
                             )}
@@ -433,7 +440,7 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
             onPress={addConditionGroup}
         >
             <IconSymbol name="plus.circle.fill" size={20} color={accentColor} />
-            <ThemedText style={styles.addGroupText}>Add an alternative condition group (OR)</ThemedText>
+            <ThemedText style={styles.addGroupText}>{t('createEvent.eventEndConditionsSection.addGroup')}</ThemedText>
         </TouchableOpacity>
     </View>
   );

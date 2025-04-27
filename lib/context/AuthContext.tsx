@@ -12,12 +12,12 @@ interface User {
     username?: string | null;
 }
 
-// update profile data interface
+// update profile interface
 interface UpdateProfileData {
     username?: string;
     email?: string;
-    password?: string;
     currentPassword?: string;
+    newPassword?: string;
 }
 
 // auth context interface
@@ -50,18 +50,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const storedUser = await AsyncStorage.getItem('user');
                 
                 if (storedToken && storedUser) {
-                setToken(storedToken);
-                setUser(JSON.parse(storedUser));
-                
-                // configure axios to use token in headers
-                axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+                    const parsedUser = JSON.parse(storedUser);
+                    setToken(storedToken);
+                    setUser(parsedUser);
+                    
+                    // configure axios to use token in headers
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+                    
+                    console.log('Loaded stored auth data:', { user: parsedUser, token: storedToken });
+                } else {
+                    console.log('No stored auth data found');
                 }
             } catch (error) {
-                console.error('Error loading token:', error);
+                console.error('Error loading auth data:', error);
             } finally {
                 setIsLoading(false);
-        }
+            }
         };
+        
         loadToken();
     }, []);
 
@@ -75,8 +81,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const { user, token } = response.data;
             
             // save data to AsyncStorage
-            await AsyncStorage.setItem('token', token);
-            await AsyncStorage.setItem('user', JSON.stringify(user));
+            await Promise.all([
+                AsyncStorage.setItem('token', token),
+                AsyncStorage.setItem('user', JSON.stringify(user))
+            ]);
             
             // update state
             setUser(user);
@@ -84,6 +92,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             // configure axios to use token in headers
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            console.log('Login successful, saved auth data to storage');
         } catch (error: any) {
             //const message = error.response?.data?.message || 'Error during login';
             const message = 'Email or password is bad';
@@ -104,8 +114,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const { user, token } = response.data;
             
             // save data to AsyncStorage
-            await AsyncStorage.setItem('token', token);
-            await AsyncStorage.setItem('user', JSON.stringify(user));
+            await Promise.all([
+                AsyncStorage.setItem('token', token),
+                AsyncStorage.setItem('user', JSON.stringify(user))
+            ]);
             
             // update state
             setUser(user);
@@ -113,6 +125,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             // configure axios to use token in headers
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            
+            console.log('Registration successful, saved auth data to storage');
         } catch (error: any) {
             //const message = error.response?.data?.message || 'Error during registration';
             const message = 'Probably the user already exists or your data is incorrect';
@@ -141,6 +155,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             // update state
             setUser(updatedUser);
+            
+            console.log('Profile updated successfully');
         
         } catch (error: any) {
             const message = error.response?.data?.error || 'Error updating profile';
@@ -157,8 +173,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsLoading(true);
             
             // remove data from AsyncStorage
-            await AsyncStorage.removeItem('token');
-            await AsyncStorage.removeItem('user');
+            await Promise.all([
+                AsyncStorage.removeItem('token'),
+                AsyncStorage.removeItem('user')
+            ]);
             
             // update state
             setUser(null);
@@ -166,7 +184,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             
             // remove token from request headers
             delete axios.defaults.headers.common['Authorization'];
+            
+            console.log('Logout successful, removed auth data from storage');
         } catch (error) {
+            console.error('Error during logout:', error);
             setError('Error during logout');
         } finally {
             setIsLoading(false);
