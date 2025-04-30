@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 
 // backend url
@@ -46,8 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const loadToken = async () => {
             try {
-                const storedToken = await AsyncStorage.getItem('token');
-                const storedUser = await AsyncStorage.getItem('user');
+                const storedToken = await SecureStore.getItemAsync('token');
+                const storedUser = await SecureStore.getItemAsync('user');
                 
                 if (storedToken && storedUser) {
                     const parsedUser = JSON.parse(storedUser);
@@ -80,10 +80,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const response = await axios.post(`${API_URL}/auth/login`, { email, password });
             const { user, token } = response.data;
             
-            // save data to AsyncStorage
+            // save data to SecureStore
             await Promise.all([
-                AsyncStorage.setItem('token', token),
-                AsyncStorage.setItem('user', JSON.stringify(user))
+                SecureStore.setItemAsync('token', token),
+                SecureStore.setItemAsync('user', JSON.stringify(user))
             ]);
             
             // update state
@@ -93,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // configure axios to use token in headers
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             
-            console.log('Login successful, saved auth data to storage');
+            console.log('Login successful, saved auth data to secure storage');
         } catch (error: any) {
             //const message = error.response?.data?.message || 'Error during login';
             const message = 'Email or password is bad';
@@ -113,10 +113,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const response = await axios.post(`${API_URL}/auth/register`, { username, email, password });
             const { user, token } = response.data;
             
-            // save data to AsyncStorage
+            // save data to SecureStore
             await Promise.all([
-                AsyncStorage.setItem('token', token),
-                AsyncStorage.setItem('user', JSON.stringify(user))
+                SecureStore.setItemAsync('token', token),
+                SecureStore.setItemAsync('user', JSON.stringify(user))
             ]);
             
             // update state
@@ -126,7 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // configure axios to use token in headers
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
             
-            console.log('Registration successful, saved auth data to storage');
+            console.log('Registration successful, saved auth data to secure storage');
         } catch (error: any) {
             //const message = error.response?.data?.message || 'Error during registration';
             const message = 'Probably the user already exists or your data is incorrect';
@@ -150,8 +150,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const response = await axios.put(`${API_URL}/users/${user.id}`, data);
             const updatedUser = response.data;
             
-            // save updated user to AsyncStorage
-            await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+            // save updated user to SecureStore
+            await SecureStore.setItemAsync('user', JSON.stringify(updatedUser));
             
             // update state
             setUser(updatedUser);
@@ -172,10 +172,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         try {
             setIsLoading(true);
             
-            // remove data from AsyncStorage
+            // remove data from SecureStore
             await Promise.all([
-                AsyncStorage.removeItem('token'),
-                AsyncStorage.removeItem('user')
+                SecureStore.deleteItemAsync('token'),
+                SecureStore.deleteItemAsync('user')
             ]);
             
             // update state
@@ -185,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // remove token from request headers
             delete axios.defaults.headers.common['Authorization'];
             
-            console.log('Logout successful, removed auth data from storage');
+            console.log('Logout successful, removed auth data from secure storage');
         } catch (error) {
             console.error('Error during logout:', error);
             setError('Error during logout');

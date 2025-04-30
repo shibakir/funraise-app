@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { getLocales } from 'expo-localization';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 // import translations files
 import enTranslations from './translations/en.json';
@@ -19,7 +19,7 @@ const deviceLanguage = getLocales()[0]?.languageCode || 'en';
 // function to get stored language
 const getStoredLanguage = async () => {
   try {
-    const storedLanguage = await AsyncStorage.getItem('app_language');
+    const storedLanguage = await SecureStore.getItemAsync('app_language');
     return storedLanguage || deviceLanguage;
   } catch (error) {
     console.error('Error loading language from storage:', error);
@@ -30,7 +30,7 @@ const getStoredLanguage = async () => {
 // function to save selected language
 export const saveLanguage = async (language: string) => {
   try {
-    await AsyncStorage.setItem('app_language', language);
+    await SecureStore.setItemAsync('app_language', language);
   } catch (error) {
     console.error('Error saving language to storage:', error);
   }
@@ -57,7 +57,7 @@ i18n
     },
   });
 
-// asynchronously update language after loading from AsyncStorage
+// asynchronously update language after loading from SecureStore
 (async () => {
   try {
     const storedLanguage = await getStoredLanguage();

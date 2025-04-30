@@ -7,7 +7,7 @@ import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useTranslation } from 'react-i18next';
 import { changeLanguage } from '@/lib/localization/i18n';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store';
 
 export default function LanguageScreen() {
     const { t, i18n } = useTranslation();
@@ -22,7 +22,7 @@ export default function LanguageScreen() {
     useEffect(() => {
         const loadLanguage = async () => {
             try {
-                const storedLanguage = await AsyncStorage.getItem('app_language');
+                const storedLanguage = await SecureStore.getItemAsync('app_language');
                 if (storedLanguage) {
                     setCurrentLanguage(storedLanguage);
                 }
