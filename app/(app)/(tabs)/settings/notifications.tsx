@@ -86,25 +86,28 @@ export default function NotificationsScreen() {
 
     if (loading) {
         return (
-        <>
-            <Stack.Screen 
-            options={{ 
-                title: t('settings.notifications') || 'Notifications',
-                headerShown: true,
-            }} 
-            />
-            <SafeAreaView style={styles.container}>
-            <ThemedView style={styles.container}>
-                <StatusBar barStyle="default" />
-                <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={primaryColor} />
-                <ThemedText style={{ marginTop: verticalScale(10) }}>
-                    {t('settings.loadingNotifications') || 'Loading notification settings...'}
-                </ThemedText>
-                </View>
-            </ThemedView>
-            </SafeAreaView>
-        </>
+            <>
+                <Stack.Screen 
+                    options={{ 
+                        title: t('settings.notificationsPage.title'),
+                        headerBackTitle: t('settings.notificationsPage.backTitle'),
+                        headerShown: true,
+                        headerStyle: { backgroundColor: headerBackground },
+                        headerTitleStyle: { color: headerText },
+                    }} 
+                />
+                <SafeAreaView style={styles.container}>
+                    <ThemedView style={styles.container}>
+                        <StatusBar barStyle="default" />
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size="large" color={primaryColor} />
+                            <ThemedText style={{ marginTop: verticalScale(10) }}>
+                                {t('settings.loadingNotifications') || 'Loading notification settings...'}
+                            </ThemedText>
+                        </View>
+                    </ThemedView>
+                </SafeAreaView>
+            </>
         );
     }
 

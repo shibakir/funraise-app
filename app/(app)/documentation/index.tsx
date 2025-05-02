@@ -18,7 +18,8 @@ export default function EventDocumentationScreen() {
             flex: 1,
         },
         contentContainer: {
-            padding: moderateScale(16),
+            padding: moderateScale(8),
+            paddingTop: verticalScale(16),
             paddingBottom: verticalScale(40),
         },
         mainSection: {
@@ -27,7 +28,7 @@ export default function EventDocumentationScreen() {
             marginBottom: verticalScale(16),
         },
         section: {
-            padding: moderateScale(16),
+            padding: moderateScale(8),
             borderRadius: moderateScale(8),
             overflow: 'hidden',
         },
@@ -88,14 +89,15 @@ export default function EventDocumentationScreen() {
             <Stack.Screen
                 options={{
                     title: t('documentation.title'),
-                    headerShown: true,
+                    headerShown: true,  
+                    headerBackTitle: t('documentation.backTitle'),
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
                 }}
             />
-            <SafeAreaView style={styles.container}>
+            <ThemedView style={styles.container}>
+                <StatusBar barStyle="default" />
                 <ThemedView style={styles.container}>
-                    <StatusBar barStyle="default" />
                     <ScrollView contentContainerStyle={styles.contentContainer}>
                         <ThemedView style={styles.mainSection}>
                             <ThemedView style={styles.section}>
@@ -280,7 +282,7 @@ export default function EventDocumentationScreen() {
                         </ThemedView>
                     </ScrollView>
                 </ThemedView>
-            </SafeAreaView>
+            </ThemedView>
         </>
     );
 } 

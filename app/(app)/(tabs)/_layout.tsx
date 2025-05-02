@@ -23,6 +23,7 @@ export default function TabLayout() {
                 tabBarBackground: TabBarBackground,
                 tabBarStyle: {
                     backgroundColor: colorScheme === 'dark' ? Colors.dark.background : Colors.light.background,
+                    borderTopWidth: 0,
                     ...(Platform.OS === 'ios' ? { position: 'absolute' } : {}),
                 },
                 tabBarInactiveTintColor: colorScheme === 'dark' ? Colors.dark.tabIconDefault : Colors.light.tabIconDefault,

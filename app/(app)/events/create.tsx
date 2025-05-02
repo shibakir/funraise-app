@@ -24,7 +24,6 @@ export default function CreateEventScreen() {
     const headerText = useThemeColor({}, 'headerText');
 
     const textColor = useThemeColor({}, 'text');
-    const primaryColor = useThemeColor({}, 'primary');
     const borderColor = useThemeColor({}, 'divider');
     const placeholderColor = useThemeColor({}, 'placeholder');
 

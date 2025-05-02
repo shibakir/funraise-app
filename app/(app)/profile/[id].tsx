@@ -11,24 +11,17 @@ import { UserAchievements } from '@/components/custom/UserAchievements';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '@/lib/context/AuthContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function ProfileScreen() {
 
     const { t } = useTranslation();
-    const { isAuthenticated } = useAuth();
-
-    const { id } = useLocalSearchParams<{ id: string }>(); // TODO: id - userId
-    const [refreshing, setRefreshing] = useState(false);
+    const { id } = useLocalSearchParams<{ id: string }>();
     const [activeSection, setActiveSection] = useState('createdEvents');
-    
     const { profile, loading, error } = useUserProfile(id);
 
     const primaryColor = useThemeColor({}, 'primary');
-    const textColor = useThemeColor({}, 'text');
-    const backgroundColor = useThemeColor({}, 'background');
     const borderColor = useThemeColor({}, 'divider');
 
     const navigationSections = [
@@ -37,7 +30,6 @@ export default function ProfileScreen() {
         { key: 'achievements', title: t('profile.achievements'), emoji: '🏆' },
         { key: 'participatingEvents', title: t('profile.participatingEvents'), emoji: '👥' },
     ];
-
     const setSection = (sectionName) => {
         setActiveSection(sectionName);
     };
@@ -63,7 +55,6 @@ export default function ProfileScreen() {
                 user={profile.user} 
                 balance={profile.balance} 
             />
-            {/* Фиксированное навигационное меню с равномерным распределением */}
             <ThemedView style={[styles.stickyNav, { borderBottomColor: borderColor }]}>
                 <View style={styles.navContainer}>
                     {navigationSections.map(section => (
@@ -94,8 +85,7 @@ export default function ProfileScreen() {
                     ))}
                 </View>
             </ThemedView>
-            
-            {/* Содержимое секций */}
+                        
             <ScrollView style={styles.scrollView}>
                 {/* Отображаем только активную секцию */}
                 {activeSection === 'achievements' && (
@@ -127,7 +117,6 @@ export default function ProfileScreen() {
 }
 
 function ProfileHeader({ user, balance }) {
-
     const { t } = useTranslation();
     
     const borderColor = useThemeColor({}, 'divider');

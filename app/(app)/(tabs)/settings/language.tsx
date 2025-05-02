@@ -71,7 +71,7 @@ export default function LanguageScreen() {
                     headerShown: true,
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
-                }} 
+                }}
             />
             <SafeAreaView style={styles.container}>
                 <ThemedView style={styles.container}>
