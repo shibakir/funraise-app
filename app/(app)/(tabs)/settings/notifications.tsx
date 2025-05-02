@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, SafeAreaView, ScrollView, ActivityIndicator, StatusBar } from 'react-native';
 import { Stack } from 'expo-router';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { Switch } from 'react-native';

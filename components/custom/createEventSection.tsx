@@ -2,8 +2,8 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, TouchableOpacity, Modal, ScrollView } from 'react-native';
-import { ThemedView } from './ThemedView';
-import { ThemedText } from './ThemedText';
-import { IconSymbol } from './ui/IconSymbol';
+import { ThemedView } from '../themed/ThemedView';
+import { ThemedText } from '../themed/ThemedText';
+import { IconSymbol } from '../ui/IconSymbol';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import type { SearchFilters } from '@/lib/hooks/useEventSearch';

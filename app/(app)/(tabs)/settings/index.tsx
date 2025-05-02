@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, ScrollView, SafeAreaView, StatusBar, View, TouchableOpacity, Alert } from 'react-native';
 import { router, Stack } from 'expo-router';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useAuth } from '@/lib/context/AuthContext';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { IconSymbol } from '@/components/ui/IconSymbol';

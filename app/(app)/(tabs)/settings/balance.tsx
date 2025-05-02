@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Alert, ActivityIndicator, KeyboardAvoidingView, Platform, Keyboard, TouchableWithoutFeedback, SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { Stack, Redirect } from 'expo-router';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { CustomButton } from '@/components/custom/button';
 import { TextInput } from 'react-native';

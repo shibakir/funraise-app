@@ -3,8 +3,8 @@ import { View, StyleSheet, ActivityIndicator, ScrollView, Dimensions, TouchableO
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Image } from 'expo-image';
 import { useUserProfile } from '@/lib/hooks/useUserProfile';
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { UserEvents } from '@/components/custom/UserEvents';
 import { UserAchievements } from '@/components/custom/UserAchievements';

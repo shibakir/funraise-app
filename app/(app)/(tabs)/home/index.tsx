@@ -1,14 +1,14 @@
 import React, { useState, useCallback } from 'react';
 import { StyleSheet, ScrollView, SafeAreaView, StatusBar, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import { Stack, useFocusEffect, Redirect, router } from 'expo-router';
-import { ThemedText } from '@/components/ThemedText';
+import { ThemedText } from '@/components/themed/ThemedText';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { useAuth } from '@/lib/context/AuthContext';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { CreateEventSection } from '@/components/custom/createEventSection';
 import { UserEvents } from '@/components/custom/UserEvents';
 import { UserAchievements } from '@/components/custom/UserAchievements';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useTranslation } from 'react-i18next';
 
 export default function HomeScreen() {

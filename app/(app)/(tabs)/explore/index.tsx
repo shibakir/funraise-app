@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { StyleSheet, ScrollView, StatusBar, SafeAreaView, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, StatusBar, SafeAreaView, View } from 'react-native';
 import { Stack, useFocusEffect, Redirect } from 'expo-router';
 
 import { CreateEventSection } from '@/components/custom/createEventSection';
 import { UserEvents } from '@/components/custom/UserEvents';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { useAuth } from '@/lib/context/AuthContext';

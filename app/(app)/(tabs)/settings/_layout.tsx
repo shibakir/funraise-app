@@ -36,13 +36,6 @@ export default function SettingsLayout() {
                 }} 
             />
             <Stack.Screen 
-                name="detail"
-                options={{ 
-                    headerShown: true,
-                    headerBackTitle: 'Settings' 
-                }}
-            />
-            <Stack.Screen 
                 name="info"
                 options={{ 
                     headerShown: true,

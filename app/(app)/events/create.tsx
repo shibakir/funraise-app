@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TextInput, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { Stack } from 'expo-router';
-import { ThemedText } from '@/components/ThemedText';
+import { ThemedText } from '@/components/themed/ThemedText';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { CustomButton } from '@/components/custom/button';
 
-import { EventImageSection } from '@/components/event/EventImageSection';
-import { EventTypeSection } from '@/components/event/EventTypeSection';
-import { EventEndConditions } from '@/components/event/EventEndConditions';
+import { EventImageSection } from '@/components/createEvent/EventImageSection';
+import { EventTypeSection } from '@/components/createEvent/EventTypeSection';
+import { EventEndConditions } from '@/components/createEvent/EventEndConditions';
 import { GroupData, EventType } from '@/types/event';
 import { useCreateEvent } from '@/lib/hooks/useCreateEvent';
 import { useAuth } from '@/lib/context/AuthContext';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useTranslation } from 'react-i18next';
 
 export default function CreateEventScreen() {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useUserInfo } from '@/lib/hooks/useUserInfo';

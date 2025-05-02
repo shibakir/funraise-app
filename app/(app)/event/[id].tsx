@@ -3,19 +3,19 @@ import { StyleSheet, View, ScrollView, ActivityIndicator, TouchableOpacity, Aler
 import { useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useEventDetails } from '@/lib/hooks/useEventDetails';
 import { useAuth } from '@/lib/context/AuthContext';
 
-import { EventStatusInfo, EventStatusInfoHandle } from '@/components/EventStatusInfo';
-import { EventImage } from '@/components/EventImage';
-import { EventDepositPanel } from '@/components/EventDepositPanel';
-import { EventDescription } from '@/components/EventDescription';
-import { EventConditionsList, EventConditionsListHandle } from '@/components/EventConditionsList';
-import { EventUsers } from '@/components/EventUsers';
+import { EventStatusInfo, EventStatusInfoHandle } from '@/components/showEvent/EventStatusInfo';
+import { EventImage } from '@/components/showEvent/EventImage';
+import { EventDepositPanel } from '@/components/showEvent/EventDepositPanel';
+import { EventDescription } from '@/components/showEvent/EventDescription';
+import { EventConditionsList, EventConditionsListHandle } from '@/components/showEvent/EventConditionsList';
+import { EventUsers } from '@/components/showEvent/EventUsers';
 import { useTranslation } from 'react-i18next';
 
 export default function EventScreen() {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Image } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
+import { ThemedText } from '@/components/themed/ThemedText';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useUserSearch } from '@/lib/hooks/useUserSearch';

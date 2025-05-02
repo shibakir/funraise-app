@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Stack, router } from 'expo-router';
 import { StyleSheet, TextInput, View, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
-import { SearchFilterPanel } from '@/components/SearchFilterPanel';
+import { SearchFilterPanel } from '@/components/search/SearchFilterPanel';
 import { useEventSearch } from '@/lib/hooks/useEventSearch';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { EventCard } from '@/components/EventCard';
+import { EventCard } from '@/components/custom/EventCard';
 import { useTranslation } from 'react-i18next';
 
 export default function SearchScreen() {

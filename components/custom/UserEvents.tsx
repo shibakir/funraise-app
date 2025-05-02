@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useUserEvents } from '@/lib/hooks/useUserEvents';
-import { EventCard } from '@/components/EventCard';
+import { EventCard } from '@/components/custom/EventCard';
 
 interface UserEventsProps {
-  limit?: number;
-  userId: string;
-  eventType?: 'created' | 'participating';
+    limit?: number;
+    userId: string;
+    eventType?: 'created' | 'participating';
 }
 
 export function UserEvents({ limit = 5, userId, eventType }: UserEventsProps) {
@@ -21,7 +21,6 @@ export function UserEvents({ limit = 5, userId, eventType }: UserEventsProps) {
     const primaryColor = useThemeColor({}, 'primary');
     const errorColor = useThemeColor({}, 'error');
 
-    // Загружаем данные при первом рендере компонента
     useEffect(() => {
         fetchUserEvents(userId, limit, eventType);
     }, [userId, eventType]);
@@ -103,10 +102,10 @@ export function UserEvents({ limit = 5, userId, eventType }: UserEventsProps) {
 
     return (
         <ThemedView style={styles.mainSection}>
-        <View style={styles.container}>
-            {events.map(event => <EventCard key={event.id} event={event} />)}
-            <LoadMoreButton />
-        </View>
+            <View style={styles.container}>
+                {events.map(event => <EventCard key={event.id} event={event} />)}
+                <LoadMoreButton />
+            </View>
         </ThemedView>
     );
 }

@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useAllEvents } from '@/lib/hooks/useAllEvents';
-import { EventCard, EventInterface } from '@/components/EventCard';
+import { EventCard, EventInterface } from '@/components/custom/EventCard';
 
 interface AllEventsProps {
     limit?: number;

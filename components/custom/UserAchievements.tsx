@@ -1,8 +1,8 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet, View, ActivityIndicator, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useUserAchievements, UserAchievement, CriterionProgress } from '@/lib/hooks/useUserAchievements';

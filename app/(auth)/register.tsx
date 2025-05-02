@@ -4,8 +4,8 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 import { useAuth } from '@/lib/context/AuthContext';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { CustomButton } from '@/components/custom/button';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { useTranslation } from 'react-i18next';

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { StyleSheet, View, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useAuth } from '@/lib/context/AuthContext';
