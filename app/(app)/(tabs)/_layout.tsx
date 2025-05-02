@@ -8,7 +8,7 @@ import { Colors } from '@/lib/constants/Colors';
 import { useTheme } from '@/lib/context/ThemeContext';
 import { useTranslation } from 'react-i18next';
 
-export default function TabLayout() {
+export default function TabLayout() {   
 
     const { t } = useTranslation();
     const { resolvedTheme } = useTheme();
@@ -29,31 +29,34 @@ export default function TabLayout() {
             }}
         >
             <Tabs.Screen
-                name="home"
+                name="home/index"
                 options={{
-                title: t('tabs.home'),
-                tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="house.fill" color={color} />,
+                    title: t('tabs.home'),
+                    headerShown: true,
+                    tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="house.fill" color={color} />,
                 }}
             />
             <Tabs.Screen
-                name="explore"
+                name="explore/index"
                 options={{
-                title: t('tabs.explore'),
-                tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+                    title: t('tabs.explore'),
+                    headerShown: true,
+                    tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
                 }}
             />
             <Tabs.Screen
-                name="search"
+                name="search/index"
                 options={{
-                title: t('tabs.search'),
-                tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="magnifyingglass" color={color} />,
+                    title: t('tabs.search'),
+                    headerShown: true,
+                    tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="magnifyingglass" color={color} />,
                 }}
             />
             <Tabs.Screen
                 name="settings"
                 options={{
-                title: t('tabs.settings'),
-                tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="gear" color={color} />,
+                    title: t('tabs.settings'),
+                    tabBarIcon: ({ color }: { color: string }) => <IconSymbol size={28} name="gear" color={color} />,
                 }}
             />
         </Tabs>

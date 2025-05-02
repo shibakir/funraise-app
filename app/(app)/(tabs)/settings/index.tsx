@@ -7,7 +7,6 @@ import { useAuth } from '@/lib/context/AuthContext';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
-import { CustomButton } from '@/components/custom/button';
 import { useTranslation } from 'react-i18next';
 
 interface SettingItemProps {
@@ -19,16 +18,14 @@ interface SettingItemProps {
 }
 
 export default function SettingsScreen() {
-    const { user, logout } = useAuth();
+    const { user, logout, isAuthenticated } = useAuth();
     const { t } = useTranslation();
 
     const borderColor = useThemeColor({}, 'divider');
     const textSecondary = useThemeColor({}, 'icon');
-    const surfaceColor = useThemeColor({}, 'surface');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
     const headerBackground = useThemeColor({}, 'headerBackground');
     const headerText = useThemeColor({}, 'headerText');
-    const primaryColor = useThemeColor({}, 'primary');
         
     const styles = StyleSheet.create({
         container: {
@@ -132,25 +129,18 @@ export default function SettingsScreen() {
         [
             { text: 'Cancel', style: 'cancel' },
             { 
-            text: 'Logout', 
-            style: 'destructive',
-            onPress: async () => {
-                try {
-                await logout();
-                } catch (error) {
-                console.error('Error during logout:', error);
-                }
-            } 
+                text: 'Logout', 
+                style: 'destructive',
+                onPress: async () => {
+                    try {
+                    await logout();
+                    } catch (error) {
+                    console.error('Error during logout:', error);
+                    }
+                } 
             },
         ]
         );
-    };
-    
-    const navigateToSettingDetail = (title: string, icon: string) => {
-        router.push({
-        pathname: "/settings/detail",
-        params: { title, icon }
-        });
     };
     
     const SettingItem: React.FC<SettingItemProps> = ({ 
@@ -161,22 +151,22 @@ export default function SettingsScreen() {
         onPress
     }) => (
         <TouchableOpacity 
-        style={[styles.settingItem, { borderBottomColor: borderColor }]} 
-        onPress={onPress || (() => navigateToSettingDetail(title, icon))}
-        activeOpacity={0.7}
+            style={[styles.settingItem, { borderBottomColor: borderColor }]} 
+            onPress={onPress}
+            activeOpacity={0.7}
         >
-        <View style={styles.iconContainer}>
-            <IconSymbol name={icon as any} size={22} color={textSecondary} />
-        </View>
-        <View style={styles.settingContent}>
-            <ThemedText style={styles.settingTitle}>{title}</ThemedText>
-            {description && (
-            <ThemedText style={styles.settingDescription}>{description}</ThemedText>
+            <View style={styles.iconContainer}>
+                <IconSymbol name={icon as any} size={22} color={textSecondary} />
+            </View>
+            <View style={styles.settingContent}>
+                <ThemedText style={styles.settingTitle}>{title}</ThemedText>
+                {description && (
+                <ThemedText style={styles.settingDescription}>{description}</ThemedText>
+                )}
+            </View>
+            {showChevron && (
+                <IconSymbol name="chevron.right" size={20} color={textSecondary} />
             )}
-        </View>
-        {showChevron && (
-            <IconSymbol name="chevron.right" size={20} color={textSecondary} />
-        )}
         </TouchableOpacity>
     );
 
@@ -198,12 +188,14 @@ export default function SettingsScreen() {
                         contentContainerStyle={styles.contentContainer}
                     >  
                         {/* PROFILE INFO */}
-                        <TouchableOpacity 
-                            style={styles.profileButton}
-                            onPress={() => router.push(`/profile/${user?.id}`)}
-                        >
-                            <ThemedText style={styles.profileButtonText}>{t('settings.showMyProfile')}</ThemedText>
-                        </TouchableOpacity>
+                        {isAuthenticated && (
+                            <TouchableOpacity 
+                                style={styles.profileButton}
+                                onPress={() => router.push(`/profile/${user?.id}`)}
+                            >
+                                <ThemedText style={styles.profileButtonText}>{t('settings.showMyProfile')}</ThemedText>
+                            </TouchableOpacity>
+                        )}
 
                         {/* PROFILE SECTION */}
                         <View style={styles.sectionHeader}>

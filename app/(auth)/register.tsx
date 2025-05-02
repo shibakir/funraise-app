@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Image, KeyboardAvoidingView, Platform, Alert, ActivityIndicator, LogBox } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, Alert, ActivityIndicator } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
@@ -12,10 +12,12 @@ import { useTranslation } from 'react-i18next';
 
 import { LogoBox } from '@/components/auth/LogoBox';
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
+    const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login, isLoading, error } = useAuth();
+    const [confirmPassword, setConfirmPassword] = useState('');
+    const { register, isLoading, error } = useAuth();
     const { t } = useTranslation();
     
     const primaryColor = useThemeColor({}, 'primary');
@@ -23,24 +25,29 @@ export default function LoginScreen() {
     const backgroundColor = useThemeColor({}, 'background');
     const surfaceColor = useThemeColor({}, 'surface');
     const errorColor = useThemeColor({}, 'error');
-    
-    const handleLogin = async () => {
-        if (!email || !password) {
+  
+    const handleRegister = async () => {
+        if (!username || !email || !password || !confirmPassword) {
             Alert.alert(t('auth.error'), t('auth.fillAllFields'));
             return;
         }
-        
+
+        if (password !== confirmPassword) {
+            Alert.alert(t('auth.error'), t('auth.passwordsNotMatch'));
+            return;
+        }
+
         try {
-            await login(email, password);
-            router.replace('/(tabs)/home');
+            await register(username, email, password);
+            router.replace('/(app)/(tabs)/home');
         } catch (error: any) {
-            Alert.alert(t('auth.error'), error.message || t('auth.failedToLogin'));
+            Alert.alert(t('auth.error'), error.message || t('auth.failedToRegister'));
         }
     };
-    
-    // handler for register page
-    const navigateToRegister = () => {
-        router.push('/register');
+  
+    // handler for login page
+    const navigateToLogin = () => {
+        router.push('/(auth)/login');
     };
   
     return (
@@ -51,16 +58,18 @@ export default function LoginScreen() {
             <StatusBar style="auto" />
 
             <LogoBox/>
-        
+
             <ThemedView style={styles.formContainer}>
-                {
-                /*error && (
-                    <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                        {error}
-                    </ThemedText>
-                )*/
-                }
-                
+
+                <TextInput
+                    style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
+                    placeholder={t('auth.username')}
+                    placeholderTextColor="#888"
+                    value={username}
+                    onChangeText={setUsername}
+                    autoCapitalize="words"
+                />
+
                 <TextInput
                     style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
                     placeholder={t('auth.email')}
@@ -70,7 +79,7 @@ export default function LoginScreen() {
                     autoCapitalize="none"
                     keyboardType="email-address"
                 />
-                
+
                 <TextInput
                     style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
                     placeholder={t('auth.password')}
@@ -79,27 +88,36 @@ export default function LoginScreen() {
                     onChangeText={setPassword}
                     secureTextEntry
                 />
-                
+
+                <TextInput
+                    style={[styles.input, { backgroundColor: surfaceColor, color: textColor, borderColor: primaryColor }]}
+                    placeholder={t('auth.confirmPassword')}
+                    placeholderTextColor="#888"
+                    value={confirmPassword}
+                    onChangeText={setConfirmPassword}
+                    secureTextEntry
+                />
+
                 {isLoading ? (
                     <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
                 ) : (
                     <CustomButton
-                        title={t('auth.login')}
-                        onPress={handleLogin}
+                        title={t('auth.register')}
+                        onPress={handleRegister}
                         variant="primary"
                         size="large"
                     />
                 )}
-                
-                <ThemedView style={styles.registerContainer}>
-                    <ThemedText>{t('auth.notRegistered')} </ThemedText>
-                    <TouchableOpacity onPress={navigateToRegister}>
-                        <ThemedText style={[styles.registerLink, { color: primaryColor }]}>
-                            {t('auth.register')}
+
+                <ThemedView style={styles.loginContainer}>
+                    <ThemedText>{t('auth.haveAccount')} </ThemedText>
+                    <TouchableOpacity onPress={navigateToLogin}>
+                        <ThemedText style={[styles.loginLink, { color: primaryColor }]}>
+                            {t('auth.login')}
                         </ThemedText>
                     </TouchableOpacity>
-                </ThemedView>
-            </ThemedView>
+                    </ThemedView>
+              </ThemedView>
         </KeyboardAvoidingView>
     );
 }
@@ -130,12 +148,12 @@ const styles = StyleSheet.create({
     loader: {
         marginTop: 20,
     },
-    registerContainer: {
+    loginContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
         marginTop: 20,
     },
-    registerLink: {
+    loginLink: {
         fontWeight: 'bold',
     },
 }); 

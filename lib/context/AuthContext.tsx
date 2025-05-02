@@ -26,6 +26,7 @@ interface AuthContextType {
     token: string | null;
     isLoading: boolean;
     error: string | null;
+    isAuthenticated: boolean;
     login: (email: string, password: string) => Promise<void>;
     register: (username: string, email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
@@ -41,6 +42,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    
+    // Computed property to determine if user is authenticated
+    const isAuthenticated = !!user && !!token;
 
     // check token presence on app load
     useEffect(() => {
@@ -201,6 +205,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 token,
                 isLoading,
                 error,
+                isAuthenticated,
                 login,
                 register,
                 logout,

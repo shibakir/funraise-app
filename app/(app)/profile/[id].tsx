@@ -11,12 +11,14 @@ import { UserAchievements } from '@/components/custom/UserAchievements';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@/lib/context/AuthContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function ProfileScreen() {
 
     const { t } = useTranslation();
+    const { isAuthenticated } = useAuth();
 
     const { id } = useLocalSearchParams<{ id: string }>(); // TODO: id - userId
     const [refreshing, setRefreshing] = useState(false);

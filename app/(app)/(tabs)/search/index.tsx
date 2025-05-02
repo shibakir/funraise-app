@@ -16,7 +16,6 @@ export default function SearchScreen() {
 
     const { t } = useTranslation();
 
-    const inputBackground = useThemeColor({}, 'surfaceHighlight');
     const borderColor = useThemeColor({}, 'divider');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
     const headerBackground = useThemeColor({}, 'headerBackground');

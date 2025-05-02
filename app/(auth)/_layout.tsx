@@ -4,7 +4,7 @@ import '@/lib/localization/i18n';
 import { ThemeProvider } from '@/lib/context/ThemeContext';
 import { AuthProvider } from '@/lib/context/AuthContext';
 
-export default function RootLayout() {
+export default function AuthLayout() {
     return (
         <ThemeProvider>
             <AuthProvider>
@@ -12,4 +12,4 @@ export default function RootLayout() {
             </AuthProvider>
         </ThemeProvider>
     );
-}
+} 

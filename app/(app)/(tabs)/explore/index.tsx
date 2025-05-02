@@ -27,8 +27,6 @@ export default function ExploreScreen() {
         }, [])
     );
 
-    const primaryColor = useThemeColor({}, 'primary');
-    const sectionBackground = useThemeColor({}, 'sectionBackground');
     const headerBackground = useThemeColor({}, 'headerBackground');
     const headerText = useThemeColor({}, 'headerText');
     

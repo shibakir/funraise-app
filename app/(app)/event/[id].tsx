@@ -21,7 +21,7 @@ export default function EventScreen() {
     const { id } = useLocalSearchParams();
     const router = useRouter();
     const { event, loading, error, refresh } = useEventDetails(id as string);
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     
     console.log('event', event);
 
@@ -69,7 +69,7 @@ export default function EventScreen() {
     // Обработчик нажатия на изображение события
     const handleImagePress = async () => {
         // Если пользователь авторизован
-        if (user && event && depositPanelRef.current) {
+        if (isAuthenticated && event && depositPanelRef.current) {
             if (depositPanelRef.current.hasParticipation) {
                 // Если уже есть участие, обновляем его
                 await depositPanelRef.current.handleUpdateParticipation();
@@ -77,7 +77,7 @@ export default function EventScreen() {
                 // Если участия еще нет, создаем новое
                 await depositPanelRef.current.handleCreateParticipation();
             }
-        } else if (!user) {
+        } else if (!isAuthenticated) {
             Alert.alert('Error', 'You must be logged in to participate');
         }
     };
@@ -89,7 +89,6 @@ export default function EventScreen() {
     const headerBackground = useThemeColor({}, 'headerBackground');
     const headerText = useThemeColor({}, 'headerText');
 
-    // Отображаем индикатор загрузки только при первой загрузке страницы
     if (loading && !initialLoadComplete) {
         return (
         <View style={[styles.loadingContainer, { backgroundColor }]}>
@@ -99,7 +98,6 @@ export default function EventScreen() {
         );
     }
 
-    // Показываем экран с ошибкой только если есть ошибка или событие не найдено
     if (error || (!loading && !event)) {
         return (
             <View style={[styles.errorContainer, { backgroundColor }]}>
@@ -116,9 +114,6 @@ export default function EventScreen() {
             </View>
         );
     }
-
-    // Если данные еще загружаются при перезагрузке (не первая загрузка)
-    // или если данные уже есть, показываем основной контент
     return (
         <ThemedView style={styles.container}>
             <Stack.Screen
@@ -151,11 +146,11 @@ export default function EventScreen() {
                         <EventImage 
                             imageUrl={event.imageUrl} 
                             onPress={handleImagePress}
-                            disabled={!user}
+                            disabled={!isAuthenticated}
                         />
                     
                         {/* Секция для внесения депозита */}
-                        {user && event.status === 'active' && (
+                        {isAuthenticated && event.status === 'active' && (
                             <View style={styles.depositContainer}>
                                 <EventDepositPanel 
                                 ref={depositPanelRef}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, ScrollView, TextInput, Alert, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
-import { Stack, router } from 'expo-router';
+import { StyleSheet, View, ScrollView, TextInput, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
+import { Stack } from 'expo-router';
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
@@ -16,7 +16,6 @@ import { ThemedView } from '@/components/ThemedView';
 import { useTranslation } from 'react-i18next';
 
 export default function CreateEventScreen() {
-
     const { user } = useAuth();
     const { t } = useTranslation();
 
