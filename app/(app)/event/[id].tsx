@@ -26,7 +26,7 @@ export default function EventScreen() {
     const { event, loading, error, refresh } = useEventDetails(id as string);
     const { user, isAuthenticated } = useAuth();
     
-    console.log('event', event);
+    //console.log('event', event);
 
     const [depositAmount, setDepositAmount] = useState(1);
     
