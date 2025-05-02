@@ -396,5 +396,8 @@
     "eventCard": {
         "activeNow": "Aktivní právě teď",
         "progress": "Postup"
+    },
+    "else": {
+        "createNewEvent": "Vytvořit novou událost"
     }
 } 

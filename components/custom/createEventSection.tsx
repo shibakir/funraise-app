@@ -7,13 +7,14 @@ import { ThemedView } from '@/components/themed/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-
+import { useTranslation } from 'react-i18next';
 interface CreateEventSectionProps {
-    title?: string;
     onPress?: () => void;
 }
 
-export function CreateEventSection({ title = 'Create New Event', onPress }: CreateEventSectionProps) {
+export function CreateEventSection({ onPress }: CreateEventSectionProps) {
+
+    const { t } = useTranslation();
 
     const textSecondary = useThemeColor({}, 'icon');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
@@ -21,9 +22,9 @@ export function CreateEventSection({ title = 'Create New Event', onPress }: Crea
 
     const handlePress = () => {
         if (onPress) {
-        onPress();
+            onPress();
         } else {
-        router.push('/events/create');
+            router.push('/events/create');
         }
     };
 
@@ -35,9 +36,9 @@ export function CreateEventSection({ title = 'Create New Event', onPress }: Crea
                 activeOpacity={0.7}
             >
                 <View style={[styles.createEventIcon, { backgroundColor: primaryColor }]}>
-                <IconSymbol name="plus" size={24} color="white" />
+                    <IconSymbol name="plus" size={24} color="white" />
                 </View>
-                <ThemedText style={styles.createEventText}>{title}</ThemedText>
+                <ThemedText style={styles.createEventText}>{t('else.createNewEvent')}</ThemedText>
                 <IconSymbol name="chevron.right" size={20} color={textSecondary} />
             </TouchableOpacity>
         </ThemedView>

@@ -394,5 +394,8 @@
     "eventCard": {
         "activeNow": "Active now",
         "progress": "Progress"
+    },
+    "else": {
+        "createNewEvent": "Create new event"
     }
 } 
