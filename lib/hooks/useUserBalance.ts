@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getApiUrl } from '../config/api';
 
 export const useUserBalance = (userId: string | null) => {
   const [balance, setBalance] = useState<number | null>(null);
@@ -15,7 +16,7 @@ export const useUserBalance = (userId: string | null) => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3000/users/${userId}/balance`);
+      const response = await fetch(getApiUrl('USER_BALANCE', userId));
 
       if (!response.ok) {
         throw new Error('Failed to load user balance');

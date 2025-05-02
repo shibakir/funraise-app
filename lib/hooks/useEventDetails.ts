@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { getApiUrl } from '../config/api';
 
 export interface Condition {
     id: string;
@@ -10,21 +11,25 @@ export interface Condition {
 }
 
 export interface ConditionGroup {
-    id: number;
-    conditions: Condition[];
+    id: string;
+    conditions: {
+        parameterName: string;
+        operator: string;
+        value: string;
+    }[];
     progress: number;
 }
 
 export interface EventDetails {
     id: string;
-    userId: string,
-    recipientId: string,
+    userId: string;
+    recipientId: string | null;
     name: string;
     description: string;
-    imageUrl?: string;
+    imageUrl: string;
     bankAmount: number;
+    status: string;
     conditionGroups: ConditionGroup[];
-    status: 'active' | 'completed';
 }
 
 export const useEventDetails = (eventId: string | null) => {
@@ -34,49 +39,49 @@ export const useEventDetails = (eventId: string | null) => {
 
     const fetchEventDetails = useCallback(async () => {
         if (!eventId) {
-        setEvent(null);
-        return;
+            setEvent(null);
+            return;
         }
 
-    setLoading(true);
-    setError(null);
+        setLoading(true);
+        setError(null);
 
-    try {
-        const response = await fetch(`http://localhost:3000/events/${eventId}`);
+        try {
+            const response = await fetch(getApiUrl('EVENT_DETAILS', eventId));
 
-        if (!response.ok) {
-            throw new Error('Failed to load event details');
+            if (!response.ok) {
+                throw new Error('Failed to load event details');
+            }
+
+            const data = await response.json();
+
+            // Преобразуем данные из API в нужный формат
+            const formattedEvent: EventDetails = {
+                id: data.id,
+                userId: data.userId,
+                recipientId: data.recipientId || null,
+                name: data.name,
+                description: data.description,
+                imageUrl: data.imageUrl,
+                bankAmount: data.bankAmount || 0,
+                status: data.status || 'completed',
+                conditionGroups: data.endConditions?.map((group: any, index: number) => ({
+                    id: group.id,
+                    conditions: group.conditions || [],
+                    progress: data.conditionsProgress?.[index] || 0
+                })) || []
+            };
+
+            //console.log(formattedEvent);
+
+            setEvent(formattedEvent);
+        } catch (err) {
+            console.error('Error fetching event details:', err);
+            setError('Failed to load event details. Please try again later.');
+        } finally {
+            setLoading(false);
         }
-
-        const data = await response.json();
-
-        // Преобразуем данные из API в нужный формат
-        const formattedEvent: EventDetails = {
-            id: data.id,
-            userId: data.userId,
-            recipientId: data.recipientId || null,
-            name: data.name,
-            description: data.description,
-            imageUrl: data.imageUrl,
-            bankAmount: data.bankAmount || 0,
-            status: data.status || 'completed',
-            conditionGroups: data.endConditions?.map((group: any, index: number) => ({
-            id: group.id,
-            conditions: group.conditions || [],
-            progress: data.conditionsProgress?.[index] || 0
-            })) || []
-        };
-
-        //console.log(formattedEvent);
-
-        setEvent(formattedEvent);
-    } catch (err) {
-        console.error('Error fetching event details:', err);
-        setError('Failed to load event details. Please try again later.');
-    } finally {
-        setLoading(false);
-    }
-  }, [eventId]);
+    }, [eventId]);
 
     useEffect(() => {
         fetchEventDetails();

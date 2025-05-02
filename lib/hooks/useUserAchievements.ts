@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getApiUrl } from '../config/api';
 
 export interface AchievementCriterion {
     id: number;
@@ -49,11 +50,11 @@ export function useUserAchievements(userId: string) {
         setError(null);
         
         try {
-            const response = await fetch(`http://localhost:3000/users/${userId}/achievements`);
+            const response = await fetch(getApiUrl('USER_ACHIEVEMENTS', userId));
         
-        if (!response.ok) {
-            throw new Error(`Failed to fetch achievements: ${response.status}`);
-        }
+            if (!response.ok) {
+                throw new Error(`Failed to fetch achievements: ${response.status}`);
+            }
             
             const data = await response.json();
             setAchievements(data);

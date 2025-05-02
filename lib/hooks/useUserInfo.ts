@@ -1,9 +1,11 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { getApiUrl } from '../config/api';
 
-interface UserInfo {
+export interface UserInfo {
     id: string;
     username: string;
     image: string | null;
+    createdAt: string;
 }
 
 export const useUserInfo = (userId: string | null) => {
@@ -21,7 +23,7 @@ export const useUserInfo = (userId: string | null) => {
         setError(null);
 
         try {
-            const response = await fetch(`http://localhost:3000/users/${userId}`);
+            const response = await fetch(getApiUrl('USER_PROFILE', userId));
 
             if (!response.ok) {
                 throw new Error('Failed to load user balance');

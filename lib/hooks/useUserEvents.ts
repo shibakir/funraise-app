@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import { getApiUrl } from '../config/api';
 
 interface Event {
   id: string;
@@ -35,7 +36,7 @@ export const useUserEvents = () => {
     setError(null);
 
     try {
-      let url = `http://localhost:3000/users/${userId}/events?limit=${limit}`;
+      let url = `${getApiUrl('USER_EVENTS', userId)}?limit=${limit}`;
       
       // Добавляем параметр типа, если он указан
       if (eventType) {

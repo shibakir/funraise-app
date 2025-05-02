@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Alert } from 'react-native';
 import debounce from 'lodash.debounce';
+import { getApiUrl } from '../config/api';
 
 interface Event {
     id: string;
@@ -14,11 +15,11 @@ interface Event {
     avgProgress: number;
 }
 
-export interface SearchFilters {
+interface SearchFilters {
     types: string[];
     minProgress: number;
     maxProgress: number;
-    sortBy: 'name' | 'createdAt' | 'progress';
+    sortBy: string;
     sortOrder: 'asc' | 'desc';
 }
 
@@ -73,10 +74,10 @@ export const useEventSearch = (initialFilters?: Partial<SearchFilters>) => {
                     queryParams.append('types', type);
                 });
                 
-                const response = await fetch(`http://localhost:3000/events?${queryParams.toString()}`, {
+                const response = await fetch(`${getApiUrl('EVENTS')}?${queryParams.toString()}`, {
                     method: 'GET',
                     headers: {
-                    'Content-Type': 'application/json',
+                        'Content-Type': 'application/json',
                     },
                 });
 
@@ -124,6 +125,7 @@ export const useEventSearch = (initialFilters?: Partial<SearchFilters>) => {
             setError(null);
 
             try {
+                // TODO: filters ???
                 const queryParams = new URLSearchParams({
                     query: searchText,
                     page: page.toString(),
@@ -139,10 +141,10 @@ export const useEventSearch = (initialFilters?: Partial<SearchFilters>) => {
                     queryParams.append('types', type);
                 });
                 
-                const response = await fetch(`http://localhost:3000/events?${queryParams.toString()}`, {
+                const response = await fetch(`${getApiUrl('EVENTS')}?${queryParams.toString()}`, {
                     method: 'GET',
                     headers: {
-                    'Content-Type': 'application/json',
+                        'Content-Type': 'application/json',
                     },
                 });
 
@@ -158,7 +160,7 @@ export const useEventSearch = (initialFilters?: Partial<SearchFilters>) => {
                 }
                 
                 setEvents(data);
-                setCurrentPage(2); // next page
+                setCurrentPage(2);
             } catch (error) {
                 console.error('Error searching events:', error);
                 setError('Failed to search events. Server is not responding.');
@@ -169,30 +171,16 @@ export const useEventSearch = (initialFilters?: Partial<SearchFilters>) => {
         }, 300)
     ).current;
 
-    useEffect(() => {
-        return () => {
-            debouncedSearch.cancel();
-            debouncedSearchWithFilters.cancel();
-        };
-    }, []);
-    
-    const updateSearchQuery = (query: string) => {
+    const updateSearchQuery = useCallback((query: string) => {
         setSearchQuery(query);
         debouncedSearch(query);
-    };
-    
-    const updateFilters = (newFilters: Partial<SearchFilters>) => {
-        const updatedFilters = {
-            ...filters,
-            ...newFilters
-        };
-        
+    }, [debouncedSearch]);
+
+    const updateFilters = useCallback((newFilters: Partial<SearchFilters>) => {
+        const updatedFilters = { ...filters, ...newFilters };
         setFilters(updatedFilters);
-        
-        if (searchQuery.trim()) {
-            debouncedSearchWithFilters(searchQuery, updatedFilters);
-        }
-    };
+        debouncedSearchWithFilters(searchQuery, updatedFilters);
+    }, [filters, searchQuery, debouncedSearchWithFilters]);
     
     // Загружаем следующую страницу
     const loadMore = useCallback(() => {
@@ -216,10 +204,10 @@ export const useEventSearch = (initialFilters?: Partial<SearchFilters>) => {
                         queryParams.append('types', type);
                     });
                     
-                    const response = await fetch(`http://localhost:3000/events?${queryParams.toString()}`, {
+                    const response = await fetch(`${getApiUrl('EVENTS')}?${queryParams.toString()}`, {
                         method: 'GET',
                         headers: {
-                        'Content-Type': 'application/json',
+                            'Content-Type': 'application/json',
                         },
                     });
 

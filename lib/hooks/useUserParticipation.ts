@@ -1,17 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { getApiUrl } from '../config/api';
 
-interface UserParticipation {
-  id: number;
-  deposit: number;
-  userId: number;
-  eventId: number;
+export interface UserParticipation {
+    id: string;
+    userId: string;
+    eventId: string;
+    deposit: number;
+    progress: number;
+    status: string;
+    createdAt: string;
 }
 
-interface UseUserParticipationReturn {
-  participation: UserParticipation | null;
-  loading: boolean;
-  error: string | null;
-  refresh: () => void;
+export interface UseUserParticipationReturn {
+    participation: UserParticipation | null;
+    loading: boolean;
+    error: string | null;
+    refresh: () => void;
 }
 
 export const useUserParticipation = (userId: string | null, eventId: string | null): UseUserParticipationReturn => {
@@ -29,7 +33,7 @@ export const useUserParticipation = (userId: string | null, eventId: string | nu
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3000/participations/user/${userId}/event/${eventId}`);
+      const response = await fetch(getApiUrl('USER_PARTICIPATION', userId, eventId));
       
       if (!response.ok) {
         if (response.status === 404) {

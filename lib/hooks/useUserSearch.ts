@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import { getApiUrl } from '../config/api';
 
 interface User {
     id: string;
     name: string;
-    imageUrl?: string;
+    imageUrl: string | null;
 }
 
 export const useUserSearch = () => {
@@ -24,7 +25,7 @@ export const useUserSearch = () => {
         setShowUserList(true);
 
         try {
-            const response = await fetch(`http://localhost:3000/users?search=${query}`, {
+            const response = await fetch(`${getApiUrl('USERS')}?search=${query}`, {
                 //headers: {
                 //          'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 //      },

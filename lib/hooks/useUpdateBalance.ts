@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { getApiUrl } from '../config/api';
 
 interface UpdateBalanceResponse {
     success: boolean;
@@ -24,7 +25,7 @@ export const useUpdateBalance = () => {
         setError(null);
 
         try {
-            const response = await fetch(`http://localhost:3000/transactions`, {
+            const response = await fetch(getApiUrl('TRANSACTIONS'), {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

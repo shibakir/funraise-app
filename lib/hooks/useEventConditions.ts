@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getApiUrl } from '../config/api';
 import { ConditionGroup } from './useEventDetails';
 
 export const useEventConditions = (eventId: string | null) => {
@@ -16,7 +17,7 @@ export const useEventConditions = (eventId: string | null) => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:3000/events/${eventId}/conditions`);
+      const response = await fetch(getApiUrl('EVENT_CONDITIONS', eventId));
 
       if (!response.ok) {
         throw new Error('Failed to load event conditions');

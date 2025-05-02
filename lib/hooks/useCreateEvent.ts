@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
 import { router } from 'expo-router';
-import { EventType, GroupData } from '@/types/event';
+import { getApiUrl } from '../config/api';
 import { EventEndCondition } from '@/lib/types';
 
 interface CreateEventParams {
   name: string;
   description: string;
-  eventType: EventType;
+  eventType: string;
   creatorId: string;
   recipientId?: string;
-  imageUri?: string | null;
-  imageFile?: { uri: string; type: string; name: string } | null;
-  groups: GroupData[];
+  imageUri: string;
+  imageFile: File;
+  groups: any[];
 }
 
 export const useCreateEvent = () => {
@@ -95,7 +95,7 @@ export const useCreateEvent = () => {
         console.log('formData', formData);
 
         // Отправляем запрос на сервер
-        const response = await fetch('http://localhost:3000/events', {
+        const response = await fetch(getApiUrl('EVENTS'), {
             method: 'POST',
             body: formData,
             headers: {

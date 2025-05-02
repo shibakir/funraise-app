@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import { getApiUrl } from '../config/api';
 
 interface Event {
     id: string;
     name: string;
     description: string;
     type: string;
-    status?: 'active' | 'inactive';
+    status?: 'active' | 'completed';
     imageUrl?: string;
     createdAt: string;
     conditionsProgress: number[];
@@ -24,10 +25,11 @@ export const useAllEvents = () => {
         setError(null);
 
         try {
-            const response = await fetch(`http://localhost:3000/events?page=${page}&limit=${limit}${userId === '' ? `&userId=${userId}` : ''}`, {
+            const url = `${getApiUrl('EVENTS')}?page=${page}&limit=${limit}${userId ? `&userId=${userId}` : ''}`;
+            const response = await fetch(url, {
                 method: 'GET',
                 headers: {
-                'Content-Type': 'application/json',
+                    'Content-Type': 'application/json',
                 },
             });
 

@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { getApiUrl } from '../config/api';
 
 interface EventStatusInfo {
     bankAmount: number;
@@ -26,7 +27,7 @@ export const useEventStatus = (eventId: string | null) => {
         setError(null);
 
         try {
-            const response = await fetch(`http://localhost:3000/events/${eventId}/status`);
+            const response = await fetch(getApiUrl('EVENT_STATUS', eventId));
 
             if (!response.ok) {
                 throw new Error('Failed to load bank info');

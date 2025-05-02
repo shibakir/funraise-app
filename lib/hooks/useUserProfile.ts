@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Alert } from 'react-native';
+import { getApiUrl } from '../config/api';
 
 export interface UserProfile {
     user: {
@@ -25,22 +26,22 @@ export function useUserProfile(userId: string | null) {
         setLoading(true);
         setError(null);
 
-    try {
-        const response = await fetch(`http://localhost:3000/users/${userId}`);
-        
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to fetch user profile');
-        }
+        try {
+            const response = await fetch(getApiUrl('USER_PROFILE', userId));
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to fetch user profile');
+            }
 
-        const data = await response.json();
-        setProfile(data);
-    } catch (err: any) {
-        console.error('Error fetching user profile:', err);
-        setError(err.message || 'Failed to load user profile');
-        Alert.alert('Error', 'Failed to load user profile. Please try again later.');
-    } finally {
-        setLoading(false);
+            const data = await response.json();
+            setProfile(data);
+        } catch (err: any) {
+            console.error('Error fetching user profile:', err);
+            setError(err.message || 'Failed to load user profile');
+            Alert.alert('Error', 'Failed to load user profile. Please try again later.');
+        } finally {
+            setLoading(false);
         }
     }, [userId]);
 
