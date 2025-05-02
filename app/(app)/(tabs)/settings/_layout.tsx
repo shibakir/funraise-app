@@ -5,6 +5,13 @@ export default function SettingsLayout() {
     return (
         <Stack>
             <Stack.Screen 
+                name="index" 
+                options={{ 
+                    headerShown: true, 
+                    title: 'Settings'
+                }} 
+            />
+            <Stack.Screen 
                 name="appearance" 
                 options={{ 
                     headerShown: true, 

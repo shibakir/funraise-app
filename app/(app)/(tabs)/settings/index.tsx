@@ -111,7 +111,7 @@ export default function SettingsScreen() {
         profileButton: {
             paddingVertical: verticalScale(12),
             paddingHorizontal: horizontalScale(20),
-            borderRadius: moderateScale(8),
+            borderRadius: moderateScale(16),
             alignItems: 'center',
             marginTop: verticalScale(16),
             backgroundColor: sectionBackground,
@@ -180,7 +180,7 @@ export default function SettingsScreen() {
                     headerTitleStyle: { color: headerText },
                 }} 
             />
-            <SafeAreaView style={[styles.container, { flex: 1 }]}>
+            <SafeAreaView style={styles.container}>
                 <ThemedView style={styles.container}>
                     <StatusBar barStyle="default" />
                     <ScrollView 

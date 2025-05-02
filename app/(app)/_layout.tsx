@@ -1,4 +1,5 @@
-import { Slot, Redirect } from 'expo-router';
+import React from 'react';
+import { Slot, Redirect, Stack } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 
 import { useAuth } from '@/lib/context/AuthContext';
@@ -20,5 +21,10 @@ export default function AppLayout() {
         return <Redirect href="/(auth)/login" />;
     }
     
-    return <Slot />;
+    return (
+        <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Slot />
+        </Stack>
+    );
 } 

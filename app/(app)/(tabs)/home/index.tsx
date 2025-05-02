@@ -34,7 +34,7 @@ export default function HomeScreen() {
         }
     };
     const navigateToDocumentation = () => {
-        router.push('/documentation');
+        router.push('/(app)/documentation');
     };
 
     const styles = StyleSheet.create({

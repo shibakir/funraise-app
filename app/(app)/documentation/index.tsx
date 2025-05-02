@@ -88,12 +88,9 @@ export default function EventDocumentationScreen() {
             <Stack.Screen
                 options={{
                     title: t('documentation.title'),
-                    headerTitleStyle: { fontWeight: '600', color: headerText },
                     headerShown: true,
-                    headerBackTitle: t('documentation.backTitle'),
-                    headerStyle: {
-                        backgroundColor: headerBackground,
-                    },
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
                 }}
             />
             <SafeAreaView style={styles.container}>
