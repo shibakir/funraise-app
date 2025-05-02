@@ -7,6 +7,7 @@ import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/M
 import { useEventStatus } from '@/lib/hooks/useEventStatus';
 import { router } from 'expo-router';
 import { useUserInfo } from '@/lib/hooks/useUserInfo';
+import { useTranslation } from 'react-i18next';
 
 export interface EventStatusInfoHandle {
     refresh: () => void;
@@ -16,22 +17,15 @@ interface EventStatusInfoProps {
     eventId: string;
 }
 
-const eventTypes = [
-    {
-        id: 'DONATION',
-        title: 'Donation',
-    },
-    {
-        id: 'FUNDRAISING',
-        title: 'Fundraising',
-    },
-    {
-        id: 'JACKPOT',
-        title: 'Jackpot',
-    }
-];
-
 export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfoProps>(({ eventId }, ref) => {
+
+    const { t } = useTranslation();
+
+    const eventTypes = [
+        { id: 'DONATION', title: t('event.eventType.donation') },
+        { id: 'FUNDRAISING', title: t('event.eventType.fundraising') },
+        { id: 'JACKPOT', title: t('event.eventType.jackpot') },
+    ];
     
     const { bankAmount, eventStatus, type, recipientId, loading, error, refresh } = useEventStatus(eventId);
     const { user: recipient, loading: recipientLoading, error: recipientError } = useUserInfo(recipientId);
@@ -39,9 +33,7 @@ export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfo
     const primaryColor = useThemeColor({}, 'primary');
     const cardColor = useThemeColor({}, 'card');
     const errorColor = useThemeColor({}, 'error');
-    const textColor = useThemeColor({}, 'text');
     const backgroundColor = useThemeColor({}, 'background');
-    const tintColor = useThemeColor({}, 'tint');
     
     useImperativeHandle(ref, () => ({
         refresh
@@ -69,19 +61,19 @@ export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfo
                 <View style={styles.header}>
                     <TouchableOpacity onPress={navigateToDocumentation} activeOpacity={0.7}>
                         <ThemedText style={[styles.headerText, { color: primaryColor }]}>
-                            {eventTypes.find(t => t.id === type)?.title || 'Unknown'} Event
+                            {eventTypes.find(t => t.id === type)?.title || t('event.eventType.unknown')} Event
                         </ThemedText>
                     </TouchableOpacity>
                     <ThemedView style={[styles.statusBadge, { backgroundColor: primaryColor + '20' }]}>
                         <ThemedText style={[styles.statusText, { color: primaryColor }]}>
-                            {eventStatus === 'completed' ? 'Completed' : 'Active'}
+                            {eventStatus === 'completed' ? t('event.status.completed') : t('event.status.active')}
                         </ThemedText>
                     </ThemedView>
                 </View>
                 
                 <ThemedView style={[styles.amountContainer, { backgroundColor: backgroundColor }]}>
                     <ThemedText style={styles.amountLabel}>
-                        {eventStatus === 'completed' ? 'Final Bank Amount' : 'Current Bank Amount'}
+                        {eventStatus === 'completed' ? t('event.finalbankAmount') : t('event.currentbankAmount')}
                     </ThemedText>
                     <ThemedText style={[styles.amountValue, { color: primaryColor }]}>
                         ${bankAmount.toFixed(2) || '0.00'}
@@ -94,7 +86,7 @@ export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfo
                         onPress={() => navigateToUserProfile(recipient?.id || '')}
                         activeOpacity={0.7}
                     >
-                        <ThemedText style={styles.recipientLabel}>Recipient</ThemedText>
+                        <ThemedText style={styles.recipientLabel}>{t('event.recipientLabel')}</ThemedText>
                         <View style={styles.userRow}>
                             {recipient?.image ? (
                                 <Image 

@@ -21,7 +21,46 @@
     },
     "search": {
         "title": "Vyhledávání",
-        "backTitle": "Zpět"
+        "backTitle": "Zpět",
+        
+
+
+        "searchPlaceholder": "Vyhledat...",
+        "searchFilterButton": "Vyhledavací filtr",
+        "searchPanel": {
+            "title": "Vyhledavací filtry",
+            "eventTypeTitle": "Typ události",
+            "eventType": {
+                "donation": "Donation",
+                "fundraising": "Fundraising",
+                "jackpot": "Jackpot"
+            },
+            "progressTitle": "Aktuální postup události",
+            "progress": {
+                "min": "Min",
+                "max": "Max"
+            },
+            "participantsTitle": "Počet účastníků",
+            "participants": {
+                "min": "Min",
+                "max": "Max"
+            },
+            "sortByTitle": "Seřadit podle",
+            "sortBy": {
+                "byEventNameAsc": "Podle názvu události (A-Z)",
+                "byEventNameDesc": "Podle názvu události (Z-A)",
+                "byDateAsc": "Podle data (nejstarší nejprve)",
+                "byDateDesc": "Podle data (nejnovější nejprve)",
+                "byProgressAsc": "Podle postupu (nejmenší nejprve)",
+                "byProgressDesc": "Podle postupu (největší nejprve)"
+            },
+
+            "noResults": "Nebyly nalezeny žádné události",
+            "emptySearch": "Zadejte něco k vyhledání",
+
+            "resetButton": "Resetovat",
+            "applyButton": "Použít"
+        }
     },
     "createEvent": {
         "backTitle": "Zpět",
@@ -83,11 +122,53 @@
             "inputPlaceholder2": "Počet"
         }
     },
+    "event": {
+        "backTitle": "Zpět",
+        "eventType": {
+            "donation": "Donation",
+            "fundraising": "Fundraising",
+            "jackpot": "Jackpot",
+            "unknown": "Neznámý"
+        },
+        "status": {
+            "active": "Aktivní",
+            "completed": "Dokončen"
+        },
+        "currentbankAmount": "Aktuální částka banky",
+        "finalbankAmount": "Konečná částka banky",
+        "recipientLabel": "Příjemce",
+        "selectAmount": "Vyberte částku k darování!",
+        "balance": "Balance",
+        "yourCurrentDeposit": "Vaše aktuální vklad",
+        "currentDeposit": "Aktuální vklad",
+        "clickOnTheImageToJoinTheEvent": "Klikěte na obrázek pro připojení k eventu",
+        "description": "Popis",
+        "associatedUsers": "Persony",
+        "creator": "Vytvořitel",
+        "recipient": "Příjemce",
+        "conditionsTitle": "Podmínky",
+        "loading": "Načítání...",
+        "errorLoadingUserInfo": "Chyba při načítání informací o uživateli",
+
+        "operator": {
+            "lt": "méně",
+            "lte": "méně nebo rovno",
+            "gt": "více",
+            "gte": "více nebo rovno"
+        },
+        "conditionType": {
+            "time": "Časový limit je:",
+            "bank": "Částka banky je:",
+            "people": "Počet účastníků je:"
+        },
+        "group": "Skupina",
+        "progress": "Stav"
+    },    
     "profile": {
         "backTitle": "Zpět",
         "title": "Osobní profil",
         "createdEvents": "Události",
-        "winnedEvents": "Úspěchy",
+        "winnedEvents": "Vyhry",
         "achievements": "Úspěchy",
         "participatingEvents": "Účast"
     },
@@ -311,5 +392,9 @@
             "about": "O aplikaci",
             "diplomaInfo": "Tento projekt byl vyvinut jako bakalářská práce na Fakultě informačních technologií Českého vysokého učení technického v Praze v období 2024 - 2025 let."
         }
+    },
+    "eventCard": {
+        "activeNow": "Aktivní právě teď",
+        "progress": "Postup"
     }
 } 

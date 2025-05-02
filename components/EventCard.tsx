@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { Image as ExpoImage } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
@@ -7,8 +7,8 @@ import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming } fr
 import { ThemedText } from '@/components/ThemedText';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
+import { useTranslation } from 'react-i18next';
 
-// Интерфейс для события
 export interface EventInterface {
     id: string;
     name: string;
@@ -19,6 +19,8 @@ export interface EventInterface {
 }
 
 export function EventCard({ event }: { event: EventInterface }) {
+    const { t } = useTranslation();
+    
     const borderColor = useThemeColor({}, 'divider');
     const primaryColor = useThemeColor({}, 'primary');
     const textColor = useThemeColor({}, 'text');
@@ -55,9 +57,10 @@ export function EventCard({ event }: { event: EventInterface }) {
         <TouchableOpacity 
             style={styles.eventCard(borderColor)}
             onPress={() => router.push({
-            pathname: '/event/[id]',
-            params: { id: event.id }
-            })}
+                    pathname: '/event/[id]',
+                    params: { id: event.id }
+                })
+            }
             activeOpacity={0.7}
         >
             <View style={styles.eventInfo()}>
@@ -65,13 +68,13 @@ export function EventCard({ event }: { event: EventInterface }) {
                     <Animated.View style={[styles.activeNowContainer(), { opacity: opacity }]}>
                         <Animated.View 
                             style={[
-                            styles.statusIndicator(),
-                            styles.activeIndicator(primaryColor),
-                            animatedStyle
+                                styles.statusIndicator(),
+                                styles.activeIndicator(primaryColor),
+                                animatedStyle
                             ]} 
                         />
                         <Animated.Text style={[styles.activeNowText(successColor), animatedStyle]}>
-                            Active Now
+                            {t('eventCard.activeNow')}
                         </Animated.Text>
                     </Animated.View>
                 )}
@@ -80,7 +83,7 @@ export function EventCard({ event }: { event: EventInterface }) {
                 <View style={styles.progressContainer(borderColor)}>
                     <View style={[styles.progressBar(primaryColor), { width: `${totalProgress}%` }]} />
                 </View>
-                <ThemedText style={styles.progressText(textColor)}>{`Progress: ${totalProgress}%`}</ThemedText>
+                <ThemedText style={styles.progressText(textColor)}>{`${t('eventCard.progress')}: ${totalProgress}%`}</ThemedText>
             </View>
         
             {event.imageUrl && (

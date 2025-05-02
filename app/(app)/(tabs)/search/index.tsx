@@ -40,11 +40,6 @@ export default function SearchScreen() {
     } = useEventSearch();
     
     const [showFilterPanel, setShowFilterPanel] = useState(false);
-    
-    // Загружаем события при первом рендере
-    useEffect(() => {
-        // Ничего не делаем - поиск начнется только после ввода запроса
-    }, []);
   
     const LoadMoreButton = () => {
         if (!hasMore || events.length === 0) {
@@ -148,7 +143,7 @@ export default function SearchScreen() {
                 <IconSymbol name="magnifyingglass" size={20} color={placeholderColor} />
                 <TextInput
                     style={[styles.input, { color: textColor }]}
-                    placeholder="Search..."
+                    placeholder={t('search.searchPlaceholder')}
                     placeholderTextColor={placeholderColor}
                     value={searchQuery}
                     onChangeText={setSearchQuery}
@@ -164,7 +159,7 @@ export default function SearchScreen() {
                 onPress={() => setShowFilterPanel(true)}
             >
                 <IconSymbol name="line.3.horizontal.decrease" size={20} color={placeholderColor} />
-                <ThemedText style={styles.filterButtonText}>Search filter</ThemedText>
+                <ThemedText style={styles.filterButtonText}>{t('search.searchFilterButton')}</ThemedText>
             </TouchableOpacity>
         </View>
     );
@@ -183,8 +178,8 @@ export default function SearchScreen() {
             <View style={styles.emptyContainer}>
                 <ThemedText style={styles.emptyText}>
                     {searchQuery.length > 0
-                        ? 'No events found'
-                        : 'Enter something to search'}
+                        ? t('search.searchPanel.noResults')
+                        : t('search.searchPanel.emptySearch')}
                 </ThemedText>
             </View>
         );

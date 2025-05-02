@@ -6,13 +6,14 @@ import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useUserInfo } from '@/lib/hooks/useUserInfo';
 import { router } from 'expo-router';
-
+import { useTranslation } from 'react-i18next';
 interface EventUsersProps {
     userId: string;
     recipientId: string;
 }
 
 export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) => {
+    const { t } = useTranslation();
     const cardColor = useThemeColor({}, 'card');
     const textColor = useThemeColor({}, 'text');
     const { user: creator, loading: creatorLoading, error: creatorError } = useUserInfo(userId);
@@ -25,7 +26,7 @@ export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) =
     if (creatorLoading || recipientLoading) {
         return (
             <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
-                <ThemedText style={styles.text}>Loading...</ThemedText>
+                <ThemedText style={styles.text}>{t('event.loading')}</ThemedText>
             </ThemedView>
         );
     }
@@ -33,14 +34,14 @@ export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) =
     if (creatorError || recipientError) {
         return (
             <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
-                <ThemedText style={styles.text}>Error loading user info</ThemedText>
+                <ThemedText style={styles.text}>{t('event.errorLoadingUserInfo')}</ThemedText>
             </ThemedView>
         );
     }
 
     return (
         <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
-            <ThemedText style={styles.title}>Associated users</ThemedText>
+            <ThemedText style={styles.title}>{t('event.associatedUsers')}</ThemedText>
             
             <TouchableOpacity 
                 style={styles.userRow} 
@@ -59,7 +60,7 @@ export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) =
                     </View>
                 )}
                 <View style={styles.userInfo}>
-                    <ThemedText style={styles.text}>Creator: {creator?.username}</ThemedText>
+                    <ThemedText style={styles.text}>{t('event.creator')}: {creator?.username}</ThemedText>
                 </View>
             </TouchableOpacity>
             
@@ -81,7 +82,7 @@ export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) =
                         </View>
                     )}
                     <View style={styles.userInfo}>
-                        <ThemedText style={styles.text}>Recipient: {recipient?.username}</ThemedText>
+                        <ThemedText style={styles.text}>{t('event.recipient')}: {recipient?.username}</ThemedText>
                     </View>
                 </TouchableOpacity>
             )}
@@ -108,7 +109,6 @@ const styles = StyleSheet.create({
     userRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        //marginBottom: verticalScale(12),
         paddingVertical: verticalScale(8),
         borderRadius: moderateScale(8),
     },

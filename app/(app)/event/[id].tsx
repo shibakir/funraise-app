@@ -16,8 +16,11 @@ import { EventDepositPanel } from '@/components/EventDepositPanel';
 import { EventDescription } from '@/components/EventDescription';
 import { EventConditionsList, EventConditionsListHandle } from '@/components/EventConditionsList';
 import { EventUsers } from '@/components/EventUsers';
+import { useTranslation } from 'react-i18next';
 
 export default function EventScreen() {
+    const { t } = useTranslation();
+    
     const { id } = useLocalSearchParams();
     const router = useRouter();
     const { event, loading, error, refresh } = useEventDetails(id as string);
@@ -120,7 +123,7 @@ export default function EventScreen() {
                 options={{
                     title: event?.name || 'Event',
                     headerShown: true,
-                    headerBackTitle: 'Back',
+                    headerBackTitle: t('event.backTitle'),
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
                 }}
@@ -153,10 +156,10 @@ export default function EventScreen() {
                         {isAuthenticated && event.status === 'active' && (
                             <View style={styles.depositContainer}>
                                 <EventDepositPanel 
-                                ref={depositPanelRef}
-                                eventId={id as string}
-                                onDepositChange={handleDepositChange}
-                                onParticipationUpdated={handleParticipationUpdated}
+                                    ref={depositPanelRef}
+                                    eventId={id as string}
+                                    onDepositChange={handleDepositChange}
+                                    onParticipationUpdated={handleParticipationUpdated}
                                 />
                             </View>
                         )}

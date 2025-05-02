@@ -21,7 +21,44 @@
     },
     "search": {
         "title": "Search",
-        "backTitle": "Back"
+        "backTitle": "Back",
+
+        "searchPlaceholder": "Search...",
+        "searchFilterButton": "Search filter",
+        "searchPanel": {
+            "title": "Search filters",
+            "eventTypeTitle": "Event type",
+            "eventType": {
+                "donation": "Donation",
+                "fundraising": "Fundraising",
+                "jackpot": "Jackpot"
+            },
+            "progressTitle": "Current Event Progress",
+            "progress": {
+                "min": "Min",
+                "max": "Max"
+            },
+            "participantsTitle": "Number of participants",
+            "participants": {
+                "min": "Min",
+                "max": "Max"
+            },
+            "sortByTitle": "Sort by",
+            "sortBy": {
+                "byEventNameAsc": "By event name ascending (A-Z)",
+                "byEventNameDesc": "By event name descending (Z-A)",
+                "byDateAsc": "By date ascending (oldest first)",
+                "byDateDesc": "By date descending (newest first)",
+                "byProgressAsc": "By progress ascending",
+                "byProgressDesc": "By progress descending"
+            },
+
+            "noResults": "No events found",
+            "emptySearch": "Enter something to search",
+
+            "resetButton": "Reset",
+            "applyButton": "Apply"
+        }
     },
     "createEvent": {
         "backTitle": "Back",
@@ -82,6 +119,48 @@
             "inputPlaceholder": "Number",
             "inputPlaceholder2": "Amount"
         }
+    },
+    "event": {
+        "backTitle": "Back",
+        "eventType": {
+            "donation": "Donation",
+            "fundraising": "Fundraising",
+            "jackpot": "Jackpot",
+            "unknown": "Unknown"
+        },
+        "status": {
+            "active": "Active",
+            "completed": "Completed"
+        },
+        "currentbankAmount": "Current bank amount",
+        "finalbankAmount": "Final bank amount",
+        "recipientLabel": "Recipient",
+        "selectAmount": "Select amount to donate!",
+        "balance": "Balance",
+        "yourCurrentDeposit": "Your current deposit",
+        "currentDeposit": "Current deposit",
+        "clickOnTheImageToJoinTheEvent": "Click on the image to join the event",
+        "description": "Description",
+        "associatedUsers": "Associated users",
+        "creator": "Creator",
+        "recipient": "Recipient",
+        "conditionsTitle": "Conditions",
+        "loading": "Loading...",
+        "errorLoadingUserInfo": "Error loading user info",
+
+        "operator": {
+            "lt": "less than",
+            "lte": "less than or equal to",
+            "gt": "greater than",
+            "gte": "greater than or equal to"
+        },
+        "conditionType": {
+            "time": "End time is:",
+            "bank": "Bank amount is:",
+            "people": "Number of participants is:"
+        },
+        "group": "Group",
+        "progress": "Progress"
     },
     "profile": {
         "backTitle": "Back",
@@ -311,5 +390,9 @@
             "about": "About",
             "diplomaInfo": "This project was developed as a bachelor's thesis at the Faculty of Information Technology, Czech Technical University in Prague during the period 2024 - 2025."
         }
+    },
+    "eventCard": {
+        "activeNow": "Active now",
+        "progress": "Progress"
     }
 } 
