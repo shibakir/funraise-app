@@ -84,7 +84,7 @@ export default function CreateEventScreen() {
         },
         contentContainer: {
             padding: moderateScale(16),
-            paddingBottom: verticalScale(40),
+            paddingBottom: moderateScale(100),
         },
         mainSection: {
             backgroundColor: sectionBackground,
@@ -137,7 +137,7 @@ export default function CreateEventScreen() {
         },
         submitButton: {
             marginTop: moderateScale(20),
-            marginBottom: moderateScale(20),
+            marginBottom: moderateScale(40),
             width: '100%',
         },
     });

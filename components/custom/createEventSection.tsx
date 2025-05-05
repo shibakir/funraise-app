@@ -33,7 +33,8 @@ export function CreateEventSection({ onPress }: CreateEventSectionProps) {
             <TouchableOpacity 
                 style={styles.createEventButton}
                 onPress={handlePress}
-                activeOpacity={0.7}
+                activeOpacity={1}
+                onPressIn={(e) => e.preventDefault()}
             >
                 <View style={[styles.createEventIcon, { backgroundColor: primaryColor }]}>
                     <IconSymbol name="plus" size={24} color="white" />

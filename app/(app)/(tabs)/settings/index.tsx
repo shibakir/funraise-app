@@ -239,8 +239,8 @@ export default function SettingsScreen() {
                         <ThemedView style={styles.mainSection}>
                             <SettingItem 
                                 icon="lock" 
-                                title={t('settings.privacyPolicy')} 
-                                description={t('settings.privacyPolicyDesc')}
+                                title={t('settings.privacySecurity')} 
+                                description={t('settings.privacySecurityDesc')}
                                 onPress={() => router.push('/settings/privacy-security')}
                             />
                             <SettingItem 

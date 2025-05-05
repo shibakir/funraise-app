@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/useThemeColor';
 import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useTranslation } from 'react-i18next';
-
+import { CreateEventSection } from '@/components/custom/createEventSection';
 export default function EventDocumentationScreen() {
     const { t } = useTranslation();
     const sectionBackground = useThemeColor({}, 'sectionBackground');
@@ -81,6 +81,10 @@ export default function EventDocumentationScreen() {
             fontSize: moderateScale(14),
             lineHeight: moderateScale(22),
             color: '#70591e',
+        },
+        sectionHeader: {
+            marginTop: verticalScale(20),
+            paddingVertical: verticalScale(12),
         },
     });
 
@@ -273,6 +277,10 @@ export default function EventDocumentationScreen() {
                                 <ThemedText style={styles.description}>
                                     {t('documentation.getStartedDesc')}
                                 </ThemedText>
+
+                                {/* NEW EVENT SECTION */}
+                                <CreateEventSection />
+
 
                                 <ThemedText style={styles.subtitle}>📎 {t('documentation.topUpBalance')}</ThemedText>
                                 <ThemedText style={styles.description}>
