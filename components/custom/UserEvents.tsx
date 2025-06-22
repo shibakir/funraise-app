@@ -1,238 +1,181 @@
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { router } from 'expo-router';
-import { Image as ExpoImage } from 'expo-image';
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
 
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
-import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { useUserEvents } from '@/lib/hooks/useUserEvents';
-import { useRouteEvents } from '@/lib/hooks/useRouteEvents';
+import { ThemedText } from '@/components/themed/ThemedText';
+import { ThemedView } from '@/components/themed/ThemedView';
+import { useThemeColor } from '@/lib/hooks/ui';
+import { useUser } from '@/lib/hooks/users';
+import { useRefreshableData } from '@/lib/hooks/data';
+import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
+import { EventStatus } from '@/lib/graphql';
+import type { Event } from '@/lib/graphql/types';
+import { EventCard } from '@/components/custom/EventCard';
+import { useTranslation } from 'react-i18next';
 
 interface UserEventsProps {
-  userId: string;
-  limit?: number;
+    limit?: number;
+    userId: string;
+    eventType?: 'created' | 'participating';
+    showOnlyActive?: boolean;
 }
 
-// event data interface
-interface EventInterface {
-    id: string;
-    name: string;
-    status?: 'active' | 'inactive';
-    imageUrl?: string;
-    conditionsProgress: number[];
-}
+export function UserEvents({ limit = 5, userId, eventType, showOnlyActive = false }: UserEventsProps) {
+    const { t } = useTranslation();
+    
+    // If there is no userId, don't show anything
+    if (!userId || userId.trim() === '') {
+        return null;
+    }
+    
+    const userIdNum = parseInt(userId);
+    if (isNaN(userIdNum)) {
+        return null;
+    }
+    
+    const { user, loading: isLoading, error: graphqlError, refetch } = useUser(userIdNum);
+    
+    const borderColor = useThemeColor({}, 'divider');
+    const sectionBackground = useThemeColor({}, 'sectionBackground');
+    const primaryColor = useThemeColor({}, 'primary');
+    const errorColor = useThemeColor({}, 'error');
 
-export function UserEvents({ userId, limit = 5 }: UserEventsProps) {
-  const { events, isLoading, error, fetchUserEvents } = useUserEvents();
-  const borderColor = useThemeColor({}, 'divider');
-  const textSecondary = useThemeColor({}, 'icon');
-  const sectionBackground = useThemeColor({}, 'sectionBackground');
-  const backgroundColor = useThemeColor({}, 'background');
-  const primaryColor = useThemeColor({}, 'primary');
-  const textColor = useThemeColor({}, 'text');
-  const errorColor = useThemeColor({}, 'error');
-  const surfaceColor = useThemeColor({}, 'surface');
-  const placeholderColor = useThemeColor({}, 'placeholder');
+    const error = graphqlError || null;
 
-  // Загружаем данные при каждом рендере компонента
-  React.useEffect(() => {
-    fetchUserEvents(userId, limit);
-  }, []);
+    const processedEvents = useMemo((): Event[] => {
+        if (!user) return [];
 
-  const styles = StyleSheet.create({
-    mainSection: {
-        backgroundColor: sectionBackground,
-        borderRadius: moderateScale(14),
-        marginBottom: verticalScale(16),
-        overflow: 'hidden',
-      },
-    activeIndicator: {
-      backgroundColor: primaryColor,
-    },
-    eventName: {
-      fontSize: moderateScale(16),
-      fontWeight: '600',
-      flex: 1,
-    },
-    progressContainer: {
-      width: '70%',
-      height: moderateScale(8),
-      backgroundColor: borderColor,
-      borderRadius: moderateScale(4),
-      marginTop: verticalScale(8),
-      overflow: 'hidden',
-    },
-    progressBar: {
-      height: '100%',
-      backgroundColor: primaryColor,
-    },
-    container: {
-      //marginVertical: verticalScale(8),
-    },
-    loadingContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: moderateScale(20),
-    },
-    eventCard: {
-        flexDirection: 'row',
-        padding: moderateScale(16),
-        borderBottomWidth: 1,
-        borderBottomColor: borderColor,
-    },
-    eventInfo: {
-      flex: 1,
-      marginRight: horizontalScale(12),
-    },
-    activeNowContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: verticalScale(8),
-    },
-    statusIndicator: {
-      width: moderateScale(8),
-      height: moderateScale(8),
-      borderRadius: moderateScale(4),
-      marginRight: horizontalScale(8),
-    },
-    activeNowText: {
-      fontSize: moderateScale(12),
-      color: '#4CAF50',
-    },
-    bankAmount: {
-      fontSize: moderateScale(14),
-      color: '#666',
-    },
-    progressText: {
-      fontSize: moderateScale(12),
-      color: textColor,
-      marginTop: verticalScale(4),
-    },
-    eventImage: {
-        width: moderateScale(80),
-        height: moderateScale(80),
-        borderRadius: moderateScale(8),
-        backgroundColor: surfaceColor,
-        borderWidth: 3,
-        borderColor: primaryColor,
-        shadowColor: primaryColor,
-        shadowOffset: {
-          width: 0,
-          height: 2,
+        let userEvents: Event[] = [];
+
+        switch (eventType) {
+            case 'created':
+                // create a copy of the array to avoid changing the read-only array from GraphQL
+                userEvents = [...(user.createdEvents || [])];
+                break;
+            case 'participating':
+                // get events from user participations
+                userEvents = (user.participations || [])
+                    .map(participation => participation.event)
+                    .filter(event => event != null) as Event[];
+                break;
+            default:
+                // Get events from participations
+                const participationEvents = (user.participations || [])
+                    .map(participation => participation.event)
+                    .filter(event => event != null) as Event[];
+                
+                userEvents = [
+                    ...(user.createdEvents || []),
+                    ...(user.receivedEvents || []),
+                    ...(user.events || []),
+                    ...participationEvents
+                ];
+                
+                const uniqueEventsMap = new Map();
+                userEvents.forEach(event => {
+                    uniqueEventsMap.set(event.id, event);
+                });
+                userEvents = Array.from(uniqueEventsMap.values());
+                break;
+        }
+
+        // Filter only active events if the showOnlyActive parameter is true
+        if (showOnlyActive) {
+            userEvents = userEvents.filter(event => event.status === EventStatus.IN_PROGRESS);
+        }
+
+        userEvents.sort((a, b) => b.id - a.id);
+
+        return userEvents.slice(0, limit);
+    }, [user, eventType, limit, showOnlyActive]);
+
+    // register component in the refresh system for pull-to-refresh
+    useRefreshableData({
+        key: `user-events-${userId}-${eventType || 'all'}`,
+        onRefresh: async () => {
+            await refetch();
         },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-  });
-
-  const EventCard = ({ event }: { event: EventInterface }) => {
-    // animation for active indicator
-    const opacity = useSharedValue(1);
-    
-    useEffect(() => {
-      if (event.status === 'active') {
-        opacity.value = withRepeat(
-          withTiming(0.4, { duration: 1000 }),
-          -1,
-          true
-        );
-      } else {
-        opacity.value = 0.6; // inactive indicator
-      }
-    }, [event.status]);
-    
-    const animatedStyle = useAnimatedStyle(() => {
-      return {
-        opacity: opacity.value,
-      };
+        dependencies: [userId, limit, eventType]
     });
 
-    // Рассчитываем общий прогресс как среднее значение всех условий
-    const totalProgress = event.conditionsProgress.length > 0 
-      ? Math.round(event.conditionsProgress.reduce((a, b) => a + b, 0) / event.conditionsProgress.length)
-      : 0;
+    const styles = StyleSheet.create({
+        mainSection: {
+            backgroundColor: sectionBackground,
+            borderRadius: moderateScale(14),
+            marginBottom: verticalScale(16),
+            overflow: 'hidden',
+        },
+        container: {
+            //marginVertical: verticalScale(8),
+        },
+        loadingContainer: {
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: moderateScale(20),
+        },
+        loadMoreButton: {
+            padding: moderateScale(16),
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderTopWidth: 1,
+            borderTopColor: borderColor,
+        },
+        loadMoreText: {
+            fontSize: moderateScale(16),
+            fontWeight: '500',
+            color: primaryColor,
+        },
+    });
+
+    const LoadMoreButton = () => {
+        return null;
+    };
+
+    if (isLoading && processedEvents.length === 0) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={primaryColor} />
+                <ThemedText style={{ marginTop: 10 }}>{t('userEvents.loading', 'Loading events...')}</ThemedText>
+            </View>
+        );
+    }
     
-    return (
-      <TouchableOpacity 
-        style={styles.eventCard}
-        onPress={() => router.push({
-          pathname: '/event/[id]',
-          params: { id: event.id }
-        })}
-        activeOpacity={0.7}
-      >
-        <View style={styles.eventInfo}>
-          {event.status === 'active' && (
-            <Animated.View style={[styles.activeNowContainer, { opacity: opacity }]}>
-              <Animated.View 
-                style={[
-                  styles.statusIndicator,
-                  styles.activeIndicator,
-                  animatedStyle
-                ]} 
-              />
-              <Animated.Text style={[styles.activeNowText, animatedStyle]}>
-                Active Now
-              </Animated.Text>
-            </Animated.View>
-          )}
-          <ThemedText style={styles.eventName} numberOfLines={2}>{event.name}</ThemedText>
-          
-          <View style={styles.progressContainer}>
-            <View style={[styles.progressBar, { width: `${totalProgress}%` }]} />
-          </View>
-          <ThemedText style={styles.progressText}>{`Progress: ${totalProgress}%`}</ThemedText>
-        </View>
-        
-        {event.imageUrl && (
-          <ExpoImage 
-            source={{ uri: event.imageUrl }}
-            style={styles.eventImage}
-            contentFit="cover"
-            cachePolicy="memory-disk"
-            transition={200}
-          />
-        )}
-      </TouchableOpacity>
-    );
-  };
+    if (error && processedEvents.length === 0) {
+        return (
+            <ThemedView style={styles.container}>
+                <ThemedText style={{ color: errorColor, padding: moderateScale(16) }}>
+                    {t('userEvents.error', 'Error')}: {error}
+                </ThemedText>
+                <TouchableOpacity 
+                    style={[styles.loadMoreButton, { backgroundColor: primaryColor }]}
+                    onPress={() => refetch()}
+                >
+                    <ThemedText style={[styles.loadMoreText, { color: 'white' }]}>
+                        {t('userEvents.retry', 'Retry')}
+                    </ThemedText>
+                </TouchableOpacity>
+            </ThemedView>
+        );
+    }
+    
+    if (processedEvents.length === 0) {
+        return (
+            <ThemedView style={styles.container}>
+                <ThemedText style={{ padding: moderateScale(16) }}>
+                    {t('userEvents.noEvents', 'No user events found')}
+                </ThemedText>
+            </ThemedView>
+        );
+    }
 
-  if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={primaryColor} />
-        <ThemedText style={{ marginTop: 10 }}>Loading events...</ThemedText>
-      </View>
+        <ThemedView style={styles.mainSection}>
+            <View style={styles.container}>
+                {processedEvents.map(event => 
+                    <EventCard key={event.id} event={event} />
+                )}
+                <LoadMoreButton />
+            </View>
+        </ThemedView>
     );
-  }
-
-  if (error) {
-    return (
-      <ThemedView style={styles.container}>
-        <ThemedText style={{ color: 'red' }}>{error}</ThemedText>
-      </ThemedView>
-    );
-  }
-
-  if (events.length === 0) {
-    return (
-      <ThemedView style={styles.container}>
-        <ThemedText>You don't have any active events</ThemedText>
-      </ThemedView>
-    );
-  }
-
-  return (
-    <ThemedView style={styles.mainSection}>
-        <View style={styles.container}>
-        {events.map(event => <EventCard key={event.id} event={event} />)}
-        </View>
-  </ThemedView>
-  );
 }

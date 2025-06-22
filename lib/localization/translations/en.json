@@ -1,0 +1,543 @@
+{
+    "tabs": {
+        "home": "Home",
+        "explore": "Explore",
+        "search": "Search",
+        "settings": "Settings"
+    },
+    "home": {
+        "title": "Home",
+        "showMyProfile": "Show My Profile",
+        "newEvent": "New Event",
+        "readHelp": "Read our Help & Guides",
+        "myRecentEvents": "My recent events",
+        "myActiveEvents": "My active events",
+        "myAchievements": "My Achievements"
+    },
+    "explore": {
+        "title": "Explore",
+        "newEvent": "Create your new event!",
+        "discoverEvents": "Discover other events",
+        "myRecentEvents": "My recent events"
+    },
+    "search": {
+        "title": "Search",
+        "backTitle": "Back",
+
+        "searchPlaceholder": "Search...",
+        "searchFilterButton": "Search filter",
+        "searchPanel": {
+            "title": "Search filters",
+            "eventTypeTitle": "Event type",
+            "eventType": {
+                "donation": "Donation",
+                "fundraising": "Fundraising",
+                "jackpot": "Jackpot"
+            },
+            "eventStatusTitle": "Event status",
+            "eventStatus": {
+                "inProgress": "In Progress",
+                "finished": "Finished", 
+                "failed": "Failed"
+            },
+            "progressTitle": "Current Event Progress",
+            "progress": {
+                "min": "Min",
+                "max": "Max"
+            },
+            "participantsTitle": "Number of participants",
+            "participants": {
+                "min": "Min",
+                "max": "Max"
+            },
+            "sortByTitle": "Sort by",
+            "sortBy": {
+                "byEventNameAsc": "By event name ascending (A-Z)",
+                "byEventNameDesc": "By event name descending (Z-A)",
+                "byDateAsc": "By date ascending (oldest first)",
+                "byDateDesc": "By date descending (newest first)",
+                "byProgressAsc": "By progress ascending",
+                "byProgressDesc": "By progress descending"
+            },
+
+            "noResults": "No events found",
+            "emptySearch": "Enter something to search",
+
+            "resetButton": "Reset",
+            "applyButton": "Apply"
+        }
+    },
+    "createEvent": {
+        "backTitle": "Back",
+        "title": "Create event",
+        "imageTitle": "Your event clicker!",
+        "eventTitle": "New event",
+        "eventDescription": "You are on the page for creating a new event. Here you need to set up its type, name and description. Set up a clicker image and set up one or more conditions for its end.",
+        "eventType": "Event type",
+        "eventName": "Event name",
+        "eventNamePlaceholder": "Enter event name",
+        "description": "Description",
+        "descriptionPlaceholder": "Enter event description",
+        "endConditions": "End conditions",
+        "createButton": "Create event",
+        "eventImageSection": {
+            "imageText": "Click to choose image",
+            "changeImage": "Click to change"
+        },
+        "eventTypeSection": {
+            "eventType": {
+                "donation": "Donation",
+                "donationDesc": "Collect donations for a specific cause or person. Perfect for charity events and personal fundraising.",
+                "fundraising": "Fundraising",
+                "fundraisingDesc": "Raise funds for a project or organization. Great for community initiatives and non-profit campaigns.",
+                "jackpot": "Jackpot",
+                "jackpotDesc": "Create a prize pool where participants can win rewards. Ideal for contests and giveaways."
+            },
+            "recipient": "Recipient",
+            "recipientDescription": "This type of event requires a recipient. Select the recipient in the field above:",
+            "searchRecipient": "Search recipient...",
+            "searchPlaceholder": "Search recipient...",
+            "noResults": "No users found"
+        },
+        "eventEndConditionsSection": {
+            "endConditionsDesc": "Create one or more groups of conditions! The event will end as soon as one of the groups of conditions is met.",
+            "endConditionsDesc2": "You can set the amount of the bank, the number of participants or the end time.",
+            "endConditionsDesc3": "Feel free to give each group its own name.",
+            "groupDesc": "To complete, the conditions of one group must be met simultaneously.",
+            "operator": {
+                "lt": "less",
+                "lte": "less or equal",
+                "gt": "greater",
+                "gte": "greater or equal"
+            },
+            "conditionLabel": {
+                "time": "TIME",
+                "bank": "BANK",
+                "people": "PEOPLE"
+            },
+            "conditionType": {
+                "time": "End date and time is:",
+                "bank": "Bank amount is:",
+                "people": "Number of participants is:"
+            },
+            "group": "Group",
+            "groupNamePlaceholder": "Group name",
+            "addGroup": "Add an alternative condition group (OR)",
+            "inputPlaceholder": "Number",
+            "inputPlaceholder2": "Amount"
+        }
+    },
+    "event": {
+        "backTitle": "Back",
+        "eventType": {
+            "donation": "Donation",
+            "fundraising": "Fundraising",
+            "jackpot": "Jackpot",
+            "unknown": "Unknown"
+        },
+        "status": {
+            "active": "Active",
+            "completed": "Completed",
+            "failed": "Failed"
+        },
+        "currentbankAmount": "Current bank amount",
+        "finalbankAmount": "Final bank amount",
+        "recipientLabel": "Recipient",
+        "selectAmount": "Select amount to donate!",
+        "balance": "Balance",
+        "yourCurrentDeposit": "Your current deposit",
+        "currentDeposit": "Current deposit",
+        "clickOnTheImageToJoinTheEvent": "Click on the image to join the event",
+        "description": "Description",
+        "associatedUsers": "Associated users",
+        "creator": "Creator",
+        "recipient": "Recipient",
+        "conditionsTitle": "Conditions",
+        "loading": "Loading...",
+        "errorLoadingUserInfo": "Error loading user info",
+
+        "operator": {
+            "lt": "less than",
+            "lte": "less than or equal to",
+            "gt": "greater than",
+            "gte": "greater than or equal to",
+            "equals": "equals"
+        },
+        "conditionType": {
+            "time": "End time is:",
+            "bank": "Bank amount is:",
+            "people": "Number of participants is:"
+        },
+        "group": "Group",
+        "progress": "Progress"
+    },
+    "profile": {
+        "backTitle": "Back",
+        "title": "Profile",
+        "createdEvents": "Events",
+        "winnedEvents": "Success",
+        "achievements": "Achievements",
+        "participatingEvents": "Joining"
+    },
+    "documentation": {
+        "backTitle": "Back",
+        "title": "Help & Guides",
+        "ourBestGuide": "Our best guide!",
+        "welcome": "Welcome to our guide on events! Here you will find an explanation of the most important aspects of using our platform and interacting with other users, as well as some useful tips.",
+        "eventTypes": "Types of Events You Can Create And Participate In",
+        "donation": "Donation",
+        "donationDesc": "A donation event is ideal when you want to support someone directly. Think of it as handing a digital envelope directly to a friend or cause you care about. The money goes directly from you to them once the conditions you specify are met. How they work will be described later.",
+        "donationPoint1": "You'll need to specify who receives the funds",
+        "donationPoint2": "Money moves in one direction: from you to them",
+        "donationPoint3": "The recipient gets the funds once some of the conditions set are achieved",
+        "fundraising": "Fundraising",
+        "fundraisingDesc": "Fundraising is your go-to when you want to gather support from multiple people for a single cause. Like a digital fundraiser, it allows many contributors to pool their resources toward one recipient, whether it's for a charity, a friend's medical bills, or a community project.",
+        "fundraisingPoint1": "You'll need to specify who receives the collected funds",
+        "fundraisingPoint2": "Multiple people can contribute to the same cause",
+        "fundraisingPoint3": "All funds go to the designated recipient when some of the conditions set are achieved",
+        "jackpot": "Jackpot",
+        "jackpotDesc": "Jackpot events add a bit of excitement! Everyone contributes to a common pool, and the winner is determined partly based on chance and partly on your share of the pot's total bank. It's like a friendly competition where participants have a chance to win the collected full bank.",
+        "jackpotPoint1": "No need to specify a recipient in advance",
+        "jackpotPoint2": "The winner is determined by the event's outcome",
+        "jackpotPoint3": "Creates a fun, competitive atmosphere among participants",
+        "creatingEvent": "Creating Your Perfect Event",
+        "setupIntro": "Ready to create an event? Here's what you'll need to set up:",
+        "setupName": "Name:",
+        "setupNameDesc": "Something catchy that describes your event",
+        "setupDescription": "Description:",
+        "setupDescriptionDesc": "Tell people what your event is all about",
+        "setupType": "Type:",
+        "setupTypeDesc": "Choose from DONATION, FUNDRAISING, or JACKPOT type",
+        "setupRecipient": "Recipient:",
+        "setupRecipientDesc": "Who will receive the funds (required for only DONATION and FUNDRAISING types)",
+        "setupImage": "Image:",
+        "setupImageDesc": "A picture that will be used as a clicker!",
+        "setupConditions": "End Conditions:",
+        "setupConditionsDesc": "What needs to happen for your event to complete",
+        "settingConditions": "Setting Event End Conditions",
+        "conditionsDesc": "End conditions are what make your event dynamic. They determine when your event finishes and funds are distributed. Think of them as finish lines or goals for your event. To finish and play the event, it is enough that at least one of the groups of conditions is met. The number of condition groups is not limited. Each group of conditions can consist of a maximum of three conditions: the bank amount condition, the number of participants condition, and the end time and date.",
+        "moneyGoals": "Money Goals (Bank Conditions)",
+        "moneyGoalsDesc": "Want your event to end when you've raised a certain amount? Use a bank condition.",
+        "moneyGoalsExample": "For example: \"Complete the event when we've collected $5,000 or more.\"",
+        "peopleGoals": "People Goals (Participants Conditions)",
+        "peopleGoalsDesc": "Here we are talking about the number of participants.",
+        "peopleGoalsExample": "For example: \"Complete the event when at least 10 people have joined in.\"",
+        "timeLimits": "Time Limits (Time Conditions)",
+        "timeLimitsDesc": "Need your event to end by a specific date? Use a time condition. But you shouldn't choose too big an end date, otherwise users may lose their interest",
+        "timeLimitsExample": "For example: \"End the event when we reach this specific date and time.\"",
+        "combiningConditions": "Combining Conditions",
+        "combiningDesc": "You can get creative by combining conditions. Here's how they work together:",
+        "combiningPoint1": "Conditions in the same group must ALL be met (using AND logic)",
+        "combiningPoint2": "Different groups work as alternatives (using OR logic)",
+        "combiningExample": "For example: \"End the event when EITHER (we've raised at least $10,000 AND have at least 5 participants) OR (we've reached our deadline date).\"",
+        "findingEvents": "Finding and Filtering Events",
+        "findingDesc": "When browsing events, you can narrow down your search with these filters:",
+        "findingPoint1": "Search by event name",
+        "findingPoint2": "Filter by event type (DONATION, FUNDRAISING, JACKPOT)",
+        "findingPoint3": "Filter by progress (how close or far an event is to completion)",
+        "findingPoint4": "Sort events by name, creation date, or progress",
+        "participating": "Participating in Events",
+        "participatingDesc": "Want to join an event? Here's what you need to know:",
+        "participatingPoint1": "The event must be active (not completed yet)",
+        "participatingPoint2": "You need enough funds in your account",
+        "participatingProgress": "Once you contribute, you can track the event's progress toward completion. The progress indicator shows how close the event is to meeting its conditions.",
+        "eventCompletion": "What Happens When an Event Completes?",
+        "completionDesc": "When an event reaches its conditions, a few things happen:",
+        "completionPoint1": "The event status changes from \"active\" to \"completed\"",
+        "completionPoint2": "No more contributions can be made",
+        "completionPoint3": "Funds are distributed according to the event type",
+        "completionDetails": "For DONATION and FUNDRAISING events, all funds go to the pre-specified recipient. For JACKPOT events, the system determines a winner based on random and users share of the pot's total bank.",
+        "behindScenes": "Behind the Scenes",
+        "behindScenesDesc": "Our system automatically checks if events have met their conditions:",
+        "behindScenesPoint1": "When someone contributes to an event",
+        "behindScenesPoint2": "When an existing contribution is updated",
+        "behindScenesPoint3": "Regularly for time-based conditions",
+        "behindScenesDetails": "This ensures that your event moves forward and completes precisely when its conditions are met, without any manual intervention needed.",
+        "proTips": "Pro Tips & Strategies",
+        "tipStandOut": "Make Your Event Stand Out",
+        "tipStandOutDesc": "Use a clear, eye-catching image and write a compelling description that tells a story. Events with personal stories get up to 3x more participants than generic ones!",
+        "tipTiming": "Time Your Events Strategically",
+        "tipTimingDesc": "Short-term events (1-7 days) tend to create urgency and get more engagement. If your event runs too long, participants may lose interest before conditions are met.",
+        "tipGoals": "Set Realistic Funding Goals",
+        "tipGoalsDesc": "Start with smaller targets for your first few events to build a track record of successful completions. Our data shows events with goals under $1,000 complete 72% of the time, while those over $10,000 complete only 23% of the time.",
+        "tipJackpot": "Jackpot Strategy",
+        "tipJackpotDesc": "For Jackpot events, remember that your chances of winning increase with your contribution size relative to the total pot. Making multiple smaller contributions over time can help maintain event visibility in the community feed.",
+        "tipConditions": "Combining Conditions Effectively",
+        "tipConditionsDesc": "When creating events, consider combining a realistic time condition with ambitious funding/participation goals. This ensures your event will eventually complete while still giving it a chance to exceed expectations.",
+        "getStarted": "Ready to Get Started?",
+        "getStartedDesc": "Now that you understand how events work, it's time to create your own! Whether you're raising funds for a cause, helping out a friend, or organizing a fun competition, our platform gives you the tools to make it happen.",
+        "topUpBalance": "How to top up your balance?",
+        "topUpBalanceDesc": "To top up your balance, you need to go to the settings page and open the Balance section."
+    },
+    "auth": {
+        "login": "Login",
+        "register": "Register",
+        "username": "Username",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm password",
+        "haveAccount": "Have an account?",
+        "notRegistered": "Not registered yet?",
+        "error": "Error",
+        "fillAllFields": "Please fill in all fields",
+        "passwordsNotMatch": "Passwords do not match",
+        "failedToRegister": "Failed to register. Try other username or email or try again later",
+        "failedToLogin": "Failed to login. Try other username or email or try again later",
+        "discordLoginFailed": "Discord login failed",
+        "discordButton": "Sign in with Discord",
+        "discordRegisterButton": "Sign up with Discord",
+        "or": "or",
+        "validation": {
+            "usernameMinLength": "Username must be at least 5 characters long",
+            "usernameMaxLength": "Username cannot exceed 30 characters",
+            "usernameInvalidChars": "Username can only contain letters, numbers and underscore",
+            "emailInvalid": "Please enter a valid email address",
+            "passwordMinLength": "Password must be at least 5 characters long",
+            "passwordMaxLength": "Password cannot exceed 100 characters",
+            "usernameAlreadyExists": "This username is already taken",
+            "emailAlreadyExists": "This email is already registered",
+            "currentPasswordIncorrect": "Current password is incorrect"
+        }
+    },
+    "alerts": {
+        "needAccess": "Need access",
+        "allowPhotoAccess": "Allow access to the photo gallery to select images",
+        "imageSizeError": "Image size should not exceed 5MB",
+        "imageSizeCheckError": "Failed to check image size",
+        "mustBeLoggedIn": "You must be logged in to participate",
+        "insufficientBalance": "Insufficient balance. Please top up your balance to continue",
+        "attention": "Attention",
+        "atLeastOneGroup": "There must be at least one condition group",
+        "conditionAlreadyAdded": "This condition type is already added to the group",
+        "eventCompleted": "Event Completed",
+        "eventNoLongerActive": "This event is no longer active",
+        "success": "Success",
+        "technicalError": "Technical error occurred while linking Discord account"
+    },
+    "settings": {
+        "title": "Settings",
+        "showMyProfile": "Show My Profile",
+        "profile": "Profile",
+        "account": "Account",
+        "app": "App",
+        "support": "Support",
+        "accountDesc": "Manage your account details",
+        "balance": "Balance",
+        "balanceDesc": "Add funds to your account",
+        "notifications": "Notifications",
+        "notificationsDesc": "Set up the notifications you want to receive",
+        "appearance": "Appearance",
+        "appearanceDesc": "Set up the appearance",
+        "language": "Language",
+        "languageDesc": "Set up the language",
+        
+        "helpAndFeedback": "Help and feedback",
+        "helpAndFeedbackDesc": "Get help",
+        "termsOfService": "Terms of service",
+        "termsOfServiceDesc": "Read the terms of service",
+        "privacySecurity": "Privacy and security",
+        "privacySecurityDesc": "Learn about security",
+        "privacyPolicy": "Privacy policy",
+        "privacyPolicyDesc": "Read the privacy policy",
+        "about": "About",
+        "appInfo": "App info",
+        "logout": "Logout",
+        
+        "alerts": {
+            "success": "Success",
+            "error": "Error",
+            "logoutTitle": "Logout",
+            "logoutMessage": "Are you sure you want to logout?",
+            "cancel": "Cancel",
+            "invalidAmount": "Invalid Amount",
+            "invalidAmountMessage": "Please enter a valid positive number",
+            "balanceUpdated": "Balance was successfully updated",
+            "failedToAddBalance": "Failed to add balance"
+        },
+        
+        "accountPage": {
+            "title": "Account",
+            "backTitle": "Back",
+            "username": "Username",
+            "newUsername": "New username",
+            "newUsernamePlaceholder": "Your new username",
+            "email": "Email",
+            "newEmail": "New email",
+            "newEmailPlaceholder": "Your new email",
+            "password": "Password",
+            "currentPassword": "Current password",
+            "newPassword": "New password",
+            "confirmPassword": "Confirm password",
+            "edit": "Edit",
+            "save": "Save",
+            "cancel": "Cancel",
+            "notSet": "Not set",
+            "validation": {
+                "usernameMinLength": "Username must be at least 5 characters long",
+                "usernameMaxLength": "Username cannot exceed 30 characters",
+                "usernameInvalidChars": "Username can only contain letters, numbers and underscore",
+                "emailInvalid": "Please enter a valid email address",
+                "passwordEmpty": "Password cannot be empty",
+                "passwordMinLength": "Password must be at least 5 characters long",
+                "passwordMaxLength": "Password cannot exceed 100 characters",
+                "currentPasswordRequired": "Current password is required",
+                "passwordsNotMatch": "Passwords do not match",
+                "passwordSameAsCurrent": "New password cannot be the same as current password",
+                "usernameAlreadyExists": "This username is already taken",
+                "emailAlreadyExists": "This email is already registered"
+            },
+            "success": {
+                "usernameUpdated": "Username updated successfully",
+                "emailUpdated": "Email updated successfully",
+                "passwordUpdated": "Password changed successfully"
+            },
+            "errors": {
+                "updateUsernameFailed": "Failed to update username",
+                "updateEmailFailed": "Failed to update email",
+                "updatePasswordFailed": "Failed to change password"
+            },
+            "discord": {
+                "linked": "Linked",
+                "linkAccount": "Link Discord Account", 
+                "linking": "Linking...",
+                "description": "Link your Discord account to log in easily and share your achievements",
+                "errors": {
+                    "alreadyLinkedToUser": "Discord account already linked to this user",
+                    "alreadyLinkedToAnother": "This Discord account is already linked to another user",
+                    "technicalError": "Technical error occurred while linking Discord account"
+                },
+                "success": {
+                    "linked": "Discord account successfully linked"
+                }
+            }
+        },
+        "balancePage": {
+            "title": "Balance",
+            "backTitle": "Back",
+            "balance": "Balance",
+            "addFunds": "Add amount",
+            "amount": "Amount",
+            "processing": "Processing..."
+        },
+        "notificationsPage": {
+            "title": "Notifications",
+            "backTitle": "Back",
+            "pushNotifications": "Push notifications",
+            "emailNotifications": "Email notifications",
+            "pushNotificationsArray": {
+                "pushNotifications": "Push oznámení",
+                "eventsReminders": "Events reminders",
+                "newMessages": "New messages",
+                "systemUpdates": "System updates"
+            },
+            "emailNotificationsArray": {
+                "marketingEmails": "Marketing emails",
+                "eventsReminders": "Events reminders",
+                "newMessages": "New messages"
+            }
+        },
+        "privacyAndSecurityPage": {
+            "title": "Privacy and security",
+            "backTitle": "Back"
+        },
+        "appearancePage": {
+            "title": "Appearance",
+            "backTitle": "Back",
+            "automatic": "Automatic",
+            "dark": "Dark",
+            "light": "Light"
+        },
+        "languagePage": {
+            "title": "Language",
+            "backTitle": "Back",
+            "language": {
+                "english": "English",
+                "czech": "Czech"
+            }
+        },
+        "helpPage": {
+            "title": "Help",
+            "backTitle": "Back",
+            "support": "Support",
+            "help": "Help and support",
+            "questions": "Frequently asked questions",
+            "contact": "Contact us"
+        },
+        "termsPage": {
+            "title": "Terms of service",
+            "backTitle": "Back",
+            "terms": "Terms"
+        },
+        "privacyPolicyPage": {
+            "title": "Privacy policy",
+            "backTitle": "Back",
+            "privacyPolicy": "Privacy policy"
+        },
+        "infoPage": {
+            "title": "App info",
+            "backTitle": "Back",
+            "info": "App info",
+            "version": "Version",
+            "about": "About",
+            "diplomaInfo": "This project was developed as a bachelor's thesis at the Faculty of Information Technology, Czech Technical University in Prague during the period 2025 - 2026."
+        }
+    },
+    "eventCard": {
+        "activeNow": "Active now",
+        "progress": "Progress"
+    },
+    "else": {
+        "createNewEvent": "Create new event"
+    },
+    "achievements": {
+        "title": "Achievements",
+        "noAchievements": "No achievements found",
+        "loading": "Loading achievements...",
+        "error": "Error loading achievements",
+        "retry": "Retry",
+        "unlockedOn": "Unlocked on",
+        "progress": "Progress",
+        "completed": "Completed",
+        "categories": {
+            "starter": "Starter",
+            "banker": "Banker", 
+            "participant": "Participant",
+            "special": "Special"
+        },
+        "list": {
+            "FIRST_STEPS_1": {
+                "name": "First Steps",
+                "description": "Create your first event and reach $5 in your account"
+            },
+            "BANKER_1": {
+                "name": "Rising Investor",
+                "description": "Accumulate $50 in your account balance"
+            },
+            "BANKER_2": {
+                "name": "Wealth Builder",
+                "description": "Reach $100 in your account balance"
+            },
+            "BANKER_3": {
+                "name": "Master Investor",
+                "description": "Achieve $500 in your account balance"
+            },
+            "ACTIVE_PARTICIPANT_1": {
+                "name": "Community Starter",
+                "description": "Create 2 events and participate in 5 completed events"
+            },
+            "ACTIVE_PARTICIPANT_2": {
+                "name": "Community Leader",
+                "description": "Create 5 events and participate in 10 completed events"
+            }
+        },
+        "criteria": {
+            "EVENT_COUNT_CREATED": "Events created",
+            "EVENT_COUNT_COMPLETED": "Events completed",
+            "USER_BANK": "Account balance amount",
+            "EVENT_INCOME": "Event earnings",
+            "EVENT_PARTICIPANTS": "Event participants",
+            "EVENT_TIME": "Event duration",
+            "USER_ACTIVITY": "Activity streak"
+        }
+    }
+} 
