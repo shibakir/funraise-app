@@ -20,10 +20,71 @@ export default function RegisterForm() {
     const primaryColor = useThemeColor({}, 'primary');
     const textColor = useThemeColor({}, 'text');
     const surfaceColor = useThemeColor({}, 'surface');
-    const errorColor = useThemeColor({}, 'error');
+
+    // Validate username
+    const validateUsername = (username: string): string | null => {
+        if (!username.trim()) {
+            return t('auth.fillAllFields');
+        }
+        if (username.length < 5) {
+            return t('auth.validation.usernameMinLength');
+        }
+        if (username.length > 30) {
+            return t('auth.validation.usernameMaxLength');
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            return t('auth.validation.usernameInvalidChars');
+        }
+        return null;
+    };
+
+    // Validate email
+    const validateEmail = (email: string): string | null => {
+        if (!email.trim()) {
+            return t('auth.fillAllFields');
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return t('auth.validation.emailInvalid');
+        }
+        return null;
+    };
+
+    // Validate password
+    const validatePassword = (password: string): string | null => {
+        if (!password) {
+            return t('auth.fillAllFields');
+        }
+        if (password.length < 5) {
+            return t('auth.validation.passwordMinLength');
+        }
+        if (password.length > 100) {
+            return t('auth.validation.passwordMaxLength');
+        }
+        return null;
+    };
   
     const handleRegister = async () => {
-        if (!username || !email || !password || !confirmPassword) {
+        // Validate all fields
+        const usernameError = validateUsername(username);
+        if (usernameError) {
+            Alert.alert(t('auth.error'), usernameError);
+            return;
+        }
+
+        const emailError = validateEmail(email);
+        if (emailError) {
+            Alert.alert(t('auth.error'), emailError);
+            return;
+        }
+
+        const passwordError = validatePassword(password);
+        if (passwordError) {
+            Alert.alert(t('auth.error'), passwordError);
+            return;
+        }
+
+        if (!confirmPassword) {
             Alert.alert(t('auth.error'), t('auth.fillAllFields'));
             return;
         }
@@ -34,10 +95,21 @@ export default function RegisterForm() {
         }
 
         try {
-            await register(username, email, password);
+            await register(username.trim(), email.trim().toLowerCase(), password);
             router.replace('/(app)/(tabs)/home');
         } catch (error: any) {
-            Alert.alert(t('auth.error'), error.message || t('auth.failedToRegister'));
+            // Handle server-side validation errors
+            //let errorMessage = error.message || t('auth.failedToRegister');
+            let errorMessage = t('auth.failedToRegister');
+        
+            // Map server errors to proper translations
+            if (error.message?.toLowerCase().includes('username') && error.message?.toLowerCase().includes('exists')) {
+                errorMessage = t('auth.validation.usernameAlreadyExists');
+            } else if (error.message?.toLowerCase().includes('email') && error.message?.toLowerCase().includes('exists')) {
+                errorMessage = t('auth.validation.emailAlreadyExists');
+            }
+            
+            Alert.alert(t('auth.error'), errorMessage);
         }
     };
   
@@ -64,6 +136,8 @@ export default function RegisterForm() {
                 onChangeText={setUsername}
                 autoCapitalize="none"
                 textContentType="none"
+                autoComplete="off"
+                importantForAutofill="no"
             />
 
             <TextInput
@@ -75,6 +149,8 @@ export default function RegisterForm() {
                 autoCapitalize="none"
                 keyboardType="email-address"
                 textContentType="none"
+                autoComplete="off"
+                importantForAutofill="no"
             />
 
             <TextInput
@@ -85,6 +161,8 @@ export default function RegisterForm() {
                 onChangeText={setPassword}
                 secureTextEntry
                 textContentType="none"
+                autoComplete="off"
+                importantForAutofill="no"
             />
 
             <TextInput

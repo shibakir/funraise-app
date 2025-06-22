@@ -283,12 +283,23 @@
         "error": "Chyba",
         "fillAllFields": "Vyplňte prosím všechna pole",
         "passwordsNotMatch": "Hesla se neshodují",
-        "failedToRegister": "Registrace se nezdařila",
-        "failedToLogin": "Přihlášení se nezdařilo",
+        "failedToRegister": "Registrace se nezdařila. Zkuste jiné uživatelské jméno nebo e-mail nebo zkuste to znovu později.",
+        "failedToLogin": "Přihlášení se nezdařilo. Zkuste jiné uživatelské jméno nebo e-mail nebo zkuste to znovu později.",
         "discordLoginFailed": "Přihlášení přes Discord se nezdařilo",
         "discordButton": "Přihlásit se přes Discord",
         "discordRegisterButton": "Registrovat se přes Discord",
-        "or": "nebo"
+        "or": "nebo",
+        "validation": {
+            "usernameMinLength": "Uživatelské jméno musí mít alespoň 5 znaků",
+            "usernameMaxLength": "Uživatelské jméno nesmí přesáhnout 30 znaků",
+            "usernameInvalidChars": "Uživatelské jméno může obsahovat pouze písmena, číslice a podtržítko",
+            "emailInvalid": "Zadejte prosím platnou e-mailovou adresu",
+            "passwordMinLength": "Heslo musí mít alespoň 5 znaků",
+            "passwordMaxLength": "Heslo nesmí přesáhnout 100 znaků",
+            "usernameAlreadyExists": "Toto uživatelské jméno je již obsazeno",
+            "emailAlreadyExists": "Tento e-mail je již registrován",
+            "currentPasswordIncorrect": "Aktuální heslo je nesprávné"
+        }
     },
     "alerts": {
         "needAccess": "Potřebujete přístup",
@@ -364,16 +375,18 @@
             "cancel": "Zrušit",
             "notSet": "Není nastaveno",
             "validation": {
-                "usernameMinLength": "Uživatelské jméno musí mít alespoň 3 znaky",
+                "usernameMinLength": "Uživatelské jméno musí mít alespoň 5 znaků",
                 "usernameMaxLength": "Uživatelské jméno nesmí přesáhnout 30 znaků",
                 "usernameInvalidChars": "Uživatelské jméno může obsahovat pouze písmena, číslice a podtržítko",
                 "emailInvalid": "Zadejte prosím platnou e-mailovou adresu",
                 "passwordEmpty": "Heslo nemůže být prázdné",
-                "passwordMinLength": "Heslo musí mít alespoň 6 znaků",
+                "passwordMinLength": "Heslo musí mít alespoň 5 znaků",
                 "passwordMaxLength": "Heslo nesmí přesáhnout 100 znaků",
                 "currentPasswordRequired": "Je třeba zadat aktuální heslo",
                 "passwordsNotMatch": "Nová hesla se neshodují",
-                "passwordSameAsCurrent": "Nové heslo nemůže být stejné jako současné"
+                "passwordSameAsCurrent": "Nové heslo nemůže být stejné jako současné",
+                "usernameAlreadyExists": "Toto uživatelské jméno je již obsazeno",
+                "emailAlreadyExists": "Tento e-mail je již registrován"
             },
             "success": {
                 "usernameUpdated": "Uživatelské jméno bylo úspěšně aktualizováno",

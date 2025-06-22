@@ -281,12 +281,23 @@
         "error": "Error",
         "fillAllFields": "Please fill in all fields",
         "passwordsNotMatch": "Passwords do not match",
-        "failedToRegister": "Failed to register",
-        "failedToLogin": "Failed to login",
+        "failedToRegister": "Failed to register. Try other username or email or try again later",
+        "failedToLogin": "Failed to login. Try other username or email or try again later",
         "discordLoginFailed": "Discord login failed",
         "discordButton": "Sign in with Discord",
         "discordRegisterButton": "Sign up with Discord",
-        "or": "or"
+        "or": "or",
+        "validation": {
+            "usernameMinLength": "Username must be at least 5 characters long",
+            "usernameMaxLength": "Username cannot exceed 30 characters",
+            "usernameInvalidChars": "Username can only contain letters, numbers and underscore",
+            "emailInvalid": "Please enter a valid email address",
+            "passwordMinLength": "Password must be at least 5 characters long",
+            "passwordMaxLength": "Password cannot exceed 100 characters",
+            "usernameAlreadyExists": "This username is already taken",
+            "emailAlreadyExists": "This email is already registered",
+            "currentPasswordIncorrect": "Current password is incorrect"
+        }
     },
     "alerts": {
         "needAccess": "Need access",
@@ -362,16 +373,18 @@
             "cancel": "Cancel",
             "notSet": "Not set",
             "validation": {
-                "usernameMinLength": "Username must be at least 3 characters long",
+                "usernameMinLength": "Username must be at least 5 characters long",
                 "usernameMaxLength": "Username cannot exceed 30 characters",
                 "usernameInvalidChars": "Username can only contain letters, numbers and underscore",
                 "emailInvalid": "Please enter a valid email address",
                 "passwordEmpty": "Password cannot be empty",
-                "passwordMinLength": "Password must be at least 6 characters long",
+                "passwordMinLength": "Password must be at least 5 characters long",
                 "passwordMaxLength": "Password cannot exceed 100 characters",
                 "currentPasswordRequired": "Current password is required",
                 "passwordsNotMatch": "Passwords do not match",
-                "passwordSameAsCurrent": "New password cannot be the same as current password"
+                "passwordSameAsCurrent": "New password cannot be the same as current password",
+                "usernameAlreadyExists": "This username is already taken",
+                "emailAlreadyExists": "This email is already registered"
             },
             "success": {
                 "usernameUpdated": "Username updated successfully",

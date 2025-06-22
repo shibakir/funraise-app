@@ -29,17 +29,6 @@ export const useProfile = () => {
         try {
             setError(null);
             
-            // In mock mode, just update the AuthContext
-            const updatedData: any = {};
-            if (data.username) updatedData.username = data.username;
-            if (data.email) updatedData.email = data.email;
-            
-            updateUserData(updatedData);
-            
-            console.log('Profile updated successfully (mock mode):', updatedData);
-            
-            // When the backend is ready, use this:
-            /*
             const result = await updateUserMutation({
                 variables: {
                     id: userId,
@@ -48,17 +37,29 @@ export const useProfile = () => {
             });
             
             if (result.data?.updateUser) {
+                // Update user data in AuthContext
                 updateUserData({
                     username: result.data.updateUser.username,
-                    email: result.data.updateUser.email
+                    email: result.data.updateUser.email,
+                    balance: result.data.updateUser.balance,
+                    image: result.data.updateUser.image
                 });
                 return result.data.updateUser;
             }
-            */
             
-            return { id: userId, ...updatedData };
+            throw new Error('No data returned from update');
         } catch (err: any) {
-            const message = err.message || 'Error updating profile';
+            let message = 'Error updating profile';
+            
+            // Handle GraphQL errors with detailed messages from server
+            if (err.graphQLErrors && err.graphQLErrors.length > 0) {
+                message = err.graphQLErrors[0].message;
+            } else if (err.networkError) {
+                message = 'Network error. Please check your connection.';
+            } else if (err.message) {
+                message = err.message;
+            }
+            
             setError(message);
             throw new Error(message);
         }
@@ -67,6 +68,6 @@ export const useProfile = () => {
     return {
         updateProfile,
         loading: graphqlLoading,
-        error: error || graphqlError || null
+        error: error || (graphqlError ? graphqlError.message : null)
     };
 }; 

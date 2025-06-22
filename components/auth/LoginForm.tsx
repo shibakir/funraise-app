@@ -31,7 +31,8 @@ export default function LoginForm() {
         try {
             await login(email, password);
         } catch (error: any) {
-            Alert.alert(t('auth.error'), error.message || t('auth.failedToLogin'));
+            //Alert.alert(t('auth.error'), error.message || t('auth.failedToLogin'));
+            Alert.alert(t('auth.error'), t('auth.failedToLogin'));
         }
     };
 

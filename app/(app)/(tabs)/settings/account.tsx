@@ -62,12 +62,54 @@ export default function AccountScreen() {
     const headerText = useThemeColor({}, 'headerText');
     const placeholderColor = useThemeColor({}, 'placeholder');
 
+    // Map server error messages to translation keys
+    const getErrorMessage = (errorMessage: string): string => {
+        const errorMap: { [key: string]: string } = {
+            'Username already exists': t('settings.accountPage.validation.usernameAlreadyExists'),
+            'Email already exists': t('settings.accountPage.validation.emailAlreadyExists'), 
+            'Current password is incorrect': t('settings.accountPage.validation.currentPasswordRequired'),
+            'User not found': t('auth.error'),
+            'Failed to update user': t('settings.accountPage.errors.updateUsernameFailed'),
+            'Validation failed': t('auth.fillAllFields'),
+        };
+
+        // Check if we have a translation for this exact error
+        if (errorMap[errorMessage]) {
+            return errorMap[errorMessage];
+        }
+
+        // Check if error message contains known patterns
+        if (errorMessage.toLowerCase().includes('username')) {
+            if (errorMessage.toLowerCase().includes('already') || errorMessage.toLowerCase().includes('exists')) {
+                return t('settings.accountPage.validation.usernameAlreadyExists');
+            }
+            return t('settings.accountPage.errors.updateUsernameFailed');
+        }
+
+        if (errorMessage.toLowerCase().includes('email')) {
+            if (errorMessage.toLowerCase().includes('already') || errorMessage.toLowerCase().includes('exists')) {
+                return t('settings.accountPage.validation.emailAlreadyExists');
+            }
+            return t('settings.accountPage.errors.updateEmailFailed');
+        }
+
+        if (errorMessage.toLowerCase().includes('password')) {
+            if (errorMessage.toLowerCase().includes('incorrect') || errorMessage.toLowerCase().includes('current')) {
+                return t('settings.accountPage.validation.currentPasswordRequired');
+            }
+            return t('settings.accountPage.errors.updatePasswordFailed');
+        }
+
+        // Return original message if no mapping found
+        return errorMessage;
+    };
+
     // Validate username
     const validateUsername = (username: string): string | null => {
         if (!username.trim()) {
             return t('auth.fillAllFields');
         }
-        if (username.length < 3) {
+        if (username.length < 5) {
             return t('settings.accountPage.validation.usernameMinLength');
         }
         if (username.length > 30) {
@@ -96,7 +138,7 @@ export default function AccountScreen() {
         if (!password) {
             return t('settings.accountPage.validation.passwordEmpty');
         }
-        if (password.length < 6) {
+        if (password.length < 5) {
             return t('settings.accountPage.validation.passwordMinLength');
         }
         if (password.length > 100) {
@@ -132,7 +174,7 @@ export default function AccountScreen() {
             Alert.alert(t('settings.alerts.success'), t('settings.accountPage.success.usernameUpdated'));
         } catch (error: any) {
             console.error('Error updating username:', error);
-            Alert.alert(t('auth.error'), error.message || t('settings.accountPage.errors.updateUsernameFailed'));
+            Alert.alert(t('auth.error'), getErrorMessage(error.message || ''));
         }
     };
     
@@ -163,7 +205,7 @@ export default function AccountScreen() {
             Alert.alert(t('settings.alerts.success'), t('settings.accountPage.success.emailUpdated'));
         } catch (error: any) {
             console.error('Error updating email:', error);
-            Alert.alert(t('auth.error'), error.message || t('settings.accountPage.errors.updateEmailFailed'));
+            Alert.alert(t('auth.error'), getErrorMessage(error.message || ''));
         }
     };
   
@@ -212,7 +254,7 @@ export default function AccountScreen() {
             Alert.alert(t('settings.alerts.success'), t('settings.accountPage.success.passwordUpdated'));
         } catch (error: any) {
             console.error('Error changing password:', error);
-            Alert.alert(t('auth.error'), error.message || t('settings.accountPage.errors.updatePasswordFailed'));
+            Alert.alert(t('auth.error'), getErrorMessage(error.message || ''));
         }
     };
     
@@ -277,7 +319,7 @@ export default function AccountScreen() {
                                         
                                         {error && (
                                             <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                                                {typeof error === 'string' ? error : error.message}
+                                                {typeof error === 'string' ? error : String(error)}
                                             </ThemedText>
                                         )}
                                         
@@ -337,7 +379,7 @@ export default function AccountScreen() {
                                             
                                             {error && (
                                                 <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                                                    {typeof error === 'string' ? error : error.message}
+                                                    {typeof error === 'string' ? error : String(error)}
                                                 </ThemedText>
                                             )}
                                             
@@ -420,7 +462,7 @@ export default function AccountScreen() {
                                         
                                         {error && (
                                             <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                                                {typeof error === 'string' ? error : error.message}
+                                                {typeof error === 'string' ? error : String(error)}
                                             </ThemedText>
                                         )}
                                         
