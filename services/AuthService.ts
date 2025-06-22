@@ -1,4 +1,4 @@
-import { client } from "@/lib/graphql/client";
+import { apolloClient as client } from "@/lib/graphql/client";
 import { LOGIN_MUTATION, REGISTER_MUTATION, DISCORD_AUTH_MUTATION, DISCORD_AUTH_CODE_MUTATION, LINK_DISCORD_ACCOUNT_MUTATION, REFRESH_TOKEN_MUTATION, LOGOUT_MUTATION } from "@/lib/graphql/queries";
 import { AuthResponse } from "@/lib/graphql/types";
 import * as SecureStore from 'expo-secure-store';
@@ -29,7 +29,7 @@ export default class AuthService {
                 throw new Error('Login failed');
             }
         } catch (error: any) {
-            console.error('AuthService login error:', error);
+            //console.error('AuthService login error:', error);
             throw new Error(error.message || 'Login failed');
         }
     }
@@ -58,7 +58,7 @@ export default class AuthService {
                 throw new Error('Registration failed');
             }
         } catch (error: any) {
-            console.error('AuthService registration error:', error);
+            //console.error('AuthService registration error:', error);
             throw new Error(error.message || 'Registration failed');
         }
     }
@@ -87,7 +87,7 @@ export default class AuthService {
                 throw new Error('Discord authentication failed');
             }
         } catch (error: any) {
-            console.error('AuthService Discord auth error:', error);
+            //console.error('AuthService Discord auth error:', error);
             throw new Error(error.message || 'Discord authentication failed');
         }
     }
@@ -116,7 +116,7 @@ export default class AuthService {
                 throw new Error('Discord authentication failed');
             }
         } catch (error: any) {
-            console.error('AuthService Discord auth code error:', error);
+            //console.error('AuthService Discord auth code error:', error);
             throw new Error(error.message || 'Discord authentication failed');
         }
     }
@@ -136,7 +136,7 @@ export default class AuthService {
                 throw new Error('Failed to link Discord account');
             }
         } catch (error: any) {
-            console.error('AuthService link Discord account error:', error);
+            //console.error('AuthService link Discord account error:', error);
             throw new Error(error.message || 'Failed to link Discord account');
         }
     }
@@ -175,6 +175,9 @@ export default class AuthService {
     }
 
     static async refreshToken(refreshToken: string): Promise<{ data: AuthResponse }> {
+
+        //console.log('call AuthService.refreshToken() refreshToken', refreshToken);
+
         try {
             const response = await client.mutate({
                 mutation: REFRESH_TOKEN_MUTATION,
@@ -182,6 +185,9 @@ export default class AuthService {
             });
 
             if (response.data?.refreshToken) {
+
+                //console.log('AuthService.refreshToken() response', response);
+
                 // Save new tokens to SecureStore
                 await SecureStore.setItemAsync('accessToken', response.data.refreshToken.accessToken);
                 await SecureStore.setItemAsync('refreshToken', response.data.refreshToken.refreshToken);
@@ -198,7 +204,7 @@ export default class AuthService {
                 throw new Error('Token refresh failed');
             }
         } catch (error: any) {
-            console.error('AuthService refresh token error:', error);
+            //console.error('AuthService refresh token error:', error);
             
             // If there is an error updating the token, delete the old tokens
             await SecureStore.deleteItemAsync('accessToken');
@@ -219,7 +225,7 @@ export default class AuthService {
             const refreshToken = await SecureStore.getItemAsync('refreshToken');
             return !!(accessToken && refreshToken);
         } catch (error) {
-            console.error('Error checking authentication status:', error);
+            //console.error('Error checking authentication status:', error);
             return false;
         }
     }
@@ -234,7 +240,7 @@ export default class AuthService {
             const refreshToken = await SecureStore.getItemAsync('refreshToken');
             return { accessToken, refreshToken };
         } catch (error) {
-            console.error('Error getting tokens:', error);
+            //console.error('Error getting tokens:', error);
             return { accessToken: null, refreshToken: null };
         }
     }
@@ -248,13 +254,13 @@ export default class AuthService {
             const userString = await SecureStore.getItemAsync('user');
             return userString ? JSON.parse(userString) : null;
         } catch (error) {
-            console.error('Error getting current user:', error);
+            //console.error('Error getting current user:', error);
             return null;
         }
     }
 
     /**
-     * Proactive token refresh if it is about to expire
+     * Refresh token only if needed (expired or about to expire)
      * @returns {Promise<boolean>} true if the token was refreshed
      */
     static async refreshTokenIfNeeded(): Promise<boolean> {
@@ -263,13 +269,16 @@ export default class AuthService {
             const { accessToken, refreshToken } = await this.getTokens();
             
             if (!accessToken || !refreshToken) {
+                //console.log('No tokens found');
                 return false;
             }
 
+            //console.log('Token expired, refreshing...');
             try {
                 const result = await this.refreshToken(refreshToken);
                 return true;
             } catch (error: any) {
+                //console.error('Token refresh failed:', error);
                 if (error.message?.includes('Invalid refresh token') ||
                     error.message?.includes('Refresh token expired') ||
                     error.message?.includes('Refresh token not found')) {
@@ -281,7 +290,7 @@ export default class AuthService {
                 return false;
             }
         } catch (error) {
-            console.error('Error while proactive token refresh:', error);
+            //console.error('Error while checking token refresh:', error);
             return false;
         }
     }
@@ -301,11 +310,11 @@ export default class AuthService {
                                error.message?.includes('Token expired');
 
             if (isAuthError) {
-                console.log('Auth error detected, attempting token refresh...');
+                //console.log('Auth error detected, attempting token refresh...');
                 
                 const refreshed = await this.refreshTokenIfNeeded();
                 if (refreshed) {
-                    console.log('Token refreshed, retrying operation...');
+                    //console.log('Token refreshed, retrying operation...');
                     return await operation();
                 }
             }

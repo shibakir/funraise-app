@@ -142,7 +142,7 @@ export default function EventScreen() {
     }
 
     return (
-        <ThemedView style={styles.container}>
+        <>
             <Stack.Screen
                 options={{
                     title: event?.name || 'Event',
@@ -151,8 +151,9 @@ export default function EventScreen() {
                     headerStyle: { backgroundColor: headerBackground },
                     headerTitleStyle: { color: headerText },
                 }}
-            />      
-            <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1 }}>
+            />
+            <ThemedView style={styles.container}>     
+                <ScrollView style={styles.scrollView} contentContainerStyle={{ flexGrow: 1 }}>
                 {loading && initialLoadComplete && (
                     <View style={styles.refreshIndicator}>
                         <ActivityIndicator size="small" color={primaryColor} />
@@ -213,6 +214,7 @@ export default function EventScreen() {
                 )}
             </ScrollView>
         </ThemedView>
+        </>
     );
 }
 

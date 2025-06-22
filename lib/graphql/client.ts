@@ -6,8 +6,8 @@ import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
 import * as SecureStore from 'expo-secure-store';
 import { router } from "expo-router";
-import AuthService from "@/services/AuthService";
 import { Observable } from '@apollo/client/utilities';
+import { REFRESH_TOKEN_MUTATION } from './queries';
 
 /**
  * Simple Apollo Client configuration for GraphQL
@@ -19,43 +19,81 @@ import { Observable } from '@apollo/client/utilities';
  * 
  */
 
+// Helper functions for token management (to avoid circular dependency)
+const refreshTokenFlow = async (): Promise<boolean> => {
+    try {
+        const refreshToken = await SecureStore.getItemAsync('refreshToken');
+        
+        if (!refreshToken) {
+            //console.log('No refresh token found');
+            return false;
+        }
+
+        // Create a temporary HTTP client for token refresh to avoid circular dependency
+        const tempClient = new ApolloClient({
+            link: createHttpLink({ uri: process.env.FUNRAISE_API_URL || 'http://localhost:3000/graphql' }),
+            cache: new InMemoryCache(),
+        });
+
+        const response = await tempClient.mutate({
+            mutation: REFRESH_TOKEN_MUTATION,
+            variables: { refreshToken }
+        });
+
+        if (response.data?.refreshToken) {
+            // Save new tokens
+            await SecureStore.setItemAsync('accessToken', response.data.refreshToken.accessToken);
+            await SecureStore.setItemAsync('refreshToken', response.data.refreshToken.refreshToken);
+            await SecureStore.setItemAsync('user', JSON.stringify(response.data.refreshToken.user));
+            
+            //console.log('Token refreshed successfully');
+            return true;
+        }
+        
+        return false;
+    } catch (error: any) {
+        //console.error('Token refresh error:', error);
+        return false;
+    }
+};
+
+const clearAuthData = async (): Promise<void> => {
+    try {
+        await SecureStore.deleteItemAsync('accessToken');
+        await SecureStore.deleteItemAsync('refreshToken');
+        await SecureStore.deleteItemAsync('user');
+        //console.log('Auth data cleared');
+    } catch (error) {
+        //console.error('Error clearing auth data:', error);
+    }
+};
+
 // Flag to prevent multiple token updates
 let isRefreshingToken = false;
 
 // HTTP link to the GraphQL server
 const httpLink = createHttpLink({
-    uri: 'http://localhost:3000/graphql',
+    uri: process.env.FUNRAISE_API_URL || 'http://localhost:3000/graphql',
 });
 
-// Function to create a WebSocket link with an actual token
+// Function to create a WebSocket link without authentication
 const createWebSocketLink = () => {
     return new GraphQLWsLink(createClient({
-        url: 'ws://localhost:3000/graphql',
-        connectionParams: async () => {
-            try {
-                // Always try to update the token before WebSocket connection
-                await AuthService.refreshTokenIfNeeded();
-                const { accessToken } = await AuthService.getTokens();
-                console.log(`WebSocket connecting with fresh token: ${accessToken?.substring(0, 20)}...`);
-                return {
-                    authorization: accessToken ? `Bearer ${accessToken}` : '',
-                };
-            } catch (error) {
-                console.error('Error getting token for WebSocket:', error);
-                return { authorization: '' };
-            }
+        url: process.env.FUNRAISE_WEBSOCKET_URL || 'ws://localhost:3000/graphql',
+        connectionParams: () => {
+            // WebSocket connections don't require authentication
+            //console.log('WebSocket connecting without authentication...');
+            return {};
         },
         lazy: true,
-        retryAttempts: 5, // More attempts
+        retryAttempts: 5,
         retryWait: async (retries) => {
-            console.log(`WebSocket retry attempt ${retries}, refreshing token...`);
-            // Before each attempt, update the token
-            await AuthService.refreshTokenIfNeeded();
-            return new Promise(resolve => setTimeout(resolve, 1000 * retries));
+            //console.log(`WebSocket retry attempt ${retries}...`);
+            return new Promise(resolve => setTimeout(resolve, 500 * retries));
         },
         on: {
             error: (error) => {
-                console.error('WebSocket error:', error);
+                //console.error('WebSocket error:', error);
             },
             closed: (event) => {
                 //console.log('WebSocket closed:', event);
@@ -95,13 +133,13 @@ const authLink = setContext(async (_, { headers }) => {
 
 // Error handling with automatic token refresh
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
-    console.log(`ERROR LINK TRIGGERED for operation: ${operation.operationName}`);
+    //console.log(`ERROR LINK TRIGGERED for operation: ${operation.operationName}`);
     
-    // Log errors
+    // Log errors for debugging
     /*
     if (graphQLErrors) {
         graphQLErrors.forEach(({ message, locations, path }) => {
-            //console.error(`GraphQL error: ${message}, Path: ${path}`);
+            console.error(`GraphQL error: ${message}, Path: ${path}`);
         });
     }
     if (networkError) {
@@ -113,20 +151,21 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
         error.message.includes('Unauthorized') ||
         error.message.includes('Invalid token') ||
         error.message.includes('Token expired') ||
-        error.message.includes('Authentication required')
+        error.message.includes('Authentication required') ||
+        error.message.includes('Invalid or expired token')
     );
 
     const isNetworkAuthError = networkError && 'statusCode' in networkError && 
         (networkError as any).statusCode === 401;
 
-    // If there is an authorization error, try to update the token
+    // If there is an authorization error and not already refreshing, try to update the token
     if ((hasAuthError || isNetworkAuthError) && !isRefreshingToken) {
-        //console.log(`AUTH ERROR DETECTED! Starting token refresh process...`);
+       // console.log(`AUTH ERROR DETECTED! Starting token refresh process...`);
         isRefreshingToken = true;
 
         return new Observable(observer => {
-            //console.log(`Calling AuthService.refreshTokenIfNeeded()...`);
-            AuthService.refreshTokenIfNeeded()
+            //console.log(`Calling token refresh...`);
+            refreshTokenFlow()
                 .then(async (refreshed) => {
                     if (refreshed) {
                         //console.log('Token refreshed successfully, retrying operation...');
@@ -157,9 +196,9 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
                             }
                         });
                     } else {
-                        // If the token refresh fails, redirect to login
+                        // If the token refresh fails, clear data and redirect to login
                         //console.log('Failed to refresh token, redirecting to login');
-                        AuthService.logout().then(() => {
+                        clearAuthData().then(() => {
                             router.replace('/(auth)/login');
                         });
                         observer.error(new Error('Authentication failed'));
@@ -167,7 +206,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
                 })
                 .catch((error) => {
                     //console.error('Token refresh failed:', error);
-                    AuthService.logout().then(() => {
+                    clearAuthData().then(() => {
                         router.replace('/(auth)/login');
                     });
                     observer.error(error);
@@ -176,15 +215,10 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
                     isRefreshingToken = false;
                 });
         });
-    } else {
-        if (isRefreshingToken) {
-            //console.log(`Token refresh already in progress, skipping...`);
-        } else if (!hasAuthError && !isNetworkAuthError) {
-            //console.log(`No auth error detected, passing through...`);
-        }
     }
-
-    // If the token refresh is already in progress or this is not an authorization error, do nothing
+    
+    // For non-auth errors or when refresh is already in progress, pass the error through
+    return;
 });
 
 // Create Apollo Client

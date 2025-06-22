@@ -9,6 +9,8 @@ import { RefreshProvider } from '@/lib/context/RefreshContext';
 export default function AppLayout() {
     const { isAuthenticated, isLoading } = useAuth();
     const backgroundColor = useThemeColor({}, 'background');
+    const headerBackground = useThemeColor({}, 'headerBackground');
+    const headerText = useThemeColor({}, 'headerText');
     
     if (isLoading) {
         return (
@@ -24,8 +26,40 @@ export default function AppLayout() {
     
     return (
         <RefreshProvider>
-            <Stack>
+            <Stack
+                screenOptions={{
+                    headerStyle: { backgroundColor: headerBackground },
+                    headerTitleStyle: { color: headerText },
+                }}
+            >
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen 
+                    name="profile/[id]" 
+                    options={{ 
+                        headerShown: true,
+                        presentation: 'card'
+                    }} 
+                />
+                <Stack.Screen 
+                    name="event/[id]" 
+                    options={{ 
+                        headerShown: true,
+                        presentation: 'card'
+                    }} 
+                />
+                <Stack.Screen 
+                    name="events/create" 
+                    options={{ 
+                        headerShown: true,
+                        presentation: 'card'
+                    }} 
+                />
+                <Stack.Screen 
+                    name="documentation/index" 
+                    options={{ 
+                        headerShown: false
+                    }} 
+                />
             </Stack>
         </RefreshProvider>
     );
