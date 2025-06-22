@@ -62,7 +62,7 @@ export default function RegisterForm() {
                 placeholderTextColor="#888"
                 value={username}
                 onChangeText={setUsername}
-                autoCapitalize="words"
+                autoCapitalize="none"
                 textContentType="none"
             />
 

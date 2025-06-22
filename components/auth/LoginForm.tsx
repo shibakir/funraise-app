@@ -57,6 +57,7 @@ export default function LoginForm() {
                 onChangeText={setEmail}
                 autoCapitalize="none"
                 keyboardType="email-address"
+                textContentType="none"
             />
 
             <TextInput
@@ -66,6 +67,8 @@ export default function LoginForm() {
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
+                autoCapitalize="none"
+                textContentType="none"
             />
 
             {isLoading ? (
