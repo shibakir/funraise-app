@@ -3,14 +3,14 @@ import { StyleSheet, View, TouchableOpacity, SafeAreaView, ScrollView, StatusBar
 import { Stack } from 'expo-router';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useTranslation } from 'react-i18next';
 import { changeLanguage } from '@/lib/localization/i18n';
 import * as SecureStore from 'expo-secure-store';
 
 export default function LanguageScreen() {
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [currentLanguage, setCurrentLanguage] = useState('en');
     
     const borderColor = useThemeColor({}, 'divider');

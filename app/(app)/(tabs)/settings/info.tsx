@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from 'react-native';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { verticalScale, moderateScale, horizontalScale } from '@/lib/utilities/Metrics';
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';

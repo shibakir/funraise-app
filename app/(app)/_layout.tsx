@@ -1,9 +1,10 @@
 import React from 'react';
-import { Slot, Redirect, Stack } from 'expo-router';
+import { Redirect, Stack } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 
 import { useAuth } from '@/lib/context/AuthContext';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
+import { RefreshProvider } from '@/lib/context/RefreshContext';
 
 export default function AppLayout() {
     const { isAuthenticated, isLoading } = useAuth();
@@ -22,9 +23,10 @@ export default function AppLayout() {
     }
     
     return (
-        <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="index" options={{ headerShown: false }} />
-        </Stack>
+        <RefreshProvider>
+            <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            </Stack>
+        </RefreshProvider>
     );
 } 

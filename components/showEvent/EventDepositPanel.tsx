@@ -3,38 +3,35 @@ import { StyleSheet, View, Alert } from 'react-native';
 import Slider from '@react-native-community/slider';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useAuth } from '@/lib/context/AuthContext';
-import { useUserBalance } from '@/lib/hooks/useUserBalance';
-import { useCreateParticipation } from '@/lib/hooks/useCreateParticipation';
-import { useUserParticipation } from '@/lib/hooks/useUserParticipation';
-import { useUpdateParticipation } from '@/lib/hooks/useUpdateParticipation';
+import { useUserBalance } from '@/lib/hooks/users';
+import { useParticipation } from '@/lib/hooks/events';
 import { useTranslation } from 'react-i18next';
 
 export interface EventDepositPanelHandle {
-    handleCreateParticipation: () => Promise<void>;
-    handleUpdateParticipation: () => Promise<void>;
+    handleUpsertParticipation: () => Promise<void>;
     hasParticipation: boolean;
 }
 
 interface EventDepositPanelProps {
     eventId: string;
+    isEventActive: boolean; // Add prop for event status
     onDepositChange: (value: number) => void;
     onParticipationUpdated: () => void;
 }
 
 export const EventDepositPanel = forwardRef<EventDepositPanelHandle, EventDepositPanelProps>(({ 
-    eventId, 
+    eventId,
+    isEventActive, 
     onDepositChange,
     onParticipationUpdated 
 }, ref) => {
     const { t } = useTranslation();
     const { user } = useAuth();
-    const { balance, loading: balanceLoading, error: balanceError, refresh: refreshBalance } = useUserBalance(user?.id.toString() || null);
-    const { participation, loading: participationLoading, error: participationError, refresh: refreshParticipation } = useUserParticipation(user?.id.toString() || null, eventId);
-    const { createParticipation, loading: createLoading } = useCreateParticipation();
-    const { updateParticipation, loading: updateLoading } = useUpdateParticipation();
+    const { balance, loading: balanceLoading, error: balanceError, refetch: refreshBalance } = useUserBalance({ userId: user?.id.toString() || null });
+    const { participation, loading: participationLoading, error: participationError, refetch: refreshParticipation, upsertParticipation } = useParticipation(user?.id.toString() || null, eventId);
     
     const [depositAmount, setDepositAmount] = useState(1);
     const [depositing, setDepositing] = useState(false);
@@ -50,18 +47,21 @@ export const EventDepositPanel = forwardRef<EventDepositPanelHandle, EventDeposi
     
     // check and correct the depositAmount value when balance changes
     useEffect(() => {
-        if (user && balance !== null && depositAmount > maxDepositAmount) {
-            setDepositAmount(maxDepositAmount);
+        if (user && balance !== null) {
+            setDepositAmount(prevAmount => {
+                const correctedAmount = Math.max(1, Math.min(prevAmount, maxDepositAmount));
+                if (correctedAmount !== prevAmount) {
+                    //console.log(`Slider value corrected: ${prevAmount} -> ${correctedAmount} (max: ${maxDepositAmount})`);
+                }
+                return correctedAmount;
+            });
         }
     }, [balance, maxDepositAmount, user]);
     
     // export methods through ref for use in the parent component
     useImperativeHandle(ref, () => ({
-        handleCreateParticipation: async () => {
-            await handleCreateParticipation();
-        },
-        handleUpdateParticipation: async () => {
-            await handleUpdateParticipation();
+        handleUpsertParticipation: async () => {
+            await handleUpsertParticipation();
         },
         hasParticipation: !!participation
     }));
@@ -71,19 +71,19 @@ export const EventDepositPanel = forwardRef<EventDepositPanelHandle, EventDeposi
         onDepositChange(depositAmount);
     }, [depositAmount, onDepositChange]);
     
-    // handler for creating participation
-    const handleCreateParticipation = async () => {
+    // handler for creating or updating participation (unified operation)
+    const handleUpsertParticipation = async () => {
         if (!user) {
-            Alert.alert('Error', 'You must be logged in to participate');
+            Alert.alert(t('auth.error'), t('alerts.mustBeLoggedIn'));
             return;
         }
         
         if (balance === 0 || balance === null) {
-            Alert.alert('Ooops...', 'Insufficient balance. Please top up your balance to continue');
+            Alert.alert(t('alerts.attention'), t('alerts.insufficientBalance'));
             return;
         }
         
-        // check and correct the depositAmount value before creating participation
+        // check and correct the depositAmount value before operation
         const actualDepositAmount = Math.min(depositAmount, maxDepositAmount);
         if (actualDepositAmount !== depositAmount) {
             setDepositAmount(actualDepositAmount);
@@ -91,7 +91,7 @@ export const EventDepositPanel = forwardRef<EventDepositPanelHandle, EventDeposi
         
         setDepositing(true);
         
-        const result = await createParticipation({
+        const result = await upsertParticipation({
             userId: user.id.toString(),
             eventId: eventId,
             deposit: actualDepositAmount
@@ -100,46 +100,17 @@ export const EventDepositPanel = forwardRef<EventDepositPanelHandle, EventDeposi
         setDepositing(false);
         
         if (result.success) {
-            Alert.alert('Success', 'You have successfully joined this event');
-            refreshBalance();
+            refreshBalance(); // This will update the balance and automatically correct the slider through useEffect
             refreshParticipation();
             onParticipationUpdated();
         }
     };
 
-    // handler for updating participation
-    const handleUpdateParticipation = async () => {
-        if (!user || !participation) {
-            return;
-        }
-        
-        if (balance === 0 || balance === null) {
-            Alert.alert('Ooops...', 'Insufficient balance. Please top up your balance to continue');
-            return;
-        }
-        
-        // Проверяем и корректируем значение depositAmount перед обновлением участия
-        const actualDepositAmount = Math.min(depositAmount, maxDepositAmount);
-        if (actualDepositAmount !== depositAmount) {
-            setDepositAmount(actualDepositAmount);
-        }
-        
-        setDepositing(true);
-        
-        const result = await updateParticipation({
-            id: participation.id.toString(),
-            deposit: actualDepositAmount
-        });
-        
-        setDepositing(false);
-        
-        if (result.success) {
-            refreshBalance();
-            refreshParticipation();
-            onParticipationUpdated();
-        }
-    };
-    
+    // Don't show the deposit panel for inactive events
+    if (!isEventActive) {
+        return null;
+    }
+
     return (
         <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
             <ThemedText style={styles.title}>{t('event.selectAmount')}</ThemedText>
@@ -177,7 +148,7 @@ export const EventDepositPanel = forwardRef<EventDepositPanelHandle, EventDeposi
                     minimumTrackTintColor={primaryColor}
                     maximumTrackTintColor={borderColor}
                     thumbTintColor={primaryColor}
-                    disabled={balance === 0 || !user || depositing || createLoading || updateLoading}
+                    disabled={balance === 0 || !user || depositing || participationLoading || !isEventActive}
                 />
                 <ThemedText style={[styles.depositAmountText, { color: primaryColor }]}>
                     ${depositAmount.toFixed(2)}

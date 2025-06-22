@@ -3,17 +3,17 @@ import { StyleSheet, View, Alert, ActivityIndicator, KeyboardAvoidingView, Platf
 import { Stack, Redirect } from 'expo-router';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { CustomButton } from '@/components/custom/button';
 import { TextInput } from 'react-native';
 import { useAuth } from '@/lib/context/AuthContext';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { useUserBalance } from '@/lib/hooks/useUserBalance';
-import { useUpdateBalance } from '@/lib/hooks/useUpdateBalance';
+import { useUserBalance } from '@/lib/hooks/users';
 import { useTranslation } from 'react-i18next';
 
 export default function BalanceScreen() {
     const { user } = useAuth();
+
     const { t } = useTranslation();
     const [amount, setAmount] = useState('');
     
@@ -29,24 +29,26 @@ export default function BalanceScreen() {
     if (!user) {
         return <Redirect href="/login" />;
     }
-    const userId = String(user.id);
-    const { balance, loading: loadingBalance, refresh: refreshBalance, error: balanceError } = useUserBalance(userId);
-    const { updateBalance, loading: loadingUpdate, error: updateError } = useUpdateBalance();
+    const userId = user?.id ? String(user.id) : null;
+    const { balance, loading: loadingBalance, refetch: refreshBalance, error: balanceError, updateBalance, updateLoading } = useUserBalance({ 
+        userId,
+        enableSubscription: false // prevent infinite re-renders
+    });
 
     const handleAddBalance = async () => {
         if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-            Alert.alert('Invalid Amount', 'Please enter a valid positive number');
+            Alert.alert(t('settings.alerts.invalidAmount'), t('settings.alerts.invalidAmountMessage'));
             return;
         }
 
-        const result = await updateBalance(userId, parseFloat(amount));
+        const result = await updateBalance(parseFloat(amount));
         
         if (result.success) {
-            Alert.alert('Success', 'Balance was successfully updated');
+            Alert.alert(t('settings.alerts.success'), t('settings.alerts.balanceUpdated'));
             refreshBalance();
             setAmount('');
         } else {
-            Alert.alert('Error', updateError || 'Failed to add balance');
+            Alert.alert(t('settings.alerts.error'), balanceError || t('settings.alerts.failedToAddBalance'));
         }
     };
 
@@ -113,14 +115,14 @@ export default function BalanceScreen() {
                                             />
                                         </View>
 
-                                        {updateError && (
-                                            <ThemedText style={styles.errorText}>{updateError}</ThemedText>
+                                        {balanceError && (
+                                            <ThemedText style={styles.errorText}>{balanceError}</ThemedText>
                                         )}
 
                                         <CustomButton 
-                                            title={loadingUpdate ? t('settings.balancePage.processing') : t('settings.balancePage.addFunds')}
+                                            title={updateLoading ? t('settings.balancePage.processing') : t('settings.balancePage.addFunds')}
                                             onPress={handleAddBalance}
-                                            disabled={loadingUpdate || !amount || isNaN(Number(amount)) || Number(amount) <= 0}
+                                            disabled={updateLoading || !amount || isNaN(Number(amount)) || Number(amount) <= 0}
                                             style={styles.submitButton}
                                             variant="primary"
                                         />

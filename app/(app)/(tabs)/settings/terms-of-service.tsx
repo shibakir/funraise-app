@@ -3,7 +3,7 @@ import { StyleSheet, SafeAreaView, ScrollView, View, StatusBar } from 'react-nat
 import { Stack } from 'expo-router';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useTranslation } from 'react-i18next';
 

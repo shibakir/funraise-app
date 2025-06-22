@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/themed/ThemedView';
 import { useAuth } from '@/lib/context/AuthContext';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { useTranslation } from 'react-i18next';
 
 interface SettingItemProps {
@@ -124,18 +124,18 @@ export default function SettingsScreen() {
     
     const handleLogout = async () => {
         Alert.alert(
-        'Logout',
-        'Are you sure you want to logout?',
+        t('settings.alerts.logoutTitle'),
+        t('settings.alerts.logoutMessage'),
         [
-            { text: 'Cancel', style: 'cancel' },
+            { text: t('settings.alerts.cancel'), style: 'cancel' },
             { 
-                text: 'Logout', 
+                text: t('settings.alerts.logoutTitle'), 
                 style: 'destructive',
                 onPress: async () => {
                     try {
-                    await logout();
+                        await logout();
                     } catch (error) {
-                    console.error('Error during logout:', error);
+                        console.error('Error during logout:', error);
                     }
                 } 
             },
@@ -186,7 +186,16 @@ export default function SettingsScreen() {
                     <ScrollView 
                         style={styles.container}
                         contentContainerStyle={styles.contentContainer}
-                    >  
+                    >
+
+                        {/* LOGOUT BUTTON */}
+                        <TouchableOpacity
+                            style={[styles.profileButton, { marginTop: verticalScale(10) }]}
+                            onPress={handleLogout}
+                        >
+                            <ThemedText style={styles.profileButtonText}>{t('settings.logout')}</ThemedText>
+                        </TouchableOpacity>
+
                         {/* PROFILE INFO */}
                         {isAuthenticated && (
                             <TouchableOpacity 
@@ -204,10 +213,10 @@ export default function SettingsScreen() {
                         <ThemedView style={styles.mainSection}>
                             <View style={styles.userHeader}>
                                 <View style={styles.avatar}>
-                                    <ThemedText style={styles.avatarText}>{user?.username?.charAt(0) || 'X'}</ThemedText>
+                                    <ThemedText style={styles.avatarText}>{user?.email?.charAt(0) || 'X'}</ThemedText>
                                 </View>
                                 <View style={styles.userInfo}>
-                                    <ThemedText style={styles.userName}>{user?.username || 'User'}</ThemedText>
+                                    <ThemedText style={styles.userName}>{user?.email || 'User'}</ThemedText>
                                     <ThemedText style={styles.userEmail}>{user?.email || ''}</ThemedText>
                                 </View>
                             </View>
@@ -296,16 +305,10 @@ export default function SettingsScreen() {
                             />
                         </ThemedView>
 
-                        {/* LOGOUT BUTTON */}
-                        <TouchableOpacity 
-                            style={[styles.profileButton, { marginTop: verticalScale(10) }]}
-                            onPress={handleLogout}
-                        >
-                            <ThemedText style={styles.profileButtonText}>{t('settings.logout')}</ThemedText>
-                        </TouchableOpacity>
+
                     </ScrollView>
                 </ThemedView>
             </SafeAreaView>
         </>
     );
-}
+};

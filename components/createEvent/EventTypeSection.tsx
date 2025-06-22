@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View, TouchableOpacity, StyleSheet, TextInput, ActivityIndicator, Image } from 'react-native';
 import { ThemedText } from '@/components/themed/ThemedText';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
-import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
-import { useUserSearch } from '@/lib/hooks/useUserSearch';
-import { EventType } from '@/types/event';
+import { useThemeColor } from '@/lib/hooks/ui';
+import { moderateScale } from '@/lib/utilities/Metrics';
+import { useUserSearch } from '@/lib/hooks/users';
+import { EventType } from '@/lib/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 const defaultUserImage = require('@/assets/images/logo.png');
@@ -256,7 +256,7 @@ export const EventTypeSection: React.FC<EventTypeSectionProps> = ({
                 ))}
             </View>
 
-        {/* Получатель средств (только для DONATION и FUNDRAISING) */}
+        {/* Recipient (only for DONATION and FUNDRAISING) */}
         {(selectedType === 'DONATION' || selectedType === 'FUNDRAISING') && (
             <View style={styles.recipientContainer}>
                 <ThemedText style={styles.recipientTitle}>{t('createEvent.eventTypeSection.recipient')}</ThemedText>

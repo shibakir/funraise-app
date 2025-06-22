@@ -1,21 +1,42 @@
 import React, { forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet, View, ActivityIndicator, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { useUserAchievements, UserAchievement, CriterionProgress } from '@/lib/hooks/useUserAchievements';
+import { useUserAchievements } from '@/lib/hooks/users';
+import { UserAchievement, UserCriterionProgress } from '@/lib/graphql/types';
 
-const formatCriteriaType = (type: string): string => {
-    switch (type) {
-        case 'BIGGEST_BANK': return 'Bank Balance';
-        case 'SIMULTANEOUS_PARTICIPATION': return 'Simultaneous Events';
-        case 'PLATFORM_VETERAN': return 'Days on Platform';
-        case 'DONATIONS_COUNT': return 'Donations Made';
-        case 'DONATIONS_SUM': return 'Total Donated';
-        case 'DAY_STREAK': return 'Daily Streak';
-        default: return type;
+// Function to get achievement key based on its name
+const getAchievementKey = (name: string): string => {
+    // Convert achievement name to key for translations
+    return name.toUpperCase().replace(/\s+/g, '_');
+};
+
+// Function to get criteria key based on its type
+const getCriteriaKey = (criteriaType: string): string => {
+    switch (criteriaType) {
+        case 'EVENT_BANK_COMPLETED':
+        case 'EVENT_INCOME_ONETIME':
+        case 'EVENT_INCOME_ALL':
+            return 'EVENT_INCOME';
+        case 'EVENT_PEOPLE_COMPLETED':
+            return 'EVENT_PARTICIPANTS';
+        case 'EVENT_TIME_COMPLETED':
+            return 'EVENT_TIME';
+        case 'EVENT_COUNT_ALL':
+        case 'EVENT_COUNT_CREATED':
+            return 'EVENT_COUNT_CREATED';
+        case 'EVENT_COUNT_COMPLETED':
+            return 'EVENT_COUNT_COMPLETED';
+        case 'USER_ACTIVITY':
+            return 'USER_ACTIVITY';
+        case 'USER_BANK':
+            return 'USER_BANK';
+        default:
+            return criteriaType;
     }
 };
 
@@ -24,71 +45,91 @@ interface AchievementCardProps {
 }
 
 const AchievementCard: React.FC<AchievementCardProps> = ({ achievement }) => {
-  const primaryColor = useThemeColor({}, 'primary');
-  const borderColor = useThemeColor({}, 'divider');
-  const cardColor = useThemeColor({}, 'card');
+    const { t } = useTranslation();
+    const primaryColor = useThemeColor({}, 'primary');
+    const borderColor = useThemeColor({}, 'divider');
+    const cardColor = useThemeColor({}, 'card');
 
-  // compute progress of achivements
-  const totalCriteria = achievement.progress.length;
-  const completedCriteria = achievement.progress.filter(p => p.isCompleted).length;
-  const progressPercentage = totalCriteria > 0 ? Math.round((completedCriteria / totalCriteria) * 100) : 0;
-  
-  const isCompleted = achievement.status === 'COMPLETED';
-  const statusColor = isCompleted ? primaryColor : borderColor;
+    // Calculate achievement progress (total criteria and completed criteria)
+    const totalCriteria = achievement.progress.length;
+    const completedCriteria = achievement.progress.filter(p => p.isCompleted).length;
+    const progressPercentage = totalCriteria > 0 ? Math.round((completedCriteria / totalCriteria) * 100) : 0;
+    
+    // In GraphQL status is a string, check if it's completed (COMPLETED or all criteria are completed)
+    const isCompleted = achievement.status === 'COMPLETED' || completedCriteria === totalCriteria;
+    const statusColor = isCompleted ? primaryColor : borderColor;
+
+    // Get localized achievement name and description (achievement.name is the key in the translations file)
+    const achievementKey = getAchievementKey(achievement.achievement.name);
+    const achievementName = t(`achievements.list.${achievementKey}.name`, { defaultValue: achievement.achievement.name });
+    const achievementDescription = t(`achievements.list.${achievementKey}.description`, { 
+        defaultValue: `Achievement: ${achievement.achievement.name}` 
+    });
 
     return (
         <ThemedView style={[
             styles.achievementCard, 
             { backgroundColor: cardColor, borderColor: statusColor }
         ]}>
-        <View style={styles.achievementHeader}>
-            <View style={styles.achievementTitleContainer}>
-                <View style={[styles.achievementIcon, { backgroundColor: statusColor, justifyContent: 'center', alignItems: 'center' }]}>
-                <Ionicons name="trophy-outline" size={24}/>
+            <View style={styles.achievementHeader}>
+                <View style={styles.achievementTitleContainer}>
+                    <View style={[styles.achievementIcon, { backgroundColor: statusColor, justifyContent: 'center', alignItems: 'center' }]}>
+                        <Ionicons name="trophy-outline" size={24} color="white" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                        <ThemedText style={styles.achievementTitle}>{achievementName}</ThemedText>
+                        <ThemedText style={styles.achievementDescription}>{achievementDescription}</ThemedText>
+                    </View>
                 </View>
-            <View>
-                <ThemedText style={styles.achievementTitle}>{achievement.achievement.name}</ThemedText>
-                <ThemedText style={styles.achievementDescription}>{achievement.achievement.description}</ThemedText>
             </View>
-            </View>
-        </View>
-        
-        <View style={styles.progressBar}>
-            <View 
-            style={[
-                styles.progressFill, 
-                { width: `${progressPercentage}%`, backgroundColor: primaryColor }
-            ]} 
-            />
-        </View>
-        
-        <View style={styles.criteriaList}>
-            {achievement.progress.map((progress) => (
-            <CriteriaItem 
-                key={progress.id} 
-                progress={progress} 
-                isCompleted={progress.isCompleted}
-            />
-            ))}
-        </View>
-        
-        {isCompleted && achievement.unlockedAt && (
-            <ThemedText style={styles.unlockedText}>
-            Unlocked on {new Date(achievement.unlockedAt).toLocaleDateString()}
-            </ThemedText>
-        )}
+            { ! isCompleted && (
+                <>
+                    <View style={styles.progressBar}>
+                        <View 
+                            style={[
+                                styles.progressFill, 
+                                { width: `${progressPercentage}%`, backgroundColor: primaryColor }
+                            ]} 
+                        />
+                    </View>
+                
+                    <View style={styles.criteriaList}>
+                        {achievement.progress.map((progress) => (
+                            <CriteriaItem 
+                                key={progress.id} 
+                                progress={progress} 
+                                isCompleted={progress.isCompleted}
+                            />
+                        ))}
+                    </View>
+                </>
+            )}
+            {/*
+            {isCompleted && achievement.unlockedAt && (
+                <ThemedText style={styles.unlockedText}>
+                    {t('achievements.unlockedOn')} {new Date(achievement.unlockedAt).toLocaleDateString()}
+                </ThemedText>
+            )}
+            */}
         </ThemedView>
     );
 };
 
 interface CriteriaItemProps {
-    progress: CriterionProgress;
+    progress: UserCriterionProgress;
     isCompleted: boolean;
 }
 
 const CriteriaItem: React.FC<CriteriaItemProps> = ({ progress, isCompleted }) => {
+    const { t } = useTranslation();
     const primaryColor = useThemeColor({}, 'primary');
     const criterion = progress.criterion;
+    
+    // Get localized criteria name and description (criterion.criteriaType is the key in the translations file)
+    const criteriaKey = getCriteriaKey(criterion.criteriaType);
+    const criteriaName = t(`achievements.criteria.${criteriaKey}`, { 
+        defaultValue: criterion.description || criterion.criteriaType 
+    });
     
     return (
         <View style={styles.criteriaItem}>
@@ -102,12 +143,12 @@ const CriteriaItem: React.FC<CriteriaItemProps> = ({ progress, isCompleted }) =>
                     styles.criteriaText,
                     isCompleted && { color: primaryColor }
                 ]}>
-                    {criterion.description}
+                    {criteriaName}
                 </ThemedText>
             </View>
             {!isCompleted && (
                 <ThemedText style={styles.criteriaDetails}>
-                    {formatCriteriaType(criterion.criteriaType)}: {progress.currentValue} / {criterion.criteriaValue}
+                    {t('achievements.progress')}: {progress.currentValue} / {criterion.criteriaValue}
                 </ThemedText>
             )}
         </View>
@@ -123,60 +164,68 @@ interface UserAchievementsProps {
 }
 
 export const UserAchievements = forwardRef<UserAchievementsHandle, UserAchievementsProps>(({ userId }, ref) => {
-    const { achievements, loading, error, refresh } = useUserAchievements(userId);
+    const { t } = useTranslation();
+    const { achievements, loading, error, refetch } = useUserAchievements(userId);
     
     const primaryColor = useThemeColor({}, 'primary');
     const errorColor = useThemeColor({}, 'error');
     
     useImperativeHandle(ref, () => ({
-        refresh
+        refresh: refetch
     }));
 
     if (loading) {
         return (
-        <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={primaryColor} />
-            <ThemedText style={{ marginTop: verticalScale(8) }}>
-                Loading achievements...
-            </ThemedText>
-        </View>
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={primaryColor} />
+                <ThemedText style={{ marginTop: verticalScale(8) }}>
+                    {t('achievements.loading')}
+                </ThemedText>
+            </View>
         );
     }
 
     if (error) {
         return (
-        <View style={styles.errorContainer}>
-            <ThemedText style={{ color: errorColor }}>{error}</ThemedText>
-        </View>
+            <View style={styles.errorContainer}>
+                <ThemedText style={{ color: errorColor }}>{error}</ThemedText>
+            </View>
         );
     }
     
     if (achievements.length === 0) {
         return (
-        <View style={styles.emptyContainer}>
-            <ThemedText style={styles.emptyText}>No achievements found</ThemedText>
-        </View>
+            <View style={styles.emptyContainer}>
+                <ThemedText style={styles.emptyText}>{t('achievements.noAchievements')}</ThemedText>
+            </View>
         );
     }
 
-    // sorty by completed and by progress
+    // Sort by completion and progress (achievements with all criteria completed are first) 
     const sortedAchievements = [...achievements].sort((a, b) => {
-        if (a.status === 'COMPLETED' && b.status !== 'COMPLETED') return -1;
-        if (a.status !== 'COMPLETED' && b.status === 'COMPLETED') return 1;
+        const aCompleted = a.status === 'COMPLETED';
+        const bCompleted = b.status === 'COMPLETED';
         
-        const progressA = a.progress.filter(p => p.isCompleted).length / a.progress.length;
-        const progressB = b.progress.filter(p => p.isCompleted).length / b.progress.length;
+        if (aCompleted && !bCompleted) {
+            return -1;
+        } 
+        if (!aCompleted && bCompleted) {
+            return 1;
+        }
+
+        const progressA = a.progress.filter(p => p.isCompleted).length / Math.max(a.progress.length, 1);
+        const progressB = b.progress.filter(p => p.isCompleted).length / Math.max(b.progress.length, 1);
         
         return progressB - progressA;
-  });
+    });
 
-  return (
-    <View>
-        {sortedAchievements.map((achievement) => (
-            <AchievementCard key={achievement.id} achievement={achievement} />
-        ))}
-    </View>
-  );
+    return (
+        <View>
+            {sortedAchievements.map((achievement) => (
+                <AchievementCard key={achievement.id} achievement={achievement} />
+            ))}
+        </View>
+    );
 });
 
 const styles = StyleSheet.create({
@@ -229,7 +278,8 @@ const styles = StyleSheet.create({
     achievementDescription: {
         fontSize: moderateScale(14),
         opacity: 0.7,
-        width: "85%",
+        //width: "85%",
+        flexShrink: 1,
     },
     statusBadge: {
         paddingHorizontal: horizontalScale(8),
@@ -283,4 +333,7 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         fontStyle: 'italic',
     },
-}); 
+    iconEmoji: {
+        fontSize: moderateScale(24),
+    },
+});

@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { StyleSheet, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { DateTimePickerModal } from './DateTimePickerModal';
 import { useTranslation } from 'react-i18next';
@@ -42,14 +42,14 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [activeCondition, setActiveCondition] = useState<{groupIndex: number, conditionIndex: number} | null>(null);
 
-    // Типы условий
+    // Condition types
     const conditionTypes = [
         { id: 'time', label: t('createEvent.eventEndConditionsSection.conditionLabel.time'), operator: 'TIME' },
         { id: 'bank', label: t('createEvent.eventEndConditionsSection.conditionLabel.bank'), operator: 'BANK' },
-        { id: 'people', label: t('createEvent.eventEndConditionsSection.conditionLabel.people'), operator: 'PEOPLE' }
+        { id: 'participation', label: t('createEvent.eventEndConditionsSection.conditionLabel.people'), operator: 'PARTICIPATION' }
     ];
     
-    // Операторы сравнения
+    // Comparison operators
     const operators = [
         { id: 'lt', label: t('createEvent.eventEndConditionsSection.operator.lt'), symbol: '<' },
         { id: 'lte', label: t('createEvent.eventEndConditionsSection.operator.lte'), symbol: '<=' },
@@ -57,7 +57,7 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
         { id: 'gte', label: t('createEvent.eventEndConditionsSection.operator.gte'), symbol: '>=' }
     ];
 
-    // Добавление новой группы условий
+    // Adding a new condition group
     const addConditionGroup = () => {
         onGroupsChange([
         ...groups, 
@@ -68,17 +68,17 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
         ]);
     };
 
-    // Обновление названия группы
+    // Updating the group name
     const updateGroupName = (groupIndex: number, newName: string) => {
         const newGroups = [...groups];
         newGroups[groupIndex].name = newName;
         onGroupsChange(newGroups);
     };
 
-    // Удаление группы условий
+    // Removing a condition group
     const removeConditionGroup = (groupIndex: number) => {
         if (groups.length <= 1) {
-            Alert.alert('Attention', 'There must be at least one condition group');
+            Alert.alert(t('alerts.attention'), t('alerts.atLeastOneGroup'));
             return;
         }
         
@@ -87,24 +87,24 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
         onGroupsChange(newGroups);
     };
 
-    // Добавление условия в группу
+    // Adding a condition to a group
     const addConditionToGroup = (groupIndex: number, conditionType: string) => {
         const newGroups = [...groups];
         const typeInfo = conditionTypes.find(t => t.id === conditionType);
         
         if (!typeInfo) return;
         
-        // Проверяем, что такого типа еще нет в группе
+        // Check if the type is already in the group
         const existingType = newGroups[groupIndex].conditions.find(
             c => c.parameterName === conditionType
         );
         
         if (existingType) {
-            Alert.alert('Error', 'This condition type is already added to the group');
+            Alert.alert(t('auth.error'), t('alerts.conditionAlreadyAdded'));
             return;
         }
         
-        // Добавляем новое условие
+        // Adding a new condition
         newGroups[groupIndex].conditions.push({
             parameterName: conditionType,
             operator: typeInfo.operator,
@@ -114,21 +114,21 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
         onGroupsChange(newGroups);
     };
 
-    // Проверка наличия условия в группе
+    // Checking if a condition is in a group
     const hasConditionInGroup = (groupIndex: number, conditionType: string) => {
         return groups[groupIndex].conditions.some(
             condition => condition.parameterName === conditionType
         );
     };
 
-    // Удаление условия из группы
+    // Removing a condition from a group
     const removeCondition = (groupIndex: number, conditionIndex: number) => {
         const newGroups = [...groups];
         newGroups[groupIndex].conditions.splice(conditionIndex, 1);
         onGroupsChange(newGroups);
     };
 
-    // Обновление значения условия
+    // Updating the condition value
     const updateConditionValue = (groupIndex: number, conditionIndex: number, value: string) => {
         // check if the value is a number
         if (value === '' || /^\d+$/.test(value)) {
@@ -138,7 +138,7 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
         }
     };
 
-    // Обновление оператора сравнения
+    // Updating the comparison operator
     const updateConditionOperator = (groupIndex: number, conditionIndex: number, operator: string) => {
         const newGroups = [...groups];
         newGroups[groupIndex].conditions[conditionIndex].comparisonOp = operator;
@@ -337,7 +337,7 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
                         {t('createEvent.eventEndConditionsSection.groupDesc')}
                     </ThemedText>
                     
-                    {/* Кнопки добавления условий */}
+                    {/* Add condition buttons */}
                     <View style={styles.buttonsContainer}>
                         {conditionTypes.map(type => (
                             !hasConditionInGroup(groupIndex, type.id) && (
@@ -354,13 +354,14 @@ export const EventEndConditions: React.FC<EventEndConditionsProps> = ({
                         ))}
                     </View>
                     
-                    {/* Список условий */}
+                    {/* List of conditions */}
                     {group.conditions.map((condition, conditionIndex) => (
                         <View key={`condition-${groupIndex}-${conditionIndex}`} style={styles.endConditionContainer}>
                             <View style={styles.conditionRow}>
                             <ThemedText style={styles.conditionLabel}>
                                 {condition.parameterName === 'time' ? t('createEvent.eventEndConditionsSection.conditionType.time') : 
-                                condition.parameterName === 'bank' ? t('createEvent.eventEndConditionsSection.conditionType.bank') : t('createEvent.eventEndConditionsSection.conditionType.people')}
+                                condition.parameterName === 'bank' ? t('createEvent.eventEndConditionsSection.conditionType.bank') : 
+                                condition.parameterName === 'participation' ? t('createEvent.eventEndConditionsSection.conditionType.people') : t('createEvent.eventEndConditionsSection.conditionType.people')}
                             </ThemedText>
                             
                             <TouchableOpacity 

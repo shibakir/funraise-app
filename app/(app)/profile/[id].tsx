@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ActivityIndicator, ScrollView, Dimensions, TouchableOpacity, Text } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { Image } from 'expo-image';
-import { useUserProfile } from '@/lib/hooks/useUserProfile';
+import { useUserProfile } from '@/lib/hooks';
 import { ThemedView } from '@/components/themed/ThemedView';
 import { ThemedText } from '@/components/themed/ThemedText';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { UserEvents } from '@/components/custom/UserEvents';
 import { UserAchievements } from '@/components/custom/UserAchievements';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
@@ -19,7 +19,7 @@ export default function ProfileScreen() {
     const { t } = useTranslation();
     const { id } = useLocalSearchParams<{ id: string }>();
     const [activeSection, setActiveSection] = useState('createdEvents');
-    const { profile, loading, error } = useUserProfile(id);
+    const { profile, loading, error, refreshProfile } = useUserProfile(id);
 
     const primaryColor = useThemeColor({}, 'primary');
     const borderColor = useThemeColor({}, 'divider');
@@ -87,7 +87,7 @@ export default function ProfileScreen() {
             </ThemedView>
                         
             <ScrollView style={styles.scrollView}>
-                {/* Отображаем только активную секцию */}
+                {/* render only active section */}
                 {activeSection === 'achievements' && (
                     <View style={styles.section}>
                         <View style={styles.sectionContent}>

@@ -3,7 +3,7 @@ import { StyleSheet, View, SafeAreaView, ScrollView, ActivityIndicator, StatusBa
 import { Stack } from 'expo-router';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { Switch } from 'react-native';
 import { useTranslation } from 'react-i18next';

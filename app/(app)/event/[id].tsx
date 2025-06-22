@@ -5,48 +5,77 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
-import { useAuth } from '@/lib/context/AuthContext';
+import { useEventPage } from '@/lib/hooks/events';
+import { useEventSubscriptions } from '@/lib/hooks/events';
+import { useUserBalance } from '@/lib/hooks/users';
 
-import { EventStatusInfo, EventStatusInfoHandle } from '@/components/showEvent/EventStatusInfo';
+import { EventStatusInfo } from '@/components/showEvent/EventStatusInfo';
 import { EventImage } from '@/components/showEvent/EventImage';
 import { EventDepositPanel } from '@/components/showEvent/EventDepositPanel';
 import { EventDescription } from '@/components/showEvent/EventDescription';
-import { EventConditionsList, EventConditionsListHandle } from '@/components/showEvent/EventConditionsList';
+import { EventConditionsList } from '@/components/showEvent/EventConditionsList';
 import { EventUsers } from '@/components/showEvent/EventUsers';
 import { useTranslation } from 'react-i18next';
+import {useAuth} from "@/lib/context/AuthContext";
 
 export default function EventScreen() {
     const { t } = useTranslation();
     
     const { id } = useLocalSearchParams();
     const router = useRouter();
-    const { event, loading, error, refresh } = useEventDetails(id as string);
-    const { user, isAuthenticated } = useAuth();
     
-    //console.log('event', event);
+    const eventId = parseInt(id as string);
+    const { 
+        event, 
+        loading, 
+        error,
+        eventStatus,
+        bankAmount,
+        type,
+        recipientId,
+        userId,
+        isActive,
+        isFinished,
+    } = useEventPage(eventId);
+
+    const { user, isAuthenticated } = useAuth();
 
     const [depositAmount, setDepositAmount] = useState(1);
     
-    // Состояние для отслеживания первой загрузки
+    // State for tracking first load
     const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+
+    // Subscriptions for event updates in real time
+    useEventSubscriptions({
+        eventId,
+        onEventUpdated: (updatedEvent) => {
+            //console.log('Event updated in real time:', updatedEvent);
+        },
+        onParticipationCreated: (participation) => {
+            //console.log('New participation:', participation);
+        },
+        onParticipationUpdated: (participation) => {
+            //console.log('Participation updated:', participation);
+        }
+    });
+
+    useUserBalance({
+        userId: (isAuthenticated && user?.id) ? user.id.toString() : null,
+        enableSubscription: true,
+        onBalanceUpdated: (updatedUser) => {
+            //console.log('User balance updated:', updatedUser);
+        }
+    });
     
-    // Реф для доступа к методам компонента EventDepositPanel
+    // Ref for accessing methods of the EventDepositPanel component (for participation) (for participation)
     const depositPanelRef = useRef<{
-        handleCreateParticipation: () => Promise<void>;
-        handleUpdateParticipation: () => Promise<void>;
+        handleUpsertParticipation: () => Promise<void>;
         hasParticipation: boolean;
     } | null>(null);
     
-    // Реф для доступа к методам компонента EventStatusInfo
-    const statusInfoRef = useRef<EventStatusInfoHandle>(null);
-
-    // Реф для доступа к методам компонента EventConditionsList
-    const conditionsListRef = useRef<EventConditionsListHandle>(null);
-    
-    // Обновляем флаг первой загрузки
+    // Update flag for first load
     useEffect(() => {
         if (!loading && !initialLoadComplete) {
             setInitialLoadComplete(true);
@@ -58,30 +87,24 @@ export default function EventScreen() {
     };
   
     const handleParticipationUpdated = () => {
-        refresh();
-        // Обновляем информацию о банке события
-        if (statusInfoRef.current) {
-            statusInfoRef.current.refresh();
-        }
-        // Обновляем информацию об условиях события
-        if (conditionsListRef.current) {
-            conditionsListRef.current.refresh();
-        }
+        // Data is automatically updated through GraphQL subscriptions
+        //console.log('Participation updated - data will be updated automatically');
     };
     
-    // Обработчик нажатия на изображение события
+    // Event image press handler
     const handleImagePress = async () => {
-        // Если пользователь авторизован
+        // Check if the event is active
+        if (!isActive) {
+            Alert.alert(t('alerts.eventCompleted'), t('alerts.eventNoLongerActive'));
+            return;
+        }
+
+        // If the user is authenticated
         if (isAuthenticated && event && depositPanelRef.current) {
-            if (depositPanelRef.current.hasParticipation) {
-                // Если уже есть участие, обновляем его
-                await depositPanelRef.current.handleUpdateParticipation();
-            } else {
-                // Если участия еще нет, создаем новое
-                await depositPanelRef.current.handleCreateParticipation();
-            }
+            // Single operation - the server will determine whether to create participation or update
+            await depositPanelRef.current.handleUpsertParticipation();
         } else if (!isAuthenticated) {
-            Alert.alert('Error', 'You must be logged in to participate');
+            Alert.alert(t('auth.error'), t('alerts.mustBeLoggedIn'));
         }
     };
 
@@ -106,7 +129,7 @@ export default function EventScreen() {
             <View style={[styles.errorContainer, { backgroundColor }]}>
                 <Ionicons name="alert-circle-outline" size={moderateScale(48)} color={errorColor} />
                 <ThemedText style={styles.errorText}>
-                    {error || 'Event not found'}
+                    {error?.message || 'Event not found'}
                 </ThemedText>
                 <TouchableOpacity 
                     style={[styles.headerButton, { marginTop: verticalScale(16) }]}
@@ -117,6 +140,7 @@ export default function EventScreen() {
             </View>
         );
     }
+
     return (
         <ThemedView style={styles.container}>
             <Stack.Screen
@@ -138,26 +162,30 @@ export default function EventScreen() {
                 {event && (
                     <>
                         <View style={styles.contentContainer}>
-                            {/* Информация о статусе события */}
+                            {/* Event status information */}
                             <EventStatusInfo 
-                                ref={statusInfoRef}
-                                eventId={id as string} 
+                                bankAmount={bankAmount || 0}
+                                status={eventStatus || 'IN_PROGRESS'}
+                                isFinished={isFinished}
+                                type={type || 'DONATION'}
+                                recipient={event?.recipient}
                             />
                         </View>
                         
-                        {/* Изображение события */}
+                        {/* Event image */}
                         <EventImage 
                             imageUrl={event.imageUrl} 
                             onPress={handleImagePress}
-                            disabled={!isAuthenticated}
+                            disabled={!isAuthenticated || !isActive}
                         />
                     
-                        {/* Секция для внесения депозита */}
-                        {isAuthenticated && event.status === 'active' && (
+                        {/* Deposit section */}
+                        {isAuthenticated && (
                             <View style={styles.depositContainer}>
                                 <EventDepositPanel 
                                     ref={depositPanelRef}
                                     eventId={id as string}
+                                    isEventActive={isActive}
                                     onDepositChange={handleDepositChange}
                                     onParticipationUpdated={handleParticipationUpdated}
                                 />
@@ -165,19 +193,20 @@ export default function EventScreen() {
                         )}
                             
                         <View style={styles.contentContainer}>
-                            {/* Описание события */}
-                            <EventDescription description={event.description} />
+                            {/* Event description */}
+                            <EventDescription description={event.description || ''} />
 
-                            {/* Создатель и получатель */}
+                            {/* Creator and recipient */}
                             <EventUsers 
-                                userId={event.userId} 
-                                recipientId={event.recipientId} 
+                                userId={userId} 
+                                recipientId={recipientId || ''}
+                                creator={event?.creator}
+                                recipient={event?.recipient}
                             />
                             
-                            {/* Условия события */}
+                            {/* Event conditions */}
                             <EventConditionsList
-                                ref={conditionsListRef} 
-                                eventId={id as string} 
+                                endConditions={event.endConditions || []}
                             />
                         </View>
                     </>

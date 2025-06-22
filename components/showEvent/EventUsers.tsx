@@ -2,28 +2,47 @@ import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { useUserInfo } from '@/lib/hooks/useUserInfo';
+import { useUser } from '@/lib/hooks/users';
 import { router } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { User } from '@/lib/graphql/types';
+
 interface EventUsersProps {
     userId: string;
     recipientId: string;
+    creator?: User | null;
+    recipient?: User | null;
 }
 
-export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) => {
+export const EventUsers: React.FC<EventUsersProps> = ({ 
+    userId, 
+    recipientId,
+    creator: graphqlCreator,
+    recipient: graphqlRecipient
+}) => {
     const { t } = useTranslation();
     const cardColor = useThemeColor({}, 'card');
     const textColor = useThemeColor({}, 'text');
-    const { user: creator, loading: creatorLoading, error: creatorError } = useUserInfo(userId);
-    const { user: recipient, loading: recipientLoading, error: recipientError } = useUserInfo(recipientId);
+    
+    const { user: restCreator, loading: creatorLoading, error: creatorError } = useUser(
+        graphqlCreator ? null : userId
+    );
+    const { user: restRecipient, loading: recipientLoading, error: recipientError } = useUser(
+        graphqlRecipient ? null : recipientId
+    );
+    
+    const creator = graphqlCreator || restCreator;
+    const recipient = graphqlRecipient || restRecipient;
+    const loading = (graphqlCreator ? false : creatorLoading) || (graphqlRecipient ? false : recipientLoading);
+    const error = creatorError || recipientError;
 
     const navigateToUserProfile = (id: string) => {
         router.push(`/profile/${id}`);
     };
 
-    if (creatorLoading || recipientLoading) {
+    if (loading && !graphqlCreator && !graphqlRecipient) {
         return (
             <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
                 <ThemedText style={styles.text}>{t('event.loading')}</ThemedText>
@@ -31,7 +50,7 @@ export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) =
         );
     }
 
-    if (creatorError || recipientError) {
+    if (error && !graphqlCreator && !graphqlRecipient) {
         return (
             <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
                 <ThemedText style={styles.text}>{t('event.errorLoadingUserInfo')}</ThemedText>
@@ -45,7 +64,7 @@ export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) =
             
             <TouchableOpacity 
                 style={styles.userRow} 
-                onPress={() => navigateToUserProfile(creator?.id || '')}
+                onPress={() => navigateToUserProfile(creator?.id?.toString() || '')}
             >
                 {creator?.image ? (
                     <Image 
@@ -67,7 +86,7 @@ export const EventUsers: React.FC<EventUsersProps> = ({ userId, recipientId }) =
             {recipientId && recipient && (
                 <TouchableOpacity 
                     style={styles.userRow} 
-                    onPress={() => navigateToUserProfile(recipient?.id || '')}
+                    onPress={() => navigateToUserProfile(recipient?.id?.toString() || '')}
                 >
                     {recipient?.image ? (
                         <Image 

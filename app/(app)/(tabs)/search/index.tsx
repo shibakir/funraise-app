@@ -1,16 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { Stack, router } from 'expo-router';
-import { StyleSheet, TextInput, View, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
+import React, { useState, useMemo } from 'react';
+import { Stack } from 'expo-router';
+import { StyleSheet, TextInput, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
-import { SearchFilterPanel } from '@/components/search/SearchFilterPanel';
-import { useEventSearch } from '@/lib/hooks/useEventSearch';
+import { useThemeColor } from '@/lib/hooks/ui';
+import { SearchFilterPanel, SearchFilters } from '@/components/search/SearchFilterPanel';
+import { useEvents } from '@/lib/hooks/events';
+import { EventStatus } from '@/lib/graphql';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { EventCard } from '@/components/custom/EventCard';
+import type { Event } from '@/lib/graphql/types';
 import { useTranslation } from 'react-i18next';
+import { RefreshableScrollView } from '@/components/custom/RefreshableScrollView';
+
+interface EventWithProgress extends Event {
+    progress: number;
+}
 
 export default function SearchScreen() {
 
@@ -26,20 +33,104 @@ export default function SearchScreen() {
     const textColor = useThemeColor({}, 'text');
     const errorColor = useThemeColor({}, 'error');
     
-    const {
-        events,
-        isLoading,
-        error,
-        hasMore,
-        searchQuery,
-        filters,
-        setSearchQuery,
-        updateFilters,
-        loadMore,
-        resetSearch
-    } = useEventSearch();
+    const { events: allEvents, loading: isLoading, error: graphqlError, refetch } = useEvents();
     
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filters, setFilters] = useState<SearchFilters>({
+        types: [],
+        statuses: [],
+        minProgress: 0,
+        maxProgress: 100,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+    });
     const [showFilterPanel, setShowFilterPanel] = useState(false);
+    const [displayLimit, setDisplayLimit] = useState(10);
+
+    const error = graphqlError || null;
+
+    const filteredAndSortedEvents = useMemo((): Event[] => {
+        let filtered = allEvents;
+
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase();
+            filtered = filtered.filter(event =>
+                event.name.toLowerCase().includes(query) ||
+                (event.description && event.description.toLowerCase().includes(query))
+            );
+        }
+
+        if (filters.types.length > 0) {
+            filtered = filtered.filter(event => filters.types.includes(event.type));
+        }
+
+        if (filters.statuses.length > 0) {
+            filtered = filtered.filter(event => filters.statuses.includes(event.status));
+        }
+
+        const eventsWithProgress: EventWithProgress[] = filtered.map(event => {
+            let progress = 0;
+            if (event.endConditions && event.endConditions.length > 0) {
+                const completedConditions = event.endConditions.filter(group => group.isCompleted).length;
+                progress = (completedConditions / event.endConditions.length) * 100;
+            } else {
+                progress = event.status === EventStatus.FINISHED ? 100 : 
+                          event.status === EventStatus.IN_PROGRESS ? 50 : 0;
+            }
+            return { ...event, progress };
+        });
+
+        const progressFiltered = eventsWithProgress.filter(event => 
+            event.progress >= filters.minProgress && event.progress <= filters.maxProgress
+        );
+
+        progressFiltered.sort((a, b) => {
+            let comparison = 0;
+            
+            switch (filters.sortBy) {
+                case 'name':
+                    comparison = a.name.localeCompare(b.name);
+                    break;
+                case 'createdAt':
+                    comparison = a.id - b.id;
+                    break;
+                case 'progress':
+                    comparison = a.progress - b.progress;
+                    break;
+            }
+            
+            return filters.sortOrder === 'desc' ? -comparison : comparison;
+        });
+
+        return progressFiltered;
+    }, [allEvents, searchQuery, filters]);
+
+    const events = filteredAndSortedEvents.slice(0, displayLimit);
+    const hasMore = filteredAndSortedEvents.length > displayLimit;
+
+    const updateFilters = (newFilters: Partial<SearchFilters>) => {
+        setFilters(prev => ({ ...prev, ...newFilters }));
+        setDisplayLimit(10);
+    };
+
+    const loadMore = () => {
+        if (hasMore && !isLoading) {
+            setDisplayLimit(prev => prev + 10);
+        }
+    };
+
+    const resetSearch = () => {
+        setSearchQuery('');
+        setFilters({
+            types: [],
+            statuses: [],
+            minProgress: 0,
+            maxProgress: 100,
+            sortBy: 'createdAt',
+            sortOrder: 'desc'
+        });
+        setDisplayLimit(10);
+    };
   
     const LoadMoreButton = () => {
         if (!hasMore || events.length === 0) {
@@ -56,7 +147,7 @@ export default function SearchScreen() {
                 {isLoading ? (
                     <ActivityIndicator size="small" color={primaryColor} />
                 ) : (
-                    <ThemedText style={styles.loadMoreText}>Show More</ThemedText>
+                    <ThemedText style={styles.loadMoreText}>{t('search.showMore', 'Show More')}</ThemedText>
                 )}
             </TouchableOpacity>
         );
@@ -136,7 +227,6 @@ export default function SearchScreen() {
         },
     }); 
 
-    // search panel
     const renderSearchBar = () => (
         <View style={styles.searchContainer}>
             <View style={[styles.searchBar, { backgroundColor: sectionBackground }]}>
@@ -163,13 +253,13 @@ export default function SearchScreen() {
             </TouchableOpacity>
         </View>
     );
-    // no results
+    
     const renderEmptyContent = () => {
         if (isLoading) {
             return (
                 <View style={styles.loadingContainer}>
                     <ActivityIndicator size="large" color={primaryColor} />
-                    <ThemedText style={{ marginTop: 10 }}>Searching events...</ThemedText>
+                    <ThemedText style={{ marginTop: 10 }}>{t('search.loading', 'Searching events...')}</ThemedText>
                 </View>
             );
         }
@@ -184,18 +274,28 @@ export default function SearchScreen() {
             </View>
         );
     };
-    // on error
+    
     const renderErrorContent = () => {
         if (error && events.length === 0) {
             return (
                 <ThemedView style={styles.container}>
-                    <ThemedText style={{ color: errorColor }}>{error}</ThemedText>
+                    <ThemedText style={{ color: errorColor, padding: moderateScale(16) }}>
+                        {t('search.error', 'Error')}: {error}
+                    </ThemedText>
+                    <TouchableOpacity 
+                        style={[styles.filterButton, { backgroundColor: primaryColor, marginHorizontal: moderateScale(16) }]}
+                        onPress={() => refetch()}
+                    >
+                        <ThemedText style={[styles.filterButtonText, { color: 'white' }]}>
+                            {t('search.retry', 'Retry')}
+                        </ThemedText>
+                    </TouchableOpacity>
                 </ThemedView>
             );
         }
         return null;
     };
-    // results
+    
     const renderEventsList = () => {
         if (events.length === 0) {
             return renderEmptyContent();
@@ -225,14 +325,14 @@ export default function SearchScreen() {
             
             <ThemedView style={styles.container}>
                 {renderSearchBar()}
-                <ScrollView 
+                <RefreshableScrollView 
                     contentContainerStyle={styles.scrollContainer}
                     showsVerticalScrollIndicator={false}
                 >
                     {renderErrorContent() || renderEventsList()}
-                </ScrollView>
+                </RefreshableScrollView>
                 
-                <SearchFilterPanel 
+                <SearchFilterPanel
                     filters={filters} 
                     onApplyFilters={updateFilters}
                     isVisible={showFilterPanel}

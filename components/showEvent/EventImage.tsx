@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Vibration } from 'react-native';
 import { Image as ExpoImage } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 
 interface EventImageProps {

@@ -2,21 +2,24 @@ import React, { useState } from 'react';
 import { StyleSheet, View, ScrollView, TextInput, ActivityIndicator, KeyboardAvoidingView } from 'react-native';
 import { Stack } from 'expo-router';
 import { ThemedText } from '@/components/themed/ThemedText';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
-import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
+import { useThemeColor } from '@/lib/hooks/ui';
+import { verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { CustomButton } from '@/components/custom/button';
 
 import { EventImageSection } from '@/components/createEvent/EventImageSection';
 import { EventTypeSection } from '@/components/createEvent/EventTypeSection';
 import { EventEndConditions } from '@/components/createEvent/EventEndConditions';
-import { GroupData, EventType } from '@/types/event';
-import { useCreateEvent } from '@/lib/hooks/useCreateEvent';
+import { GroupData, EventType } from '@/lib/types';
+import { EventType as EventTypeEnum } from '@/lib/graphql/types';
+import { useEventCreate } from '@/lib/hooks/events';
 import { useAuth } from '@/lib/context/AuthContext';
 import { ThemedView } from '@/components/themed/ThemedView';
 import { useTranslation } from 'react-i18next';
 
 export default function CreateEventScreen() {
+
     const { user } = useAuth();
+
     const { t } = useTranslation();
 
     const sectionBackground = useThemeColor({}, 'sectionBackground');
@@ -27,7 +30,7 @@ export default function CreateEventScreen() {
     const borderColor = useThemeColor({}, 'divider');
     const placeholderColor = useThemeColor({}, 'placeholder');
 
-    const [eventType, setEventType] = useState<EventType>('DONATION');
+    const [eventType, setEventType] = useState<EventType>(EventTypeEnum.DONATION);
     const [creatorId, setCreatorId] = useState(String(user?.id));
     const [recipientId, setRecipientId] = useState('');
     const [recipientName, setRecipientName] = useState('');
@@ -42,7 +45,7 @@ export default function CreateEventScreen() {
         }
     ]);
 
-    const { createEvent, loading } = useCreateEvent();
+    const { createEvent, loading } = useEventCreate();
 
     const handleEventTypeChange = (type: EventType) => {
         setEventType(type);
@@ -58,7 +61,6 @@ export default function CreateEventScreen() {
     };
 
     const handleImageChange = (uri: string | null, file?: { uri: string; type: string; name: string }) => {
-        console.log('Image changed:', uri, file);
         setImageUri(uri);
         if (file) {
         setImageFile(file);
@@ -157,7 +159,7 @@ export default function CreateEventScreen() {
             <ThemedView style={styles.container}>
                 <ScrollView contentContainerStyle={styles.contentContainer}>
                     <View>
-                        {/* Изображение */}
+                        {/* Image */}
                         <View style={styles.doubleSection}>
                             <View style={styles.section}>
                                 <ThemedText style={styles.sectionTitle}>{t('createEvent.imageTitle')}</ThemedText>
@@ -174,7 +176,7 @@ export default function CreateEventScreen() {
                             </View>   
                         </View>
 
-                        {/* Тип события */}
+                        {/* Event type */}
                         <View style={styles.section}>
                             <ThemedText style={styles.sectionTitle}>{t('createEvent.eventType')}</ThemedText>
                             <EventTypeSection 
@@ -187,7 +189,7 @@ export default function CreateEventScreen() {
                             />
                         </View>
                         
-                        {/* Название события */}
+                        {/* Event name */}
                         <View style={styles.section}>
                             <ThemedText style={styles.sectionTitle}>{t('createEvent.eventName')}</ThemedText>
                             <TextInput
@@ -199,7 +201,7 @@ export default function CreateEventScreen() {
                             />
                         </View>
                         
-                        {/* Описание */}
+                        {/* Description */}
                         <View style={styles.section}>
                             <ThemedText style={styles.sectionTitle}>{t('createEvent.description')}</ThemedText>
                             <TextInput
@@ -212,7 +214,7 @@ export default function CreateEventScreen() {
                             />
                         </View>
                         
-                        {/* Условия окончания события */}
+                        {/* Event end conditions */}
                         <View style={styles.section}>
                             <ThemedText style={styles.sectionTitle}>{t('createEvent.endConditions')}</ThemedText>
                             <EventEndConditions
@@ -221,7 +223,7 @@ export default function CreateEventScreen() {
                             />
                         </View>
                         
-                        {/* Кнопка создания */}
+                        {/* Create button */}
                         <CustomButton 
                             onPress={handleSubmit}
                             disabled={loading}

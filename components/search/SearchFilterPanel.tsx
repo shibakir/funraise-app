@@ -3,11 +3,20 @@ import { StyleSheet, View, TouchableOpacity, Modal, ScrollView } from 'react-nat
 import { ThemedView } from '../themed/ThemedView';
 import { ThemedText } from '../themed/ThemedText';
 import { IconSymbol } from '../ui/IconSymbol';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import type { SearchFilters } from '@/lib/hooks/useEventSearch';
 import Slider from '@react-native-community/slider';
 import { useTranslation } from 'react-i18next';
+
+export interface SearchFilters {
+    types: string[];
+    statuses: string[];
+    minProgress: number;
+    maxProgress: number;
+    sortBy: 'name' | 'createdAt' | 'progress';
+    sortOrder: 'asc' | 'desc';
+}
+
 interface SearchFilterPanelProps {
     filters: SearchFilters;
     onApplyFilters: (filters: Partial<SearchFilters>) => void;
@@ -30,6 +39,12 @@ export const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
         { id: 'DONATION', label: t('search.searchPanel.eventType.donation') },
         { id: 'FUNDRAISING', label: t('search.searchPanel.eventType.fundraising') },
         { id: 'JACKPOT', label: t('search.searchPanel.eventType.jackpot') }
+    ];
+
+    const EVENT_STATUSES = [
+        { id: 'IN_PROGRESS', label: t('search.searchPanel.eventStatus.inProgress') },
+        { id: 'FINISHED', label: t('search.searchPanel.eventStatus.finished') },
+        { id: 'FAILED', label: t('search.searchPanel.eventStatus.failed') }
     ];
 
     const SORT_OPTIONS = [
@@ -77,6 +92,19 @@ export const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
             };
         });
     };
+
+    const toggleEventStatus = (status: string) => {
+        setLocalFilters(prev => {
+            const newStatuses = prev.statuses.includes(status)
+                ? prev.statuses.filter(s => s !== status)
+                : [...prev.statuses, status];
+            
+            return {
+                ...prev,
+                statuses: newStatuses
+            };
+        });
+    };
   
     const handleProgressChange = (values: [number, number]) => {
         setLocalFilters(prev => ({
@@ -105,6 +133,7 @@ export const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
     const resetFilters = () => {
         const resetState: SearchFilters = {
         types: [],
+        statuses: [],
         minProgress: 0,
         maxProgress: 100,
         sortBy: 'createdAt',
@@ -116,6 +145,8 @@ export const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
     };
     
     const isTypeSelected = (type: string) => localFilters.types.includes(type);
+    
+    const isStatusSelected = (status: string) => localFilters.statuses.includes(status);
     
     const isSortSelected = (sortBy: string, sortOrder: string) => 
         localFilters.sortBy === sortBy && localFilters.sortOrder === sortOrder;
@@ -256,7 +287,7 @@ export const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
                         </View>
                         
                         <ScrollView style={styles.modalBody}>
-                        {/* Фильтр по типам событий */}
+                        {/* Filter by event types */}
                         <View style={styles.filterSection}>
                             <ThemedText style={styles.sectionTitle}>{t('search.searchPanel.eventTypeTitle')}</ThemedText>
                             <View style={styles.typeButtonsContainer}>
@@ -282,10 +313,39 @@ export const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
                             </View>
                         </View>
                         
-                        {/* Разделитель */}
+                        {/* Divider */}
                         <View style={[styles.divider, { backgroundColor: dividerColor }]} />
                         
-                        {/* Фильтр по прогрессу */}
+                        {/* Filter by event status */}
+                        <View style={styles.filterSection}>
+                            <ThemedText style={styles.sectionTitle}>{t('search.searchPanel.eventStatusTitle')}</ThemedText>
+                            <View style={styles.typeButtonsContainer}>
+                                {EVENT_STATUSES.map((eventStatus) => (
+                                    <TouchableOpacity
+                                        key={eventStatus.id}
+                                        style={[
+                                            styles.typeButton,
+                                            isStatusSelected(eventStatus.id) && { backgroundColor: primaryColor }
+                                        ]}
+                                        onPress={() => toggleEventStatus(eventStatus.id)}
+                                    >
+                                        <ThemedText
+                                            style={[
+                                                styles.typeButtonText,
+                                                isStatusSelected(eventStatus.id) && { color: surfaceColor }
+                                            ]}
+                                        >
+                                            {eventStatus.label}
+                                        </ThemedText>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+                        
+                        {/* Divider */}
+                        <View style={[styles.divider, { backgroundColor: dividerColor }]} />
+                        
+                        {/* Filter by progress */}
                         <View style={styles.filterSection}>
                             <ThemedText style={styles.sectionTitle}>{t('search.searchPanel.progressTitle')}</ThemedText>
                             <View style={styles.progressContainer}>
@@ -319,10 +379,10 @@ export const SearchFilterPanel: React.FC<SearchFilterPanelProps> = ({
                             </View>
                         </View>
                         
-                        {/* Разделитель */}
+                        {/* Divider */}
                         <View style={[styles.divider, { backgroundColor: dividerColor }]} />
                         
-                        {/* Фильтр по сортировке */}
+                        {/* Filter by sort */}
                         <View style={styles.filterSection}>
                             <ThemedText style={styles.sectionTitle}>{t('search.searchPanel.sortByTitle')}</ThemedText>
                             <View style={styles.sortOptionsContainer}>

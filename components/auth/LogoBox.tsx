@@ -8,7 +8,7 @@ export function LogoBox() {
 
   return (
     <ThemedView style={styles.logoContainer}>
-            <Image 
+            <Image
                 source={logoImage} 
                 style={styles.logo} 
                 resizeMode="contain"

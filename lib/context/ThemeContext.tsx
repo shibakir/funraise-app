@@ -2,11 +2,11 @@ import React, { createContext, useState, useEffect, useContext } from 'react';
 import { useColorScheme as useDeviceColorScheme } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
-type ThemeType = 'light' | 'dark' | 'system';
+type ThemeType = 'dark' | 'light' | 'system';
 type ThemeContextType = {
     theme: ThemeType;
     setTheme: (theme: ThemeType) => void;
-    resolvedTheme: 'light' | 'dark';
+    resolvedTheme: 'dark' | 'light';
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

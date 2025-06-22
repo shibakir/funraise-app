@@ -7,7 +7,7 @@ import * as SecureStore from 'expo-secure-store';
 import enTranslations from './translations/en.json';
 import csTranslations from './translations/cs.json';
 
-// translations resources - добавляем пространство имен translation
+// translations resources - add translation namespace
 const resources = {
   en: { translation: enTranslations },
   cs: { translation: csTranslations },
@@ -27,7 +27,7 @@ const getStoredLanguage = async () => {
   }
 };
 
-// function to save selected language
+// function to save the selected language
 export const saveLanguage = async (language: string) => {
   try {
     await SecureStore.setItemAsync('app_language', language);
@@ -36,13 +36,13 @@ export const saveLanguage = async (language: string) => {
   }
 };
 
-// function to change language
+// function to change the language
 export const changeLanguage = (language: string) => {
   i18n.changeLanguage(language);
   saveLanguage(language);
 };
 
-// initialize i18n
+// initialize i18n with the selected language
 i18n
   .use(initReactI18next)
   .init({
@@ -57,7 +57,7 @@ i18n
     },
   });
 
-// asynchronously update language after loading from SecureStore
+// asynchronously update the language after loading from SecureStore
 (async () => {
   try {
     const storedLanguage = await getStoredLanguage();

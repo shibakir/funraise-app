@@ -1,23 +1,28 @@
-import React, { useImperativeHandle, forwardRef } from 'react';
-import { StyleSheet, View, ActivityIndicator, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { useEventStatus } from '@/lib/hooks/useEventStatus';
 import { router } from 'expo-router';
-import { useUserInfo } from '@/lib/hooks/useUserInfo';
 import { useTranslation } from 'react-i18next';
-
-export interface EventStatusInfoHandle {
-    refresh: () => void;
-}
+import { User, EventStatus } from '@/lib/graphql/types';
 
 interface EventStatusInfoProps {
-    eventId: string;
+    bankAmount: number;
+    status: EventStatus;
+    isFinished: boolean;
+    type: string;
+    recipient?: User;
 }
 
-export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfoProps>(({ eventId }, ref) => {
+export const EventStatusInfo: React.FC<EventStatusInfoProps> = ({ 
+    bankAmount,
+    status,
+    isFinished,
+    type,
+    recipient
+}) => {
 
     const { t } = useTranslation();
 
@@ -27,17 +32,9 @@ export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfo
         { id: 'JACKPOT', title: t('event.eventType.jackpot') },
     ];
     
-    const { bankAmount, eventStatus, type, recipientId, loading, error, refresh } = useEventStatus(eventId);
-    const { user: recipient, loading: recipientLoading, error: recipientError } = useUserInfo(recipientId);
-    
     const primaryColor = useThemeColor({}, 'primary');
     const cardColor = useThemeColor({}, 'card');
-    const errorColor = useThemeColor({}, 'error');
     const backgroundColor = useThemeColor({}, 'background');
-    
-    useImperativeHandle(ref, () => ({
-        refresh
-    }));
 
     const navigateToUserProfile = (id: string) => {
         router.push(`/profile/${id}`);
@@ -46,14 +43,6 @@ export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfo
     const navigateToDocumentation = () => {
         router.push('/documentation');
     };
-
-    if (error) {
-        return (
-            <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
-                <ThemedText style={{ color: errorColor, textAlign: 'center' }}>{error}</ThemedText>
-            </ThemedView>
-        );
-    }
 
     return (
         <ThemedView style={[styles.container, { backgroundColor: cardColor }]}>
@@ -66,29 +55,29 @@ export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfo
                     </TouchableOpacity>
                     <ThemedView style={[styles.statusBadge, { backgroundColor: primaryColor + '20' }]}>
                         <ThemedText style={[styles.statusText, { color: primaryColor }]}>
-                            {eventStatus === 'completed' ? t('event.status.completed') : t('event.status.active')}
+                            {status === EventStatus.IN_PROGRESS ? t('event.status.active') : status === EventStatus.FINISHED ? t('event.status.completed') : t('event.status.failed')}
                         </ThemedText>
                     </ThemedView>
                 </View>
                 
                 <ThemedView style={[styles.amountContainer, { backgroundColor: backgroundColor }]}>
                     <ThemedText style={styles.amountLabel}>
-                        {eventStatus === 'completed' ? t('event.finalbankAmount') : t('event.currentbankAmount')}
+                        {!isFinished ? t('event.currentbankAmount') : t('event.finalbankAmount')}
                     </ThemedText>
                     <ThemedText style={[styles.amountValue, { color: primaryColor }]}>
                         ${bankAmount.toFixed(2) || '0.00'}
                     </ThemedText>
                 </ThemedView>
                 
-                {eventStatus === 'completed' && recipientId && (
+                {isFinished && recipient && (
                     <TouchableOpacity 
                         style={[styles.recipientCard, { backgroundColor: backgroundColor }]} 
-                        onPress={() => navigateToUserProfile(recipient?.id || '')}
+                        onPress={() => navigateToUserProfile(recipient.id.toString())}
                         activeOpacity={0.7}
                     >
                         <ThemedText style={styles.recipientLabel}>{t('event.recipientLabel')}</ThemedText>
                         <View style={styles.userRow}>
-                            {recipient?.image ? (
+                            {recipient.image ? (
                                 <Image 
                                     source={{ uri: recipient.image }} 
                                     style={styles.userImage} 
@@ -96,12 +85,12 @@ export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfo
                             ) : (
                                 <View style={[styles.userImagePlaceholder, { backgroundColor: primaryColor + '30' }]}>
                                     <ThemedText style={[styles.placeholderText, { color: primaryColor }]}>
-                                        {recipient?.username?.charAt(0)?.toUpperCase() || '?'}
+                                        {recipient.username.charAt(0).toUpperCase()}
                                     </ThemedText>
                                 </View>
                             )}
                             <View style={styles.userInfo}>
-                                <ThemedText style={styles.username}>{recipient?.username}</ThemedText>
+                                <ThemedText style={styles.username}>{recipient.username}</ThemedText>
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -109,7 +98,7 @@ export const EventStatusInfo = forwardRef<EventStatusInfoHandle, EventStatusInfo
             </View>
         </ThemedView>
     );
-});
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -196,4 +185,4 @@ const styles = StyleSheet.create({
         fontSize: moderateScale(16),
         fontWeight: '600',
     },
-}); 
+});

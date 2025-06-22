@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from 'react';
-import { StyleSheet, ScrollView, SafeAreaView, StatusBar, View, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
-import { Stack, useFocusEffect, Redirect, router } from 'expo-router';
+import React, { useCallback } from 'react';
+import { StyleSheet, SafeAreaView, StatusBar, View, TouchableOpacity } from 'react-native';
+import { Stack, useFocusEffect, router } from 'expo-router';
 import { ThemedText } from '@/components/themed/ThemedText';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { useAuth } from '@/lib/context/AuthContext';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { CreateEventSection } from '@/components/custom/createEventSection';
@@ -10,22 +10,26 @@ import { UserEvents } from '@/components/custom/UserEvents';
 import { UserAchievements } from '@/components/custom/UserAchievements';
 import { ThemedView } from '@/components/themed/ThemedView';
 import { useTranslation } from 'react-i18next';
+import { RefreshableScrollView } from '@/components/custom/RefreshableScrollView';
+import { useRefresh } from '@/lib/context/RefreshContext';
 
 export default function HomeScreen() {
-    const [updateKey, setUpdateKey] = useState(0);
     const { user } = useAuth();
+    const userId = String(user?.id);
+
     const { t } = useTranslation();
+    const { triggerRefresh } = useRefresh();
 
     const sectionBackground = useThemeColor({}, 'sectionBackground');
-    const primaryColor = useThemeColor({}, 'primary');
+    //const primaryColor = useThemeColor({}, 'primary');
     const headerBackground = useThemeColor({}, 'headerBackground');
     const headerText = useThemeColor({}, 'headerText');
     
     useFocusEffect(
         useCallback(() => {
-            // Обновляем ключ, чтобы заставить компоненты перерендериться
-            setUpdateKey(prev => prev + 1);
-        }, [])
+            // Update data when focus on the screen
+            triggerRefresh();
+        }, [triggerRefresh])
     );
 
     const navigateToProfile = () => {
@@ -83,13 +87,6 @@ export default function HomeScreen() {
         },
     });
 
-    // redirect to login page if user is not authenticated
-    if (!user) {
-        return <Redirect href="/login" />;
-    }
-
-    const userId = String(user.id);
-
     return (
         <>
             <Stack.Screen 
@@ -103,7 +100,7 @@ export default function HomeScreen() {
             <SafeAreaView style={[styles.container, { flex: 1 }]}>
                 <ThemedView style={styles.container}>
                     <StatusBar barStyle="default" />
-                    <ScrollView 
+                    <RefreshableScrollView 
                         style={styles.container}
                         contentContainerStyle={styles.contentContainer}
                     >
@@ -119,7 +116,8 @@ export default function HomeScreen() {
                         <View style={styles.sectionHeader}>
                             <ThemedText style={styles.sectionTitle}>{t('home.newEvent')}</ThemedText>
                         </View>
-                        <CreateEventSection key={`create-${updateKey}`} />
+                        <CreateEventSection />
+
                         {/* DOCUMENTATION BUTTON */}
                         <TouchableOpacity 
                             style={styles.docButton}
@@ -131,16 +129,16 @@ export default function HomeScreen() {
                         
                         {/* MY ACTIVE EVENTS SECTION */}
                         <View style={styles.sectionHeader}>
-                            <ThemedText style={styles.sectionTitle}>{t('home.myRecentEvents')}</ThemedText>
+                            <ThemedText style={styles.sectionTitle}>{t('home.myActiveEvents')}</ThemedText>
                         </View>
-                        <UserEvents userId={userId} key={`events-${updateKey}`} />
-                        
+                        <UserEvents userId={userId} limit={5} eventType="created" showOnlyActive={true} />
+
                         {/* ACHIEVEMENTS SECTION */}
                         <View style={styles.sectionHeader}>
                             <ThemedText style={styles.sectionTitle}>{t('home.myAchievements')}</ThemedText>
                         </View>
-                        <UserAchievements userId={userId} key={`achievements-${updateKey}`} />
-                    </ScrollView>
+                        <UserAchievements userId={userId} />
+                    </RefreshableScrollView>
                 </ThemedView>
             </SafeAreaView>
         </>

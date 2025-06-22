@@ -9,22 +9,25 @@ import {
     Alert,
     ActivityIndicator,
     KeyboardAvoidingView,
-    StatusBar
+    StatusBar,
+    Image
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { verticalScale, moderateScale, horizontalScale } from '@/lib/utilities/Metrics';
 import { useAuth } from '@/lib/context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { CustomButton } from '@/components/custom/button';
-
-// TODO: Add data verification + restrictions
+import { useProfile } from '@/lib/hooks/auth';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function AccountScreen() {
-    const { user, updateProfile, error, isLoading } = useAuth();
+    const { user, linkDiscord, updateUserData } = useAuth();
+    const { updateProfile, loading, error } = useProfile();
     const { t } = useTranslation();
+    
     const [name, setName] = useState(user?.username || '');
     const [email, setEmail] = useState(user?.email || '');
     const [currentPassword, setCurrentPassword] = useState('');
@@ -33,6 +36,21 @@ export default function AccountScreen() {
     const [editingName, setEditingName] = useState(false);
     const [editingEmail, setEditingEmail] = useState(false);
     const [editingPassword, setEditingPassword] = useState(false);
+    const [linkingDiscord, setLinkingDiscord] = useState(false);
+    
+    const currentUser = user;
+    
+    // Check if user has Discord linked
+    const hasDiscordLinked = currentUser?.accounts?.some(account => account.provider === 'discord');
+    const discordAccount = currentUser?.accounts?.find(account => account.provider === 'discord');
+    
+    // Update local state when user data changes
+    React.useEffect(() => {
+        if (currentUser) {
+            setName(currentUser.username || '');
+            setEmail(currentUser.email || '');
+        }
+    }, [currentUser]);
     
     const backgroundColor = useThemeColor({}, 'background');
     const primaryColor = useThemeColor({}, 'primary');
@@ -44,102 +62,167 @@ export default function AccountScreen() {
     const headerText = useThemeColor({}, 'headerText');
     const placeholderColor = useThemeColor({}, 'placeholder');
 
+    // Validate username
+    const validateUsername = (username: string): string | null => {
+        if (!username.trim()) {
+            return t('auth.fillAllFields');
+        }
+        if (username.length < 3) {
+            return t('settings.accountPage.validation.usernameMinLength');
+        }
+        if (username.length > 30) {
+            return t('settings.accountPage.validation.usernameMaxLength');
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+            return t('settings.accountPage.validation.usernameInvalidChars');
+        }
+        return null;
+    };
+
+    // Validate email
+    const validateEmail = (email: string): string | null => {
+        if (!email.trim()) {
+            return t('auth.fillAllFields');
+        }
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return t('settings.accountPage.validation.emailInvalid');
+        }
+        return null;
+    };
+
+    // Validate password
+    const validatePassword = (password: string): string | null => {
+        if (!password) {
+            return t('settings.accountPage.validation.passwordEmpty');
+        }
+        if (password.length < 6) {
+            return t('settings.accountPage.validation.passwordMinLength');
+        }
+        if (password.length > 100) {
+            return t('settings.accountPage.validation.passwordMaxLength');
+        }
+        return null;
+    };
+
     const handleUpdateName = async () => {
         try {
-            if (!name.trim()) {
-                Alert.alert('Error', 'Name cannot be empty');
+            const trimmedName = name.trim();
+            
+            // Validation
+            const validationError = validateUsername(trimmedName);
+            if (validationError) {
+                Alert.alert(t('auth.error'), validationError);
                 return;
             }
             
-            if (name === user?.username) {
+            // Check for changes
+            if (trimmedName === currentUser?.username) {
                 setEditingName(false);
                 return;
             }
             
-            const updateData = { name };
+            const updateData = { username: trimmedName };
             
-            await updateProfile(updateData);
+            if (currentUser?.id) {
+                await updateProfile(currentUser.id, updateData);
+            }
             setEditingName(false);
             
-            Alert.alert('Success', 'Name updated successfully');
+            Alert.alert(t('settings.alerts.success'), t('settings.accountPage.success.usernameUpdated'));
         } catch (error: any) {
-            console.error('Error updating name:', error);
-            Alert.alert('Error', error.message || 'Failed to update name');
+            console.error('Error updating username:', error);
+            Alert.alert(t('auth.error'), error.message || t('settings.accountPage.errors.updateUsernameFailed'));
         }
     };
     
     const handleUpdateEmail = async () => {
         try {
-            if (!email.trim() || !email.includes('@')) {
-                Alert.alert('Error', 'Please enter a valid email');
+            const trimmedEmail = email.trim().toLowerCase();
+            
+            // Validation
+            const validationError = validateEmail(trimmedEmail);
+            if (validationError) {
+                Alert.alert(t('auth.error'), validationError);
                 return;
             }
             
-            if (email === user?.email) {
+            // Check for changes
+            if (trimmedEmail === currentUser?.email) {
                 setEditingEmail(false);
                 return;
             }
             
-            const updateData = { email };
+            const updateData = { email: trimmedEmail };
             
-            await updateProfile(updateData);
+            if (currentUser?.id) {
+                await updateProfile(currentUser.id, updateData);
+            }
             setEditingEmail(false);
             
-            Alert.alert('Success', 'Email updated successfully');
+            Alert.alert(t('settings.alerts.success'), t('settings.accountPage.success.emailUpdated'));
         } catch (error: any) {
             console.error('Error updating email:', error);
-            Alert.alert('Error', error.message || 'Failed to update email');
+            Alert.alert(t('auth.error'), error.message || t('settings.accountPage.errors.updateEmailFailed'));
         }
     };
   
     const handleUpdatePassword = async () => {
         try {
-            if (!currentPassword) {
-                Alert.alert('Error', 'Current password is required');
+            // Current password validation
+            if (!currentPassword.trim()) {
+                Alert.alert(t('auth.error'), t('settings.accountPage.validation.currentPasswordRequired'));
                 return;
             }
             
+            // New password validation
+            const passwordValidationError = validatePassword(newPassword);
+            if (passwordValidationError) {
+                Alert.alert(t('auth.error'), passwordValidationError);
+                return;
+            }
+            
+            // Check password match
             if (newPassword !== confirmPassword) {
-                Alert.alert('Error', 'New passwords do not match');
+                Alert.alert(t('auth.error'), t('settings.accountPage.validation.passwordsNotMatch'));
                 return;
             }
             
-            if (newPassword.length < 6) {
-                Alert.alert('Error', 'Password must be at least 6 characters');
-                return;
-            }
-            
-            if (!newPassword.trim()) {
-                setEditingPassword(false);
+            // Check that new password is different from current
+            if (currentPassword === newPassword) {
+                Alert.alert(t('auth.error'), t('settings.accountPage.validation.passwordSameAsCurrent'));
                 return;
             }
             
             const updateData = {
-                currentPassword,
-                password: newPassword
+                currentPassword: currentPassword.trim(),
+                newPassword: newPassword.trim()
             };
             
-            await updateProfile(updateData);
+            if (currentUser?.id) {
+                await updateProfile(currentUser.id, updateData);
+            }
             
+            // Clear fields after successful update
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
             setEditingPassword(false);
             
-            Alert.alert('Success', 'Password changed successfully');
+            Alert.alert(t('settings.alerts.success'), t('settings.accountPage.success.passwordUpdated'));
         } catch (error: any) {
             console.error('Error changing password:', error);
-            Alert.alert('Error', error.message || 'Failed to change password');
+            Alert.alert(t('auth.error'), error.message || t('settings.accountPage.errors.updatePasswordFailed'));
         }
     };
     
     const handleCancelName = () => {
-        setName(user?.username || '');
+        setName(currentUser?.username || '');
         setEditingName(false);
     };
     
     const handleCancelEmail = () => {
-        setEmail(user?.email || '');
+        setEmail(currentUser?.email || '');
         setEditingEmail(false);
     };
     
@@ -164,6 +247,7 @@ export default function AccountScreen() {
             <SafeAreaView style={styles.container}>
                 <ThemedView style={styles.container}>
                     <StatusBar barStyle="default" />
+                    
                     <KeyboardAvoidingView style={styles.container}>
                         <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
                             {/* USERNAME */}
@@ -193,12 +277,12 @@ export default function AccountScreen() {
                                         
                                         {error && (
                                             <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                                                {error}
+                                                {typeof error === 'string' ? error : error.message}
                                             </ThemedText>
                                         )}
                                         
                                         <View style={styles.buttonContainer}>
-                                            {isLoading ? (
+                                            {loading ? (
                                                 <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
                                                 ) : (
                                                     <>
@@ -219,7 +303,7 @@ export default function AccountScreen() {
                                         </View>
                                         </>
                                     ) : (
-                                        <ThemedText style={styles.value}>{user?.username || t('settings.accountPage.notSet')}</ThemedText>
+                                        <ThemedText style={styles.value}>{currentUser?.username || t('settings.accountPage.notSet')}</ThemedText>
                                     )}
                                 </View>
                             </ThemedView>
@@ -253,12 +337,12 @@ export default function AccountScreen() {
                                             
                                             {error && (
                                                 <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                                                    {error}
+                                                    {typeof error === 'string' ? error : error.message}
                                                 </ThemedText>
                                             )}
                                             
                                             <View style={styles.buttonContainer}>
-                                                {isLoading ? (
+                                                {loading ? (
                                                 <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
                                                     ) : (
                                                     <>
@@ -279,7 +363,7 @@ export default function AccountScreen() {
                                             </View>
                                         </>
                                     ) : (
-                                        <ThemedText style={styles.value}>{user?.email || t('settings.accountPage.notSet')}</ThemedText>
+                                        <ThemedText style={styles.value}>{currentUser?.email || t('settings.accountPage.notSet')}</ThemedText>
                                     )}
                                 </View>
                             </ThemedView>
@@ -336,12 +420,12 @@ export default function AccountScreen() {
                                         
                                         {error && (
                                             <ThemedText style={[styles.errorText, { color: errorColor }]}>
-                                                {error}
+                                                {typeof error === 'string' ? error : error.message}
                                             </ThemedText>
                                         )}
                                         
                                         <View style={styles.buttonContainer}>
-                                            {isLoading ? (
+                                            {loading ? (
                                             <ActivityIndicator size="large" color={primaryColor} style={styles.loader} />
                                             ) : (
                                                 <>
@@ -362,6 +446,66 @@ export default function AccountScreen() {
                                         </>
                                     ) : (
                                         <ThemedText style={styles.value}>••••••••</ThemedText>
+                                    )}
+                                </View>
+                            </ThemedView>
+                            
+                            {/* DISCORD INTEGRATION */}
+                            <ThemedView style={[styles.mainSection, { backgroundColor: sectionBackground }]}>
+                                <View style={[styles.header, { borderBottomColor: borderColor }]}>
+                                    <View style={styles.headerWithIcon}>
+                                        <Ionicons name="logo-discord" size={24} color="#5865F2" style={styles.discordIcon} />
+                                        <ThemedText style={styles.headerTitle}>Discord</ThemedText>
+                                    </View>
+                                </View>
+                                
+                                <View style={styles.form}>
+                                    {hasDiscordLinked && discordAccount ? (
+                                        <View style={styles.linkedAccount}>
+                                            <View style={styles.linkedAccountInfo}>
+                                                {discordAccount.providerAvatar && (
+                                                    <Image 
+                                                        source={{ uri: discordAccount.providerAvatar }} 
+                                                        style={styles.discordAvatar}
+                                                    />
+                                                )}
+                                                <View style={styles.linkedAccountText}>
+                                                    <ThemedText style={styles.linkedUsername}>
+                                                        {discordAccount.providerUsername}
+                                                        {discordAccount.providerDiscriminator && `#${discordAccount.providerDiscriminator}`}
+                                                    </ThemedText>
+                                                    <ThemedText style={[styles.linkedEmail, { opacity: 0.7 }]}>
+                                                        {discordAccount.providerEmail}
+                                                    </ThemedText>
+                                                </View>
+                                            </View>
+                                            <ThemedText style={[styles.linkedStatus, { color: primaryColor }]}>
+                                                {t('settings.accountPage.discord.linked')}
+                                            </ThemedText>
+                                        </View>
+                                    ) : (
+                                        <View>
+                                            <ThemedText style={[styles.discordDescription, { opacity: 0.7 }]}>
+                                                {t('settings.accountPage.discord.description')}
+                                            </ThemedText>
+                                            <CustomButton
+                                                title={linkingDiscord ? t('settings.accountPage.discord.linking') : t('settings.accountPage.discord.linkAccount')}
+                                                onPress={async () => {
+                                                    setLinkingDiscord(true);
+                                                    try {
+                                                        await linkDiscord();
+                                                    } catch (error) {
+                                                        // Technical errors are already handled in linkDiscord
+                                                        //console.log('Discord linking completed with potential error:', error);
+                                                    } finally {
+                                                        setLinkingDiscord(false);
+                                                    }
+                                                }}
+                                                variant="primary"
+                                                disabled={linkingDiscord}
+                                                style={styles.linkButton}
+                                            />
+                                        </View>
                                     )}
                                 </View>
                             </ThemedView>
@@ -440,4 +584,51 @@ const styles = StyleSheet.create({
     loader: {
         marginVertical: verticalScale(16),
     },
-}); 
+    headerWithIcon: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    discordIcon: {
+        marginRight: horizontalScale(8),
+    },
+    linkedAccount: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    linkedAccountInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    linkedAccountText: {
+        marginLeft: horizontalScale(8),
+    },
+    linkedUsername: {
+        fontSize: moderateScale(16),
+        fontWeight: '600',
+    },
+    linkedEmail: {
+        fontSize: moderateScale(14),
+    },
+    linkedStatus: {
+        fontSize: moderateScale(14),
+        fontWeight: '600',
+    },
+    discordDescription: {
+        marginBottom: verticalScale(16),
+    },
+    linkButton: {
+        marginTop: verticalScale(16),
+    },
+    discordAvatar: {
+        width: verticalScale(32),
+        height: verticalScale(32),
+        borderRadius: verticalScale(16),
+        marginRight: horizontalScale(8),
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});

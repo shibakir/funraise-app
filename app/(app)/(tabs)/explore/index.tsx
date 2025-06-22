@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { StyleSheet, ScrollView, StatusBar, SafeAreaView, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { StyleSheet, StatusBar, SafeAreaView, View } from 'react-native';
 import { Stack, useFocusEffect, Redirect } from 'expo-router';
 
 import { CreateEventSection } from '@/components/custom/createEventSection';
@@ -7,24 +7,30 @@ import { UserEvents } from '@/components/custom/UserEvents';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
-import { useAuth } from '@/lib/context/AuthContext';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { useTranslation } from 'react-i18next';
-
 import { AllEvents } from '@/components/custom/AllEvents';
+import { RefreshableScrollView } from '@/components/custom/RefreshableScrollView';
+import { useRefresh } from '@/lib/context/RefreshContext';
+import {useAuth} from "@/lib/context/AuthContext";
 
 export default function ExploreScreen() {
-    // Добавляем forceUpdate для обновления компонента
-    const [updateKey, setUpdateKey] = useState(0);
-    const { user } = useAuth();
-    const { t } = useTranslation();
+    const { user, isAuthenticated } = useAuth();
 
-    // Используем useFocusEffect для обновления при каждом переходе на эту страницу
+    if (!isAuthenticated || !user) {
+        return <Redirect href="/login" />;
+    }
+    const userId = String(user.id);
+
+    const { t } = useTranslation();
+    const { triggerRefresh } = useRefresh();
+
+    // Use useFocusEffect to update data when the screen is focused
     useFocusEffect(
         useCallback(() => {
-            // Обновляем ключ, чтобы заставить компоненты перерендериться
-            setUpdateKey(prev => prev + 1);
-        }, [])
+            // Update data when the screen is focused
+            triggerRefresh();
+        }, [triggerRefresh])
     );
 
     const headerBackground = useThemeColor({}, 'headerBackground');
@@ -64,13 +70,6 @@ export default function ExploreScreen() {
         },
     });
 
-    // Перенаправляем на страницу входа, если пользователь не авторизован
-    if (!user) {
-        return <Redirect href="/login" />;
-    }
-
-    const userId = String(user.id);
-
     return (
         <>
             <Stack.Screen 
@@ -84,7 +83,7 @@ export default function ExploreScreen() {
             <SafeAreaView style={[styles.container, { flex: 1 }]}>
                 <ThemedView style={styles.container}>
                     <StatusBar barStyle="default" />
-                    <ScrollView 
+                    <RefreshableScrollView 
                         style={styles.container}
                         contentContainerStyle={styles.contentContainer}
                     >
@@ -92,21 +91,21 @@ export default function ExploreScreen() {
                         <View style={styles.sectionHeader}>
                             <ThemedText style={styles.sectionTitle}>{t('explore.newEvent')}</ThemedText>
                         </View>
-                        <CreateEventSection key={`create-${updateKey}`} />
+                        <CreateEventSection />
 
                         {/* ALL EVENTS SECTION */}
                         <View style={styles.sectionHeader}>
                             <ThemedText style={styles.sectionTitle}>{t('explore.discoverEvents')}</ThemedText>
                         </View>
-                        <AllEvents limit={5} userId={userId} key={`all-events-${updateKey}`} />
+                        <AllEvents limit={5} />
 
                         {/* MY ACTIVE EVENTS SECTION */}
                         <View style={styles.sectionHeader}>
                             <ThemedText style={styles.sectionTitle}>{t('explore.myRecentEvents')}</ThemedText>
                         </View>
-                        <UserEvents userId={userId} limit={5} key={`events-${updateKey}`} />
-                        
-                    </ScrollView>
+                        <UserEvents userId={userId} limit={5} />
+
+                    </RefreshableScrollView>
                 </ThemedView>
             </SafeAreaView>
         </>

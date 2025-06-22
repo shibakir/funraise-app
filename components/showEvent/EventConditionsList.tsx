@@ -1,18 +1,17 @@
-import React, { forwardRef, useImperativeHandle } from 'react';
-import { StyleSheet, View, ActivityIndicator } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { useEventConditions } from '@/lib/hooks/useEventConditions';
-import { Condition } from '@/lib/hooks/useEventDetails';
 import { useTranslation } from 'react-i18next';
+import { EventEndCondition, Operator, ConditionType } from '@/lib/graphql/types';
 
 // Format parameter value (includes time)
-const formatParameterValue = (name: string, value: string): string => {
+const formatParameterValue = (name: ConditionType, value: string): string => {
 
-    if (name.toLowerCase() === 'time') {
+    if (name === ConditionType.TIME) {
 
         // Check on special date format YYYYMMDDHHmmssSSS
         if (/^\d{17}$/.test(value)) {
@@ -45,10 +44,18 @@ const formatParameterValue = (name: string, value: string): string => {
     return value;
 };
 
+interface ProcessedCondition {
+    id: string;
+    parameterName: ConditionType;
+    operator: Operator;
+    value: string;
+    isCompleted: boolean;
+}
+
 interface ConditionGroupCardProps {
     group: {
         id: number;
-        conditions: Condition[];
+        conditions: ProcessedCondition[];
         progress: number;
     };
     index: number;
@@ -59,29 +66,31 @@ const ConditionGroupCard: React.FC<ConditionGroupCardProps> = ({ group, index })
     const { t } = useTranslation();
 
     // Format operators to text view
-    const formatOperator = (operator: string): string => {
+    const formatOperator = (operator: Operator): string => {
         switch (operator) {
-            case 'gte': 
+            case Operator.GREATER_EQUALS: 
                 return t('event.operator.gte');
-            case 'gt': 
+            case Operator.GREATER: 
                 return t('event.operator.gt');
-            case 'lt': 
+            case Operator.LESS: 
                 return t('event.operator.lt');
-            case 'lte': 
+            case Operator.LESS_EQUALS: 
                 return t('event.operator.lte');
+            case Operator.EQUALS:
+                return t('event.operator.equals');
             default: 
                 return operator;
         }
     };
 
     // Format parameter name
-    const formatParameterName = (name: string): string => {
-        switch (name.toLowerCase()) {
-            case 'time': 
+    const formatParameterName = (name: ConditionType): string => {
+        switch (name) {
+            case ConditionType.TIME: 
                 return t('event.conditionType.time');
-            case 'bank': 
+            case ConditionType.BANK: 
                 return t('event.conditionType.bank');
-            case 'people': 
+            case ConditionType.PARTICIPATION: 
                 return t('event.conditionType.people');
             default: 
                 return name;
@@ -125,7 +134,7 @@ const ConditionGroupCard: React.FC<ConditionGroupCardProps> = ({ group, index })
                                 condition.isCompleted && { color: primaryColor }
                             ]}
                         >
-                        {formatParameterName(condition.parameterName)} {formatOperator(condition.operator)} {formatParameterValue(condition.parameterName, condition.value)}
+                        {formatParameterName(condition.parameterName as ConditionType)} {formatOperator(condition.operator as Operator)} {formatParameterValue(condition.parameterName as ConditionType, condition.value)}
                         </ThemedText>
                     </View>
                 ))}
@@ -134,65 +143,42 @@ const ConditionGroupCard: React.FC<ConditionGroupCardProps> = ({ group, index })
     );
 };
 
-export interface EventConditionsListHandle {
-    refresh: () => void;
-}
-
 interface EventConditionsListProps {
-    eventId: string;
+    endConditions: EventEndCondition[];
 }
 
-export const EventConditionsList = forwardRef<EventConditionsListHandle, EventConditionsListProps>(({ eventId }, ref) => {
+export const EventConditionsList: React.FC<EventConditionsListProps> = ({ endConditions }) => {
     const { t } = useTranslation();
-    const { conditionGroups, loading, error, refresh } = useEventConditions(eventId);
-    
-    const primaryColor = useThemeColor({}, 'primary');
-    const errorColor = useThemeColor({}, 'error');
-    
-    useImperativeHandle(ref, () => ({
-        refresh
-    }));
 
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={primaryColor} />
-                <ThemedText style={{ marginTop: verticalScale(8) }}>
-                    {t('event.loading')}
-                </ThemedText>
-            </View>
-        );
-    }
-
-    if (error) {
-        return (
-        <View style={styles.errorContainer}>
-            <ThemedText style={{ color: errorColor }}>{error}</ThemedText>
-        </View>
-        );
-    }
+    const processedConditionGroups = endConditions.map((endCondition) => {
+        const totalConditions = endCondition.conditions?.length || 0;
+        const completedConditions = endCondition.conditions?.filter(c => c.isCompleted).length || 0;
+        const progress = totalConditions > 0 ? Math.round((completedConditions / totalConditions) * 100) : 0;
+        
+        return {
+            id: endCondition.id,
+            conditions: endCondition.conditions?.map(condition => ({
+                id: condition.id.toString(),
+                parameterName: condition.name as ConditionType,
+                operator: condition.operator as Operator,
+                value: condition.value,
+                isCompleted: condition.isCompleted
+            })) || [],
+            progress
+        };
+    });
 
     return (
         <View>
             <ThemedText style={styles.conditionsTitle}>{t('event.conditionsTitle')}</ThemedText>
-            {conditionGroups.map((group, index) => (
+            {processedConditionGroups.map((group, index) => (
                 <ConditionGroupCard key={group.id} group={group} index={index} />
             ))}
         </View>
     );
-});
+};
 
 const styles = StyleSheet.create({
-    loadingContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: moderateScale(20),
-    },
-    errorContainer: {
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: moderateScale(20),
-    },
     conditionsTitle: {
         fontSize: moderateScale(18),
         fontWeight: '600',

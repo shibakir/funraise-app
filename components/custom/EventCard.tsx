@@ -5,20 +5,17 @@ import { Image as ExpoImage } from 'expo-image';
 import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming } from 'react-native-reanimated';
 
 import { ThemedText } from '@/components/themed/ThemedText';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useTranslation } from 'react-i18next';
+import { EventStatus } from '@/lib/graphql/types';
+import type { Event } from '@/lib/graphql/types';
 
-export interface EventInterface {
-    id: string;
-    name: string;
-    status?: 'active' | 'inactive';
-    imageUrl?: string;
-    conditionsProgress: number[];
-    avgProgress?: number;
-}
+export type EventCardProps = {
+    event: Event;
+};
 
-export function EventCard({ event }: { event: EventInterface }) {
+export function EventCard({ event }: EventCardProps) {
     const { t } = useTranslation();
     
     const borderColor = useThemeColor({}, 'divider');
@@ -27,45 +24,74 @@ export function EventCard({ event }: { event: EventInterface }) {
     const surfaceColor = useThemeColor({}, 'surface');
     const successColor = useThemeColor({}, 'success');
 
-    // animation for active indicator
     const opacity = useSharedValue(1);
+
+    const totalProgress = React.useMemo(() => {
+        let progress = 0;
+        
+        if (event.endConditions && Array.isArray(event.endConditions) && event.endConditions.length > 0) {
+            let totalConditions = 0;
+            let completedConditions = 0;
+            
+            event.endConditions.forEach(endConditionGroup => {
+                if (endConditionGroup && endConditionGroup.conditions && Array.isArray(endConditionGroup.conditions)) {
+                    endConditionGroup.conditions.forEach(condition => {
+                        if (condition) {
+                            totalConditions++;
+                            if (condition.isCompleted) {
+                                completedConditions++;
+                            }
+                        }
+                    });
+                }
+            });
+            
+            if (totalConditions > 0) {
+                progress = (completedConditions / totalConditions) * 100;
+            } else {
+                // If there are no conditions, use the status of the event
+                progress = event.status === EventStatus.FINISHED ? 100 : event.status === EventStatus.IN_PROGRESS ? 50 : 0;
+            }
+        } else {
+            progress = event.status === EventStatus.FINISHED ? 100 : event.status === EventStatus.IN_PROGRESS ? 50 : 0;
+        }
+        
+        return Math.round(progress);
+    }, [event]);
+
+    const isActive = event.status === EventStatus.IN_PROGRESS;
     
     useEffect(() => {
-        if (event.status === 'active') {
+        if (isActive) {
             opacity.value = withRepeat(
                 withTiming(0.4, { duration: 1000 }),
                 -1,
                 true
             );
         } else {
-            opacity.value = 0.6; // inactive indicator
+            opacity.value = 0; // inactive indicator
         }
-    }, [event.status]);
-    
+    }, [isActive]);
+
     const animatedStyle = useAnimatedStyle(() => {
         return {
             opacity: opacity.value,
         };
     });
 
-    // Рассчитываем общий прогресс как среднее значение всех условий
-    const totalProgress = event.avgProgress || (event.conditionsProgress.length > 0 
-        ? Math.round(event.conditionsProgress.reduce((a, b) => a + b, 0) / event.conditionsProgress.length)
-        : 0);
-    
     return (
         <TouchableOpacity 
             style={styles.eventCard(borderColor)}
             onPress={() => router.push({
                     pathname: '/event/[id]',
-                    params: { id: event.id }
+                    params: { id: String(event.id) }
                 })
             }
             activeOpacity={0.7}
         >
             <View style={styles.eventInfo()}>
-                {event.status === 'active' && (
-                    <Animated.View style={[styles.activeNowContainer(), { opacity: opacity }]}>
+                {isActive && (
+                    <Animated.View style={[styles.activeNowContainer(), { opacity: opacity}]}>
                         <Animated.View 
                             style={[
                                 styles.statusIndicator(),

@@ -10,14 +10,15 @@
         "showMyProfile": "Zobrazit můj profil",
         "newEvent": "Nová událost",
         "readHelp": "Přečtěte si naši nápovědu a průvodce",
-        "myRecentEvents": "Moje nedávné události",
+        "myRecentEvents": "Moje nedávné eventy",
+        "myActiveEvents": "Moje aktivní eventy",
         "myAchievements": "Moje úspěchy"
     },
     "explore": {
         "title": "Prozkoumat",
         "newEvent": "Vytvořte svou novou událost!",
-        "discoverEvents": "Objevte další události",
-        "myRecentEvents": "Moje nedávné události"
+        "discoverEvents": "Objevte další eventy",
+        "myRecentEvents": "Moje nedávné eventy"
     },
     "search": {
         "title": "Vyhledávání",
@@ -29,13 +30,19 @@
         "searchFilterButton": "Vyhledavací filtr",
         "searchPanel": {
             "title": "Vyhledavací filtry",
-            "eventTypeTitle": "Typ události",
+            "eventTypeTitle": "Typ eventu",
             "eventType": {
                 "donation": "Donation",
                 "fundraising": "Fundraising",
                 "jackpot": "Jackpot"
             },
-            "progressTitle": "Aktuální postup události",
+            "eventStatusTitle": "Stav eventu",
+            "eventStatus": {
+                "inProgress": "Probíhá",
+                "finished": "Dokončeno",
+                "failed": "Neúspěšné"
+            },
+            "progressTitle": "Aktuální postup eventu",
             "progress": {
                 "min": "Min",
                 "max": "Max"
@@ -47,15 +54,15 @@
             },
             "sortByTitle": "Seřadit podle",
             "sortBy": {
-                "byEventNameAsc": "Podle názvu události (A-Z)",
-                "byEventNameDesc": "Podle názvu události (Z-A)",
+                "byEventNameAsc": "Podle názvu eventu (A-Z)",
+                "byEventNameDesc": "Podle názvu eventu (Z-A)",
                 "byDateAsc": "Podle data (nejstarší nejprve)",
                 "byDateDesc": "Podle data (nejnovější nejprve)",
                 "byProgressAsc": "Podle postupu (nejmenší nejprve)",
                 "byProgressDesc": "Podle postupu (největší nejprve)"
             },
 
-            "noResults": "Nebyly nalezeny žádné události",
+            "noResults": "Nebyly nalezeny žádné eventy",
             "emptySearch": "Zadejte něco k vyhledání",
 
             "resetButton": "Resetovat",
@@ -67,7 +74,7 @@
         "title": "Vytvořit event",
         "imageTitle": "Vaš clicker!",
         "eventTitle": "Nový event",
-        "eventDescription": "Jste na stránce pro vytváření nové události. Zde musíte nastavit její typ, název a popis. Nastavte obrázek klikacího prvku a nastavte jednu nebo více podmínek pro jeho dokončení.",
+        "eventDescription": "Jste na stránce pro vytváření nového eventu. Zde musíte nastavit jeho typ, název a popis. Nastavte obrázek klikacího prvku a nastavte jednu nebo více podmínek pro jeho dokončení.",
         "eventType": "Typ eventu",
         "eventName": "Název eventu",
         "eventNamePlaceholder": "Zadejte název eventu",
@@ -89,7 +96,7 @@
                 "jackpotDesc": "Vytvořte si cenový fond, kde účastníci mohou vyhrát odměny. Ideální pro soutěže a dárky."
             },
             "recipient": "Příjemce",
-            "recipientDescription": "Zvolený typ události vyžaduje příjemce:",
+            "recipientDescription": "Zvolený typ eventu vyžaduje příjemce:",
             "searchRecipient": "Vyhledat příjemce...",
             "searchPlaceholder": "Vyhledat příjemce...",
             "noResults": "Nebyli nalezeni žádní uživatelé"
@@ -132,7 +139,8 @@
         },
         "status": {
             "active": "Aktivní",
-            "completed": "Dokončen"
+            "completed": "Dokončen",
+            "failed": "Neúspěšný"
         },
         "currentbankAmount": "Aktuální částka banky",
         "finalbankAmount": "Konečná částka banky",
@@ -154,7 +162,8 @@
             "lt": "méně",
             "lte": "méně nebo rovno",
             "gt": "více",
-            "gte": "více nebo rovno"
+            "gte": "více nebo rovno",
+            "equals": "rovno"
         },
         "conditionType": {
             "time": "Časový limit je:",
@@ -167,7 +176,7 @@
     "profile": {
         "backTitle": "Zpět",
         "title": "Osobní profil",
-        "createdEvents": "Události",
+        "createdEvents": "Eventy",
         "winnedEvents": "Vyhry",
         "achievements": "Úspěchy",
         "participatingEvents": "Účast"
@@ -189,11 +198,11 @@
         "fundraisingPoint2": "Více lidí může přispívat na stejnou věc",
         "fundraisingPoint3": "Všechny prostředky jdou určenému příjemci, když jsou splněny některé stanovené podmínky",
         "jackpot": "Jackpot",
-        "jackpotDesc": "Jackpot události přidávají trochu vzrušení! Každý přispívá do společného fondu a vítěz je určen částečně na základě náhody a částečně na základě vašeho podílu na celkovém banku. Je to jako přátelská soutěž, kde účastníci mají šanci vyhrát nasbíraný plný bank.",
+        "jackpotDesc": "Jackpot eventy přidávají trochu vzrušení! Každý přispívá do společného fondu a vítěz je určen částečně na základě náhody a částečně na základě vašeho podílu na celkovém banku. Je to jako přátelská soutěž, kde účastníci mají šanci vyhrát nasbíraný plný bank.",
         "jackpotPoint1": "Není třeba předem určovat příjemce",
-        "jackpotPoint2": "Vítěz je určen výsledkem události",
+        "jackpotPoint2": "Vítěz je určen výsledkem eventu",
         "jackpotPoint3": "Vytváří zábavnou, soutěživou atmosféru mezi účastníky",
-        "creatingEvent": "Vytvoření vaší dokonalé události",
+        "creatingEvent": "Vytvoření vašeho dokonalého eventu",
         "setupIntro": "Jste připraveni vytvořit událost? Zde je, co budete muset nastavit:",
         "setupName": "Název:",
         "setupNameDesc": "Něco chytlavého, co popisuje vaši událost",
@@ -207,8 +216,8 @@
         "setupImageDesc": "Obrázek, který bude použit jako klikací prvek!",
         "setupConditions": "Podmínky ukončení:",
         "setupConditionsDesc": "Co se musí stát, aby se vaše událost dokončila",
-        "settingConditions": "Nastavení podmínek ukončení události",
-        "conditionsDesc": "Podmínky ukončení jsou to, co činí vaši událost dynamickou. Určují, kdy vaše událost končí a prostředky jsou distribuovány. Představte si je jako cílové čáry nebo cíle pro vaši událost. K dokončení a odehrání události stačí, aby byla splněna alespoň jedna ze skupin podmínek. Počet skupin podmínek není omezen. Každá skupina podmínek může sestávat z maximálně tří podmínek: podmínky částky banky, podmínky počtu účastníků a času a data ukončení.",
+        "settingConditions": "Nastavení podmínek ukončení eventu",
+        "conditionsDesc": "Podmínky ukončení jsou to, co činí vaši událost dynamickou. Určují, kdy vaše událost končí a prostředky jsou distribuovány. Představte si je jako cílové čáry nebo cíle pro vaši událost. K dokončení a odehrání eventu stačí, aby byla splněna alespoň jedna ze skupin podmínek. Počet skupin podmínek není omezen. Každá skupina podmínek může sestávat z maximálně tří podmínek: podmínky částky banky, podmínky počtu účastníků a času a data ukončení.",
         "moneyGoals": "Finanční cíle (podmínky banky)",
         "moneyGoalsDesc": "Chcete, aby vaše událost skončila, když vyberete určitou částku? Použijte podmínku banky.",
         "moneyGoalsExample": "Například: \"Dokončete událost, když jsme vybrali 5000 $ nebo více.\"",
@@ -225,40 +234,40 @@
         "combiningExample": "Například: \"Ukončete událost, když BUĎTO (jsme vybrali alespoň 10 000 $ A máme alespoň 5 účastníků) NEBO (jsme dosáhli našeho konečného data).\"",
         "findingEvents": "Vyhledávání a filtrování událostí",
         "findingDesc": "Při procházení událostí můžete zúžit své hledání pomocí těchto filtrů:",
-        "findingPoint1": "Vyhledávání podle názvu události",
-        "findingPoint2": "Filtrování podle typu události (DAR, FUNDRAISING, JACKPOT)",
+        "findingPoint1": "Vyhledávání podle názvu eventu",
+        "findingPoint2": "Filtrování podle typu eventu (DAR, FUNDRAISING, JACKPOT)",
         "findingPoint3": "Filtrování podle postupu (jak blízko nebo daleko je událost od dokončení)",
         "findingPoint4": "Řazení událostí podle názvu, data vytvoření nebo postupu",
         "participating": "Účast na událostech",
-        "participatingDesc": "Chcete se připojit k události? Zde je, co potřebujete vědět:",
+        "participatingDesc": "Chcete se připojit k eventu? Zde je, co potřebujete vědět:",
         "participatingPoint1": "Událost musí být aktivní (ještě není dokončena)",
         "participatingPoint2": "Potřebujete dostatek prostředků na svém účtu",
-        "participatingProgress": "Jakmile přispějete, můžete sledovat postup události směrem k dokončení. Indikátor postupu ukazuje, jak blízko je událost ke splnění svých podmínek.",
+        "participatingProgress": "Jakmile přispějete, můžete sledovat postup eventu směrem k dokončení. Indikátor postupu ukazuje, jak blízko je událost ke splnění svých podmínek.",
         "eventCompletion": "Co se stane, když se událost dokončí?",
         "completionDesc": "Když událost dosáhne svých podmínek, stane se několik věcí:",
-        "completionPoint1": "Stav události se změní z \"aktivní\" na \"dokončená\"",
+        "completionPoint1": "Stav eventu se změní z \"aktivní\" na \"dokončená\"",
         "completionPoint2": "Nelze již dělat další příspěvky",
-        "completionPoint3": "Prostředky jsou distribuovány podle typu události",
+        "completionPoint3": "Prostředky jsou distribuovány podle typu eventu",
         "completionDetails": "U událostí DAR a FUNDRAISING jdou všechny prostředky předem určenému příjemci. U událostí JACKPOT systém určí vítěze na základě náhody a podílu uživatelů na celkovém banku.",
         "behindScenes": "Zákulisí",
-        "behindScenesDesc": "Náš systém automaticky kontroluje, zda události splnily své podmínky:",
-        "behindScenesPoint1": "Když někdo přispěje k události",
+        "behindScenesDesc": "Náš systém automaticky kontroluje, zda eventy splnily své podmínky:",
+        "behindScenesPoint1": "Když někdo přispěje k eventu",
         "behindScenesPoint2": "Když je existující příspěvek aktualizován",
         "behindScenesPoint3": "Pravidelně pro časově založené podmínky",
         "behindScenesDetails": "To zajišťuje, že vaše událost postupuje vpřed a dokončí se přesně tehdy, když jsou splněny její podmínky, bez potřeby manuálního zásahu.",
         "proTips": "Profesionální tipy a strategie",
         "tipStandOut": "Nechte vaši událost vyniknout",
-        "tipStandOutDesc": "Použijte jasný, poutavý obrázek a napište přesvědčivý popis, který vypráví příběh. Události s osobními příběhy získávají až 3x více účastníků než obecné!",
-        "tipTiming": "Načasujte své události strategicky",
-        "tipTimingDesc": "Krátkodobé události (1-7 dní) mají tendenci vytvářet naléhavost a získat větší zapojení. Pokud vaše událost běží příliš dlouho, účastníci mohou ztratit zájem předtím, než jsou splněny podmínky.",
+        "tipStandOutDesc": "Použijte jasný, poutavý obrázek a napište přesvědčivý popis, který vypráví příběh. Eventy s osobními příběhy získávají až 3x více účastníků než obecné!",
+        "tipTiming": "Načasujte své eventy strategicky",
+        "tipTimingDesc": "Krátkodobé eventy (1-7 dní) mají tendenci vytvářet naléhavost a získat větší zapojení. Pokud vaše událost běží příliš dlouho, účastníci mohou ztratit zájem předtím, než jsou splněny podmínky.",
         "tipGoals": "Stanovte realistické cíle financování",
-        "tipGoalsDesc": "Začněte s menšími cíly pro své první události, abyste si vybudovali historii úspěšných dokončení. Naše data ukazují, že události s cíly pod 1 000 $ se dokončí v 72 % případů, zatímco ty nad 10 000 $ se dokončí pouze v 23 % případů.",
+        "tipGoalsDesc": "Začněte s menšími cíly pro své první eventy, abyste si vybudovali historii úspěšných dokončení. Naše data ukazují, že eventy s cíly pod 1 000 $ se dokončí v 72 % případů, zatímco ty nad 10 000 $ se dokončí pouze v 23 % případů.",
         "tipJackpot": "Strategie Jackpotu",
-        "tipJackpotDesc": "U Jackpot událostí si pamatujte, že vaše šance na výhru se zvyšují s velikostí vašeho příspěvku vzhledem k celkovému banku. Dělání více menších příspěvků v průběhu času může pomoci udržet viditelnost události v komunitním kanálu.",
+        "tipJackpotDesc": "U Jackpot událostí si pamatujte, že vaše šance na výhru se zvyšují s velikostí vašeho příspěvku vzhledem k celkovému banku. Dělání více menších příspěvků v průběhu času může pomoci udržet viditelnost eventu v komunitním kanálu.",
         "tipConditions": "Efektivní kombinování podmínek",
         "tipConditionsDesc": "Při vytváření událostí zvažte kombinaci realistické časové podmínky s ambiciózními cíly financování/účasti. To zajistí, že se vaše událost nakonec dokončí, zatímco jí stále dává šanci překonat očekávání.",
         "getStarted": "Připraveni začít?",
-        "getStartedDesc": "Nyní, když rozumíte, jak události fungují, je čas vytvořit si vlastní! Ať už získáváte prostředky pro věc, pomáháte příteli nebo organizujete zábavnou soutěž, naše platforma vám dává nástroje, aby se to stalo.",
+        "getStartedDesc": "Nyní, když rozumíte, jak eventy fungují, je čas vytvořit si vlastní! Ať už získáváte prostředky pro věc, pomáháte příteli nebo organizujete zábavnou soutěž, naše platforma vám dává nástroje, aby se to stalo.",
         "topUpBalance": "Jak dobít váš zůstatek?",
         "topUpBalanceDesc": "Pro dobití vašeho zůstatku musíte přejít na stránku nastavení a otevřít sekci Zůstatek."
     },
@@ -275,7 +284,26 @@
         "fillAllFields": "Vyplňte prosím všechna pole",
         "passwordsNotMatch": "Hesla se neshodují",
         "failedToRegister": "Registrace se nezdařila",
-        "failedToLogin": "Přihlášení se nezdařilo"
+        "failedToLogin": "Přihlášení se nezdařilo",
+        "discordLoginFailed": "Přihlášení přes Discord se nezdařilo",
+        "discordButton": "Přihlásit se přes Discord",
+        "discordRegisterButton": "Registrovat se přes Discord",
+        "or": "nebo"
+    },
+    "alerts": {
+        "needAccess": "Potřebujete přístup",
+        "allowPhotoAccess": "Povolte přístup ke galerii fotografií pro výběr obrázků",
+        "imageSizeError": "Velikost obrázku by neměla přesáhnout 5MB",
+        "imageSizeCheckError": "Nepodařilo se zkontrolovat velikost obrázku",
+        "mustBeLoggedIn": "Pro účast musíte být přihlášeni",
+        "insufficientBalance": "Nedostatečný zůstatek. Pro pokračování si dobijte zůstatek",
+        "attention": "Pozor",
+        "atLeastOneGroup": "Musí existovat alespoň jedna skupina podmínek",
+        "conditionAlreadyAdded": "Tento typ podmínky je již přidán do skupiny",
+        "eventCompleted": "Událost dokončena",
+        "eventNoLongerActive": "Tato událost již není aktivní",
+        "success": "Úspěch",
+        "technicalError": "Při propojování Discord účtu došlo k technické chybě"
     },
     "settings": {
         "title": "Nastavení",
@@ -306,6 +334,18 @@
         "appInfo": "Informace o aplikaci",
         "logout": "Odhlásit se",
         
+        "alerts": {
+            "success": "Úspěch",
+            "error": "Chyba",
+            "logoutTitle": "Odhlásit se",
+            "logoutMessage": "Jste si jisti, že se chcete odhlásit?",
+            "cancel": "Zrušit",
+            "invalidAmount": "Neplatná částka",
+            "invalidAmountMessage": "Zadejte prosím platné kladné číslo",
+            "balanceUpdated": "Zůstatek byl úspěšně aktualizován",
+            "failedToAddBalance": "Nepodařilo se přidat zůstatek"
+        },
+        
         "accountPage": {
             "title": "Účet",
             "backTitle": "Zpět",
@@ -322,7 +362,43 @@
             "edit": "Upravit",
             "save": "Uložit",
             "cancel": "Zrušit",
-            "notSet": "Není nastaveno"
+            "notSet": "Není nastaveno",
+            "validation": {
+                "usernameMinLength": "Uživatelské jméno musí mít alespoň 3 znaky",
+                "usernameMaxLength": "Uživatelské jméno nesmí přesáhnout 30 znaků",
+                "usernameInvalidChars": "Uživatelské jméno může obsahovat pouze písmena, číslice a podtržítko",
+                "emailInvalid": "Zadejte prosím platnou e-mailovou adresu",
+                "passwordEmpty": "Heslo nemůže být prázdné",
+                "passwordMinLength": "Heslo musí mít alespoň 6 znaků",
+                "passwordMaxLength": "Heslo nesmí přesáhnout 100 znaků",
+                "currentPasswordRequired": "Je třeba zadat aktuální heslo",
+                "passwordsNotMatch": "Nová hesla se neshodují",
+                "passwordSameAsCurrent": "Nové heslo nemůže být stejné jako současné"
+            },
+            "success": {
+                "usernameUpdated": "Uživatelské jméno bylo úspěšně aktualizováno",
+                "emailUpdated": "E-mail byl úspěšně aktualizován",
+                "passwordUpdated": "Heslo bylo úspěšně změněno"
+            },
+            "errors": {
+                "updateUsernameFailed": "Nepodařilo se aktualizovat uživatelské jméno",
+                "updateEmailFailed": "Nepodařilo se aktualizovat e-mail",
+                "updatePasswordFailed": "Změna hesla se nezdařila"
+            },
+            "discord": {
+                "linked": "Propojeno",
+                "linkAccount": "Propojit Discord účet",
+                "linking": "Propojování...",
+                "description": "Propojte svůj Discord účet pro snadné přihlášení a sdílení vašich úspěchů",
+                "errors": {
+                    "alreadyLinkedToUser": "Discord účet je již propojen s tímto uživatelem",
+                    "alreadyLinkedToAnother": "Tento Discord účet je již propojen s jiným uživatelem",
+                    "technicalError": "Při propojování Discord účtu došlo k technické chybě"
+                },
+                "success": {
+                    "linked": "Discord účet byl úspěšně propojen"
+                }
+            }
         },
         "balancePage": {
             "title": "Zůstatek",
@@ -392,7 +468,7 @@
             "info": "Informace o aplikaci",
             "version": "Verze",
             "about": "O aplikaci",
-            "diplomaInfo": "Tento projekt byl vyvinut jako bakalářská práce na Fakultě informačních technologií Českého vysokého učení technického v Praze v období 2024 - 2025 let."
+            "diplomaInfo": "Tento projekt byl vyvinut jako bakalářská práce na Fakultě informačních technologií Českého vysokého učení technického v Praze v období 2025 - 2026 let."
         }
     },
     "eventCard": {
@@ -401,5 +477,56 @@
     },
     "else": {
         "createNewEvent": "Vytvořit novou událost"
+    },
+    "achievements": {
+        "title": "Úspěchy",
+        "noAchievements": "Nebyly nalezeny žádné úspěchy",
+        "loading": "Načítání úspěchů...",
+        "error": "Chyba při načítání úspěchů",
+        "retry": "Zkusit znovu",
+        "unlockedOn": "Odemčeno",
+        "progress": "Postup",
+        "completed": "Dokončeno",
+        "categories": {
+            "starter": "Začátečník",
+            "banker": "Bankéř",
+            "participant": "Účastník",
+            "special": "Speciální"
+        },
+        "list": {
+            "FIRST_STEPS_1": {
+                "name": "První kroky",
+                "description": "Vytvořte svou první událost a dosáhněte $5 na vašem účtu"
+            },
+            "BANKER_1": {
+                "name": "Začínající investor",
+                "description": "Nahromaďte $50 na zůstatku vašeho účtu"
+            },
+            "BANKER_2": {
+                "name": "Budovatel bohatství",
+                "description": "Dosáhněte $100 na zůstatku vašeho účtu"
+            },
+            "BANKER_3": {
+                "name": "Mistr investor",
+                "description": "Dosáhněte $500 na zůstatku vašeho účtu"
+            },
+            "ACTIVE_PARTICIPANT_1": {
+                "name": "Začátečník komunity",
+                "description": "Vytvořte 2 eventy a zúčastněte se 5 dokončených eventů"
+            },
+            "ACTIVE_PARTICIPANT_2": {
+                "name": "Vůdce komunity",
+                "description": "Vytvořte 5 eventů a zúčastněte se 10 dokončených eventů"
+            }
+        },
+        "criteria": {
+            "EVENT_COUNT_CREATED": "Vytvořené eventy",
+            "EVENT_COUNT_COMPLETED": "Dokončené eventy",
+            "USER_BANK": "Zůstatek účtu",
+            "EVENT_INCOME": "Výdělek z eventů",
+            "EVENT_PARTICIPANTS": "Účastníci eventu",
+            "EVENT_TIME": "Doba trvání eventu",
+            "USER_ACTIVITY": "Aktivní série"
+        }
     }
 } 

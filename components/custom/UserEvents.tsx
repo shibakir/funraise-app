@@ -1,29 +1,92 @@
-import React, { useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
+import { useUser } from '@/lib/hooks/users';
+import { useRefreshableData } from '@/lib/hooks/data';
 import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
-import { useUserEvents } from '@/lib/hooks/useUserEvents';
+import { EventStatus } from '@/lib/graphql';
+import type { Event } from '@/lib/graphql/types';
 import { EventCard } from '@/components/custom/EventCard';
+import { useTranslation } from 'react-i18next';
 
 interface UserEventsProps {
     limit?: number;
     userId: string;
     eventType?: 'created' | 'participating';
+    showOnlyActive?: boolean;
 }
 
-export function UserEvents({ limit = 5, userId, eventType }: UserEventsProps) {
-    const { events, isLoading, error, fetchUserEvents, resetEvents } = useUserEvents();
+export function UserEvents({ limit = 5, userId, eventType, showOnlyActive = false }: UserEventsProps) {
+    const { t } = useTranslation();
+    
+    // If there is no userId, don't show anything
+    if (!userId || userId.trim() === '') {
+        return null;
+    }
+    
+    const userIdNum = parseInt(userId);
+    if (isNaN(userIdNum)) {
+        return null;
+    }
+    
+    const { user, loading: isLoading, error: graphqlError, refetch } = useUser(userIdNum);
+    
     const borderColor = useThemeColor({}, 'divider');
     const sectionBackground = useThemeColor({}, 'sectionBackground');
     const primaryColor = useThemeColor({}, 'primary');
     const errorColor = useThemeColor({}, 'error');
 
-    useEffect(() => {
-        fetchUserEvents(userId, limit, eventType);
-    }, [userId, eventType]);
+    const error = graphqlError || null;
+
+    const processedEvents = useMemo((): Event[] => {
+        if (!user) return [];
+
+        let userEvents: Event[] = [];
+
+        switch (eventType) {
+            case 'created':
+                // create a copy of the array to avoid changing the read-only array from GraphQL
+                userEvents = [...(user.createdEvents || [])];
+                break;
+            case 'participating':
+                // create a copy of the array to avoid changing the read-only array from GraphQL
+                userEvents = [...(user.receivedEvents || [])];
+                break;
+            default:
+                userEvents = [
+                    ...(user.createdEvents || []),
+                    ...(user.receivedEvents || []),
+                    ...(user.events || [])
+                ];
+                
+                const uniqueEventsMap = new Map();
+                userEvents.forEach(event => {
+                    uniqueEventsMap.set(event.id, event);
+                });
+                userEvents = Array.from(uniqueEventsMap.values());
+                break;
+        }
+
+        // Filter only active events if the showOnlyActive parameter is true
+        if (showOnlyActive) {
+            userEvents = userEvents.filter(event => event.status === EventStatus.IN_PROGRESS);
+        }
+
+        userEvents.sort((a, b) => b.id - a.id);
+
+        return userEvents.slice(0, limit);
+    }, [user, eventType, limit, showOnlyActive]);
+
+    useRefreshableData({
+        key: `user-events-${userId}-${eventType || 'all'}`,
+        onRefresh: async () => {
+            await refetch();
+        },
+        dependencies: [userId, limit, eventType]
+    });
 
     const styles = StyleSheet.create({
         mainSection: {
@@ -56,46 +119,42 @@ export function UserEvents({ limit = 5, userId, eventType }: UserEventsProps) {
     });
 
     const LoadMoreButton = () => {
-        // Предполагаем, что для пользовательских событий всегда загружаем все сразу
         return null;
-            
-        /* use load more button
-        return (
-            <TouchableOpacity 
-                style={styles.loadMoreButton}
-                onPress={() => fetchUserEvents(userId, limit)}
-                activeOpacity={0.7}
-                disabled={isLoading}
-            >
-                {isLoading ? (
-                    <ActivityIndicator size="small" color={primaryColor} />
-                ) : (
-                    <ThemedText style={styles.loadMoreText}>Show More</ThemedText>
-                )}
-            </TouchableOpacity>
-        );
-        */
     };
 
-    if (isLoading && events.length === 0) {
+    if (isLoading && processedEvents.length === 0) {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={primaryColor} />
-                <ThemedText style={{ marginTop: 10 }}>Loading events...</ThemedText>
+                <ThemedText style={{ marginTop: 10 }}>{t('userEvents.loading', 'Loading events...')}</ThemedText>
             </View>
         );
     }
-    if (error && events.length === 0) {
+    
+    if (error && processedEvents.length === 0) {
         return (
             <ThemedView style={styles.container}>
-                <ThemedText style={{ color: errorColor }}>{error}</ThemedText>
+                <ThemedText style={{ color: errorColor, padding: moderateScale(16) }}>
+                    {t('userEvents.error', 'Error')}: {error}
+                </ThemedText>
+                <TouchableOpacity 
+                    style={[styles.loadMoreButton, { backgroundColor: primaryColor }]}
+                    onPress={() => refetch()}
+                >
+                    <ThemedText style={[styles.loadMoreText, { color: 'white' }]}>
+                        {t('userEvents.retry', 'Retry')}
+                    </ThemedText>
+                </TouchableOpacity>
             </ThemedView>
         );
     }
-    if (events.length === 0) {
+    
+    if (processedEvents.length === 0) {
         return (
             <ThemedView style={styles.container}>
-                <ThemedText>No user events found</ThemedText>
+                <ThemedText style={{ padding: moderateScale(16) }}>
+                    {t('userEvents.noEvents', 'No user events found')}
+                </ThemedText>
             </ThemedView>
         );
     }
@@ -103,7 +162,9 @@ export function UserEvents({ limit = 5, userId, eventType }: UserEventsProps) {
     return (
         <ThemedView style={styles.mainSection}>
             <View style={styles.container}>
-                {events.map(event => <EventCard key={event.id} event={event} />)}
+                {processedEvents.map(event => 
+                    <EventCard key={event.id} event={event} />
+                )}
                 <LoadMoreButton />
             </View>
         </ThemedView>

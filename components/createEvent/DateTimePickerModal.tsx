@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View, TouchableOpacity, Modal } from 'react-native';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { moderateScale } from '@/lib/utilities/Metrics';
 import DateTimePicker from '@react-native-community/datetimepicker';
 

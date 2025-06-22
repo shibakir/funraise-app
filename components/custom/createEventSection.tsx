@@ -5,8 +5,8 @@ import { router } from 'expo-router';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
-import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
+import { useThemeColor } from '@/lib/hooks/ui';
+import { horizontalScale, moderateScale } from '@/lib/utilities/Metrics';
 import { useTranslation } from 'react-i18next';
 interface CreateEventSectionProps {
     onPress?: () => void;

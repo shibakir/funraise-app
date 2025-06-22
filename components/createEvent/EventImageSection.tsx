@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, verticalScale, moderateScale } from '@/lib/utilities/Metrics';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
@@ -28,7 +28,7 @@ export const EventImageSection: React.FC<EventImageSectionProps> = ({ imageUri, 
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         
         if (status !== 'granted') {
-            Alert.alert('Need access', 'Allow access to the photo gallery to select images');
+            Alert.alert(t('alerts.needAccess'), t('alerts.allowPhotoAccess'));
             return;
         }
 
@@ -45,22 +45,22 @@ export const EventImageSection: React.FC<EventImageSectionProps> = ({ imageUri, 
             const selectedImage = result.assets[0];
             //console.log('Selected image:', selectedImage);
 
-            // Проверяем размер файла
+            // Check file size
             try {
                 const fileInfo = await FileSystem.getInfoAsync(selectedImage.uri);
                 if (fileInfo.exists && fileInfo.size) {
                     if (fileInfo.size > MAX_FILE_SIZE) {
-                        Alert.alert('Error', 'Image size should not exceed 5MB');
+                        Alert.alert(t('auth.error'), t('alerts.imageSizeError'));
                         return;
                     }
                 }
             } catch (error) {
                 //console.error('Error checking file size:', error);
-                Alert.alert('Error', 'Failed to check image size');
+                Alert.alert(t('auth.error'), t('alerts.imageSizeCheckError'));
                 return;
             }
             
-            // Создаем объект файла для отправки
+            // Create file object to send
             const file = {
                 uri: selectedImage.uri,
                 type: 'image/jpeg',

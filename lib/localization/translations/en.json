@@ -11,6 +11,7 @@
         "newEvent": "New Event",
         "readHelp": "Read our Help & Guides",
         "myRecentEvents": "My recent events",
+        "myActiveEvents": "My active events",
         "myAchievements": "My Achievements"
     },
     "explore": {
@@ -32,6 +33,12 @@
                 "donation": "Donation",
                 "fundraising": "Fundraising",
                 "jackpot": "Jackpot"
+            },
+            "eventStatusTitle": "Event status",
+            "eventStatus": {
+                "inProgress": "In Progress",
+                "finished": "Finished", 
+                "failed": "Failed"
             },
             "progressTitle": "Current Event Progress",
             "progress": {
@@ -130,7 +137,8 @@
         },
         "status": {
             "active": "Active",
-            "completed": "Completed"
+            "completed": "Completed",
+            "failed": "Failed"
         },
         "currentbankAmount": "Current bank amount",
         "finalbankAmount": "Final bank amount",
@@ -152,7 +160,8 @@
             "lt": "less than",
             "lte": "less than or equal to",
             "gt": "greater than",
-            "gte": "greater than or equal to"
+            "gte": "greater than or equal to",
+            "equals": "equals"
         },
         "conditionType": {
             "time": "End time is:",
@@ -273,7 +282,26 @@
         "fillAllFields": "Please fill in all fields",
         "passwordsNotMatch": "Passwords do not match",
         "failedToRegister": "Failed to register",
-        "failedToLogin": "Failed to login"
+        "failedToLogin": "Failed to login",
+        "discordLoginFailed": "Discord login failed",
+        "discordButton": "Sign in with Discord",
+        "discordRegisterButton": "Sign up with Discord",
+        "or": "or"
+    },
+    "alerts": {
+        "needAccess": "Need access",
+        "allowPhotoAccess": "Allow access to the photo gallery to select images",
+        "imageSizeError": "Image size should not exceed 5MB",
+        "imageSizeCheckError": "Failed to check image size",
+        "mustBeLoggedIn": "You must be logged in to participate",
+        "insufficientBalance": "Insufficient balance. Please top up your balance to continue",
+        "attention": "Attention",
+        "atLeastOneGroup": "There must be at least one condition group",
+        "conditionAlreadyAdded": "This condition type is already added to the group",
+        "eventCompleted": "Event Completed",
+        "eventNoLongerActive": "This event is no longer active",
+        "success": "Success",
+        "technicalError": "Technical error occurred while linking Discord account"
     },
     "settings": {
         "title": "Settings",
@@ -304,6 +332,18 @@
         "appInfo": "App info",
         "logout": "Logout",
         
+        "alerts": {
+            "success": "Success",
+            "error": "Error",
+            "logoutTitle": "Logout",
+            "logoutMessage": "Are you sure you want to logout?",
+            "cancel": "Cancel",
+            "invalidAmount": "Invalid Amount",
+            "invalidAmountMessage": "Please enter a valid positive number",
+            "balanceUpdated": "Balance was successfully updated",
+            "failedToAddBalance": "Failed to add balance"
+        },
+        
         "accountPage": {
             "title": "Account",
             "backTitle": "Back",
@@ -320,7 +360,43 @@
             "edit": "Edit",
             "save": "Save",
             "cancel": "Cancel",
-            "notSet": "Not set"
+            "notSet": "Not set",
+            "validation": {
+                "usernameMinLength": "Username must be at least 3 characters long",
+                "usernameMaxLength": "Username cannot exceed 30 characters",
+                "usernameInvalidChars": "Username can only contain letters, numbers and underscore",
+                "emailInvalid": "Please enter a valid email address",
+                "passwordEmpty": "Password cannot be empty",
+                "passwordMinLength": "Password must be at least 6 characters long",
+                "passwordMaxLength": "Password cannot exceed 100 characters",
+                "currentPasswordRequired": "Current password is required",
+                "passwordsNotMatch": "Passwords do not match",
+                "passwordSameAsCurrent": "New password cannot be the same as current password"
+            },
+            "success": {
+                "usernameUpdated": "Username updated successfully",
+                "emailUpdated": "Email updated successfully",
+                "passwordUpdated": "Password changed successfully"
+            },
+            "errors": {
+                "updateUsernameFailed": "Failed to update username",
+                "updateEmailFailed": "Failed to update email",
+                "updatePasswordFailed": "Failed to change password"
+            },
+            "discord": {
+                "linked": "Linked",
+                "linkAccount": "Link Discord Account", 
+                "linking": "Linking...",
+                "description": "Link your Discord account to log in easily and share your achievements",
+                "errors": {
+                    "alreadyLinkedToUser": "Discord account already linked to this user",
+                    "alreadyLinkedToAnother": "This Discord account is already linked to another user",
+                    "technicalError": "Technical error occurred while linking Discord account"
+                },
+                "success": {
+                    "linked": "Discord account successfully linked"
+                }
+            }
         },
         "balancePage": {
             "title": "Balance",
@@ -390,7 +466,7 @@
             "info": "App info",
             "version": "Version",
             "about": "About",
-            "diplomaInfo": "This project was developed as a bachelor's thesis at the Faculty of Information Technology, Czech Technical University in Prague during the period 2024 - 2025."
+            "diplomaInfo": "This project was developed as a bachelor's thesis at the Faculty of Information Technology, Czech Technical University in Prague during the period 2025 - 2026."
         }
     },
     "eventCard": {
@@ -399,5 +475,56 @@
     },
     "else": {
         "createNewEvent": "Create new event"
+    },
+    "achievements": {
+        "title": "Achievements",
+        "noAchievements": "No achievements found",
+        "loading": "Loading achievements...",
+        "error": "Error loading achievements",
+        "retry": "Retry",
+        "unlockedOn": "Unlocked on",
+        "progress": "Progress",
+        "completed": "Completed",
+        "categories": {
+            "starter": "Starter",
+            "banker": "Banker", 
+            "participant": "Participant",
+            "special": "Special"
+        },
+        "list": {
+            "FIRST_STEPS_1": {
+                "name": "First Steps",
+                "description": "Create your first event and reach $5 in your account"
+            },
+            "BANKER_1": {
+                "name": "Rising Investor",
+                "description": "Accumulate $50 in your account balance"
+            },
+            "BANKER_2": {
+                "name": "Wealth Builder",
+                "description": "Reach $100 in your account balance"
+            },
+            "BANKER_3": {
+                "name": "Master Investor",
+                "description": "Achieve $500 in your account balance"
+            },
+            "ACTIVE_PARTICIPANT_1": {
+                "name": "Community Starter",
+                "description": "Create 2 events and participate in 5 completed events"
+            },
+            "ACTIVE_PARTICIPANT_2": {
+                "name": "Community Leader",
+                "description": "Create 5 events and participate in 10 completed events"
+            }
+        },
+        "criteria": {
+            "EVENT_COUNT_CREATED": "Events created",
+            "EVENT_COUNT_COMPLETED": "Events completed",
+            "USER_BANK": "Account balance amount",
+            "EVENT_INCOME": "Event earnings",
+            "EVENT_PARTICIPANTS": "Event participants",
+            "EVENT_TIME": "Event duration",
+            "USER_ACTIVITY": "Activity streak"
+        }
     }
 } 
