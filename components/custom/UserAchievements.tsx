@@ -8,6 +8,7 @@ import { useThemeColor } from '@/lib/hooks/ui';
 import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useUserAchievements } from '@/lib/hooks/users';
 import { UserAchievement, UserCriterionProgress } from '@/lib/graphql/types';
+import { useRefreshableData } from '@/lib/hooks/data';
 
 // Function to get achievement key based on its name
 const getAchievementKey = (name: string): string => {
@@ -169,6 +170,15 @@ export const UserAchievements = forwardRef<UserAchievementsHandle, UserAchieveme
     
     const primaryColor = useThemeColor({}, 'primary');
     const errorColor = useThemeColor({}, 'error');
+    
+    // register component in the refresh system for pull-to-refresh
+    useRefreshableData({
+        key: `user-achievements-${userId}`,
+        onRefresh: async () => {
+            await refetch();
+        },
+        dependencies: [userId]
+    });
     
     useImperativeHandle(ref, () => ({
         refresh: refetch

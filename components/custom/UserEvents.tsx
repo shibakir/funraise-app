@@ -52,14 +52,22 @@ export function UserEvents({ limit = 5, userId, eventType, showOnlyActive = fals
                 userEvents = [...(user.createdEvents || [])];
                 break;
             case 'participating':
-                // create a copy of the array to avoid changing the read-only array from GraphQL
-                userEvents = [...(user.receivedEvents || [])];
+                // get events from user participations
+                userEvents = (user.participations || [])
+                    .map(participation => participation.event)
+                    .filter(event => event != null) as Event[];
                 break;
             default:
+                // Get events from participations
+                const participationEvents = (user.participations || [])
+                    .map(participation => participation.event)
+                    .filter(event => event != null) as Event[];
+                
                 userEvents = [
                     ...(user.createdEvents || []),
                     ...(user.receivedEvents || []),
-                    ...(user.events || [])
+                    ...(user.events || []),
+                    ...participationEvents
                 ];
                 
                 const uniqueEventsMap = new Map();
@@ -80,6 +88,7 @@ export function UserEvents({ limit = 5, userId, eventType, showOnlyActive = fals
         return userEvents.slice(0, limit);
     }, [user, eventType, limit, showOnlyActive]);
 
+    // register component in the refresh system for pull-to-refresh
     useRefreshableData({
         key: `user-events-${userId}-${eventType || 'all'}`,
         onRefresh: async () => {

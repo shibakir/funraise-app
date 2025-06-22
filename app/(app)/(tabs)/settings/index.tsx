@@ -216,7 +216,7 @@ export default function SettingsScreen() {
                                     <ThemedText style={styles.avatarText}>{user?.email?.charAt(0) || 'X'}</ThemedText>
                                 </View>
                                 <View style={styles.userInfo}>
-                                    <ThemedText style={styles.userName}>{user?.email || 'User'}</ThemedText>
+                                    <ThemedText style={styles.userName}>{user?.username || 'User'}</ThemedText>
                                     <ThemedText style={styles.userEmail}>{user?.email || ''}</ThemedText>
                                 </View>
                             </View>

@@ -46,6 +46,7 @@ export function AllEvents({ limit = 5 }: AllEventsProps) {
         return filtered.slice(0, limit);
     }, [allEvents, limit]);
 
+    // register component in the refresh system for pull-to-refresh
     useRefreshableData({
         key: `all-events-${userId}-${limit}`,
         onRefresh: async () => {

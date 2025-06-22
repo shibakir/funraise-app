@@ -282,6 +282,32 @@ export const GET_USER = gql`
                 }
             }
         }
+        participations {
+            id
+            deposit
+            userId
+            eventId
+            event {
+                id
+                name
+                status
+                type
+                imageUrl
+                bankAmount
+                endConditions {
+                    id
+                    isCompleted
+                    isFailed
+                    conditions {
+                        id
+                        name
+                        operator
+                        value
+                        isCompleted
+                    }
+                }
+            }
+        }
         }
     }
 `;
