@@ -5,24 +5,48 @@ import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import * as FileSystem from 'expo-file-system';
 
-// Types for creating an event
+/**
+ * Input parameters for creating a new event.
+ * Contains all necessary data for event creation including conditions and media.
+ */
 interface CreateEventParams {
+    /** Display name for the event */
     name: string;
+    /** Detailed description of the event */
     description: string;
+    /** Type of event (DONATION, FUNDRAISING, JACKPOT) */
     eventType: string;
+    /** ID of the user creating the event */
     creatorId: string;
+    /** ID of the recipient user (for donations and fundraising) */
     recipientId?: string;
+    /** Local URI of the selected image */
     imageUri: string | null;
+    /** Image file object with metadata */
     imageFile: { uri: string; type: string; name: string } | null;
+    /** Array of condition groups defining event completion criteria */
     groups: any[];
 }
 
+/**
+ * Response structure for event creation operations.
+ * Indicates success status and returns created event data if successful.
+ */
 interface CreateEventResponse {
+    /** Whether the event was created successfully */
     success: boolean;
+    /** Created event data (only present if success is true) */
     event?: Event;
 }
 
-// Utilities for mapping
+/**
+ * Maps UI condition types to GraphQL enum values.
+ * Converts user-friendly condition names to backend-compatible types.
+ * 
+ * @param {string} uiType - UI condition type string
+ * @returns {ConditionType} Corresponding GraphQL condition type
+ * @throws {Error} When unknown condition type is provided
+ */
 const mapConditionType = (uiType: string): ConditionType => {
     const mapping: Record<string, ConditionType> = {
         time: ConditionType.TIME,
@@ -37,6 +61,13 @@ const mapConditionType = (uiType: string): ConditionType => {
     return mapping[uiType];
 };
 
+/**
+ * Maps UI operator strings to GraphQL enum values.
+ * Converts user-friendly operator names to backend-compatible operators.
+ * 
+ * @param {string} uiOperator - UI operator string (lt, lte, gt, gte, eq)
+ * @returns {Operator} Corresponding GraphQL operator enum
+ */
 const mapOperator = (uiOperator: string): Operator => {
     const mapping: Record<string, Operator> = {
         lt: Operator.LESS,
@@ -49,7 +80,13 @@ const mapOperator = (uiOperator: string): Operator => {
     return mapping[uiOperator] || Operator.GREATER_EQUALS;
 };
 
-// Validation functions
+/**
+ * Validates basic event creation fields.
+ * Checks required fields and business logic constraints.
+ * 
+ * @param {CreateEventParams} params - Event creation parameters
+ * @returns {string|null} Error message if validation fails, null if valid
+ */
 const validateBasicFields = (params: CreateEventParams): string | null => {
     const { name, eventType, recipientId, imageUri, imageFile } = params;
     
@@ -68,6 +105,13 @@ const validateBasicFields = (params: CreateEventParams): string | null => {
     return null;
 };
 
+/**
+ * Validates event end conditions.
+ * Ensures at least one condition group exists and all values are valid.
+ * 
+ * @param {any[]} groups - Array of condition groups
+ * @returns {string|null} Error message if validation fails, null if valid
+ */
 const validateConditions = (groups: any[]): string | null => {
     const hasValidGroups = groups.some(group => group.conditions.length > 0);
     if (!hasValidGroups) {
@@ -91,6 +135,15 @@ const validateConditions = (groups: any[]): string | null => {
     return null;
 };
 
+/**
+ * Converts a local image file to base64 encoded string.
+ * Required for uploading images to the GraphQL API.
+ * 
+ * @param {Object} imageFile - Image file object with URI
+ * @param {string} imageFile.uri - Local file URI
+ * @returns {Promise<string>} Base64 encoded image with data URI prefix
+ * @throws {Error} When file reading fails
+ */
 const convertImageToBase64 = async (imageFile: { uri: string }): Promise<string> => {
     try {
         const base64 = await FileSystem.readAsStringAsync(imageFile.uri, {
@@ -103,6 +156,13 @@ const convertImageToBase64 = async (imageFile: { uri: string }): Promise<string>
     }
 };
 
+/**
+ * Transforms UI condition groups to GraphQL format.
+ * Filters out empty groups and maps condition types and operators.
+ * 
+ * @param {any[]} groups - UI condition groups
+ * @returns {Array} Transformed condition groups for GraphQL
+ */
 const transformConditionGroups = (groups: any[]) => {
     return groups
         .filter(group => group.conditions.length > 0)
@@ -122,12 +182,29 @@ const transformConditionGroups = (groups: any[]) => {
         }));
 };
 
+/**
+ * Custom hook for creating events with comprehensive validation and error handling.
+ * Provides functionality to create events with images, conditions, and recipients.
+ * 
+ * @returns {Object} Event creation functionality and state
+ * @returns {Function} createEvent - Function to create a new event
+ * @returns {boolean} loading - Loading state indicator
+ * @returns {string|null} error - Current error message or null
+ * 
+ */
 export const useEventCreate = () => {
     const [createEventMutation, { loading, error }] = useMutation(CREATE_EVENT, {
         errorPolicy: 'all',
         refetchQueries: [GET_EVENTS]
     });
 
+    /**
+     * Creates a new event with validation, image processing, and condition setup.
+     * Handles the complete event creation flow from validation to GraphQL mutation.
+     * 
+     * @param {CreateEventParams} params - Event creation parameters
+     * @returns {Promise<CreateEventResponse>} Result indicating success/failure and event data
+     */
     const createEvent = async (params: CreateEventParams): Promise<CreateEventResponse> => {
         const { name, description, eventType, creatorId, recipientId, imageFile, groups } = params;
         

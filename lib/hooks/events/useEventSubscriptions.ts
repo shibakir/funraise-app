@@ -7,16 +7,48 @@ import {
     EVENT_CONDITIONS_UPDATED_SUBSCRIPTION
 } from '@/lib/graphql';
 
+/**
+ * Configuration props for event subscriptions hook.
+ * Defines event ID and callback functions for different subscription types.
+ */
 interface UseEventSubscriptionsProps {
+    /** ID of the event to subscribe to */
     eventId: number;
+    /** Callback function triggered when event data is updated */
     onEventUpdated?: (event: any) => void;
+    /** Callback function triggered when a new participation is created */
     onParticipationCreated?: (participation: any) => void;
+    /** Callback function triggered when a participation is updated */
     onParticipationUpdated?: (participation: any) => void;
+    /** Callback function triggered when event conditions are updated */
     onConditionsUpdated?: (conditions: any[]) => void;
 }
 
 /**
- * Hook for subscribing to all event updates in real time
+ * Custom hook for subscribing to real-time event updates.
+ * Manages multiple WebSocket subscriptions for comprehensive event monitoring.
+ * 
+ * This hook provides real-time updates for:
+ * - Event status changes (progress, completion, failure)
+ * - New user participations in the event
+ * - Updates to existing participations (deposit changes)
+ * - Event end condition evaluations and completions
+ * 
+ * @param {UseEventSubscriptionsProps} props - Configuration object
+ * @param {number} props.eventId - ID of the event to monitor
+ * @param {Function} [props.onEventUpdated] - Callback for event updates
+ * @param {Function} [props.onParticipationCreated] - Callback for new participations
+ * @param {Function} [props.onParticipationUpdated] - Callback for participation updates
+ * @param {Function} [props.onConditionsUpdated] - Callback for condition updates
+ * 
+ * @returns {Object} Subscription data and state
+ * @returns {any} eventData - Latest event update data
+ * @returns {any} participationCreatedData - Latest participation creation data
+ * @returns {any} participationUpdatedData - Latest participation update data
+ * @returns {any} conditionsData - Latest conditions update data
+ * @returns {boolean} loading - Combined loading state of all subscriptions
+ * @returns {Object} errors - Error messages for each subscription type
+ *
  */
 export const useEventSubscriptions = ({
     eventId,

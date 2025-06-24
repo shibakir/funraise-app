@@ -7,12 +7,6 @@ import * as SecureStore from 'expo-secure-store';
  * and user data stored in SecureStore. It is used by AuthService and Apollo Client
  * to ensure consistent token management across the application.
  * 
- * Features:
- * - Save/retrieve access and refresh tokens
- * - Manage user data in secure storage
- * - Check authentication status
- * - Notify components when tokens are cleared
- * 
  * @class TokenManager
  */
 export class TokenManager {

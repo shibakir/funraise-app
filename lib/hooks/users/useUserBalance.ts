@@ -3,23 +3,63 @@ import { GET_USER_BALANCE, BALANCE_UPDATED_SUBSCRIPTION, CREATE_TRANSACTION } fr
 import { User } from '@/lib/graphql';
 import { useState, useCallback } from 'react';
 
+/**
+ * Configuration props for the user balance hook.
+ * Defines user ID, subscription preferences, and callback functions.
+ */
 interface UseUserBalanceProps {
+    /** ID of the user to monitor balance for (null if not authenticated) */
     userId: string | null;
+    /** Whether to enable real-time balance subscriptions (default: true) */
     enableSubscription?: boolean;
+    /** Callback function triggered when balance is updated via subscription */
     onBalanceUpdated?: (user: User) => void;
 }
 
+/**
+ * Input structure for creating balance update transactions.
+ * Defines the transaction parameters for balance modifications.
+ */
 interface CreateTransactionInput {
+    /** Amount to add or subtract from balance */
     amount: number;
+    /** Type of transaction (BALANCE_INCOME, BALANCE_OUTCOME, etc.) */
     type: string;
+    /** ID of the user receiving the transaction */
     userId: number;
 }
 
+/**
+ * Response structure for balance update operations.
+ * Indicates success status and optionally returns new balance value.
+ */
 interface UpdateBalanceResponse {
+    /** Whether the balance update was successful */
     success: boolean;
+    /** New balance value after the update (optional) */
     newBalance?: number;
 }
 
+/**
+ * Custom hook for managing user balance with real-time updates.
+ * Provides comprehensive balance management including fetching, monitoring,
+ * and updating user balances with subscription support.
+ * 
+ * @param {UseUserBalanceProps} props - Configuration object
+ * @param {string|null} props.userId - User ID to monitor (null if not authenticated)
+ * @param {boolean} [props.enableSubscription=true] - Enable real-time subscriptions
+ * @param {Function} [props.onBalanceUpdated] - Callback for balance updates
+ * 
+ * @returns {Object} Balance data and operations
+ * @returns {number|null} balance - Current user balance or null
+ * @returns {boolean} loading - Combined loading state for queries and subscriptions
+ * @returns {boolean} updateLoading - Loading state for balance update operations
+ * @returns {string|null} error - Current error message or null
+ * @returns {Function} refetch - Function to manually refetch balance data
+ * @returns {Function} updateBalance - Function to update user balance
+ * @returns {User|null} subscriptionData - Latest user data from subscriptions
+ * 
+ */
 export const useUserBalance = ({ 
     userId, 
     enableSubscription = true, 
@@ -58,6 +98,13 @@ export const useUserBalance = ({
 
     const [createTransaction] = useMutation(CREATE_TRANSACTION);
 
+    /**
+     * Updates the user's balance by creating a BALANCE_INCOME transaction.
+     * Validates input, executes the mutation, and handles errors gracefully.
+     * 
+     * @param {number} amount - Amount to add to the user's balance (must be positive)
+     * @returns {Promise<UpdateBalanceResponse>} Result indicating success/failure
+     */
     const updateBalance = useCallback(async (amount: number): Promise<UpdateBalanceResponse> => {
         if (!userId) {
             setUpdateError('User ID is required');

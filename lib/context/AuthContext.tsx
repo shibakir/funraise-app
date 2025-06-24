@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         // Subscribe to token cleared events
         const handleTokensCleared = () => {
-            console.log('AuthContext: Tokens were cleared, performing local logout');
+            //console.log('AuthContext: Tokens were cleared, performing local logout');
             setUser(null);
             setError(null);
         };

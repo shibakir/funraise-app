@@ -11,7 +11,19 @@ import {
   User
 } from '@/lib/graphql';
 
-// Get user by ID
+/**
+ * Custom hook for fetching a specific user by ID.
+ * Provides detailed user information with automatic query management.
+ * 
+ * @param {number|string|null} id - User ID to fetch (accepts various formats)
+ * 
+ * @returns {Object} User data and state
+ * @returns {User|null} user - User data or null if not found
+ * @returns {boolean} loading - Loading state indicator
+ * @returns {string|null} error - Error message or null
+ * @returns {Function} refetch - Function to manually refetch user data
+ * 
+ */
 export const useUser = (id: number | string | null) => {
     const userId = typeof id === 'string' ? parseInt(id) : id;
     
@@ -34,7 +46,15 @@ export const useUser = (id: number | string | null) => {
     };
 };
 
-// Lazy user search
+/**
+ * Custom hook for lazy user search functionality.
+ * Provides on-demand user searching with manual trigger control.
+ * 
+ * This hook uses lazy querying, meaning the search is not executed
+ * automatically. The search must be manually triggered using the
+ * returned search function.
+ * 
+ */
 export const useUserSearch = () => {
     const [searchUsers, { data, loading, error }] = useLazyQuery<SearchUsersResponse, SearchUsersArgs>(
         SEARCH_USERS,
@@ -43,6 +63,12 @@ export const useUserSearch = () => {
         }
     );
 
+    /**
+     * Executes user search if the username meets minimum requirements.
+     * Validates input length before triggering the GraphQL query.
+     * 
+     * @param {string} username - Username to search for
+     */
     const search = (username: string) => {
         if (username && username.length >= 2) {
             searchUsers({ variables: { username } });
@@ -57,7 +83,27 @@ export const useUserSearch = () => {
     };
 };
 
-// Get user profile with full information
+/**
+ * Custom hook for fetching comprehensive user profile information.
+ * Provides enhanced user data with computed statistics and formatted output.
+ * 
+ * This hook extends the basic user fetching with additional computed
+ * properties and maintains compatibility with REST API patterns used
+ * elsewhere in the application.
+ * 
+ * @param {number|string|null} id - User ID to fetch profile for
+ * 
+ * @returns {Object} Enhanced profile data and state
+ * @returns {Object|null} profile - Formatted profile data (REST API compatible)
+ * @returns {boolean} loading - Loading state indicator
+ * @returns {string|null} error - Error message or null
+ * @returns {Function} refreshProfile - Function to refresh profile data
+ * @returns {User|null} fullUser - Complete GraphQL user object
+ * @returns {number} totalCreatedEvents - Count of events created by user
+ * @returns {number} totalReceivedEvents - Count of events received by user
+ * @returns {number} totalEvents - Total count of user's event participations
+ * 
+ */
 export const useUserProfile = (id: number | string | null) => {
     const userId = typeof id === 'string' ? parseInt(id) : id;
     
