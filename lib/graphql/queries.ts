@@ -1,10 +1,21 @@
 import { gql } from '@apollo/client';
 
 /**
- * GraphQL queries, mutations and subscriptions
+ * GraphQL queries, mutations and subscriptions for the application.
+ * 
+ * This module contains all GraphQL operations used throughout the app,
+ * including authentication, user management, events, and real-time subscriptions.
+ * Operations are organized by functionality for better maintainability.
  */
 
-// Authentication mutations
+// =============================================================================
+// AUTHENTICATION MUTATIONS
+// =============================================================================
+
+/**
+ * Login mutation for email/password authentication.
+ * Returns access token, refresh token, and complete user data with accounts.
+ */
 export const LOGIN_MUTATION = gql`
     mutation Login($email: String!, $password: String!) {
         login(email: $email, password: $password) {
@@ -31,6 +42,10 @@ export const LOGIN_MUTATION = gql`
     }
 `;
 
+/**
+ * Registration mutation for creating new user accounts.
+ * Returns authentication tokens and user data upon successful registration.
+ */
 export const REGISTER_MUTATION = gql`
     mutation Register($username: String!, $email: String!, $password: String!) {
         register(username: $username, email: $email, password: $password) {
@@ -57,6 +72,10 @@ export const REGISTER_MUTATION = gql`
     }
 `;
 
+/**
+ * Discord authentication mutation using Discord access token.
+ * Used for direct Discord token authentication flow.
+ */
 export const DISCORD_AUTH_MUTATION = gql`
     mutation DiscordAuth($accessToken: String!) {
         discordAuth(accessToken: $accessToken) {
@@ -83,6 +102,10 @@ export const DISCORD_AUTH_MUTATION = gql`
     }
 `;
 
+/**
+ * Discord OAuth authentication using authorization code.
+ * Used in the complete OAuth flow with PKCE support.
+ */
 export const DISCORD_AUTH_CODE_MUTATION = gql`
     mutation DiscordAuthCode($code: String!, $redirectUri: String!, $codeVerifier: String) {
         discordAuthCode(code: $code, redirectUri: $redirectUri, codeVerifier: $codeVerifier) {
@@ -109,6 +132,10 @@ export const DISCORD_AUTH_CODE_MUTATION = gql`
     }
 `;
 
+/**
+ * Token refresh mutation for extending authentication sessions.
+ * Exchanges a valid refresh token for new access and refresh tokens.
+ */
 export const REFRESH_TOKEN_MUTATION = gql`
     mutation RefreshToken($refreshToken: String!) {
         refreshToken(refreshToken: $refreshToken) {
@@ -135,13 +162,54 @@ export const REFRESH_TOKEN_MUTATION = gql`
     }
 `;
 
+/**
+ * Logout mutation for invalidating refresh tokens on the server.
+ * Ensures proper session termination and security.
+ */
 export const LOGOUT_MUTATION = gql`
     mutation Logout($refreshToken: String!) {
         logout(refreshToken: $refreshToken)
     }
 `;
 
-// Get event by ID
+/**
+ * Links a Discord account to an existing authenticated user.
+ * Used for connecting Discord profile to current user account.
+ */
+export const LINK_DISCORD_ACCOUNT_MUTATION = gql`
+    mutation LinkDiscordAccount($code: String!, $redirectUri: String!, $codeVerifier: String) {
+        linkDiscordAccount(code: $code, redirectUri: $redirectUri, codeVerifier: $codeVerifier) {
+            success
+            message
+            user {
+                id
+                username
+                email
+                balance
+                image
+                isActivated
+                createdAt
+                accounts {
+                    id
+                    provider
+                    providerUsername
+                    providerAvatar
+                    providerEmail
+                    providerDiscriminator
+                }
+            }
+        }
+    }
+`;
+
+// =============================================================================
+// EVENT QUERIES
+// =============================================================================
+
+/**
+ * Query to fetch a single event by ID.
+ * Returns complete event details including creator, recipient, and end conditions.
+ */
 export const GET_EVENT = gql`
     query GetEvent($id: Int!) {
         event(id: $id) {
@@ -184,7 +252,10 @@ export const GET_EVENT = gql`
     }
 `;
 
-// Get all events
+/**
+ * Query to fetch all events in the system.
+ * Returns a list of events with their basic information and end conditions.
+ */
 export const GET_EVENTS = gql`
     query GetEvents {
         events {
@@ -213,7 +284,14 @@ export const GET_EVENTS = gql`
     }
 `;
 
-// Get user by ID
+// =============================================================================
+// USER QUERIES
+// =============================================================================
+
+/**
+ * Query to fetch complete user profile by ID.
+ * Includes all user events, participations, and related data.
+ */
 export const GET_USER = gql`
     query GetUser($id: Int!) {
         user(id: $id) {
@@ -312,7 +390,10 @@ export const GET_USER = gql`
     }
 `;
 
-// Search users by username
+/**
+ * Query to search users by username with fuzzy matching.
+ * Returns basic user information for search results.
+ */
 export const SEARCH_USERS = gql`
     query SearchUsers($username: String!) {
         searchUsers(username: $username) {
@@ -324,7 +405,10 @@ export const SEARCH_USERS = gql`
     }
 `;
 
-// Get user participation in an event
+/**
+ * Query to get user's participation in a specific event.
+ * Returns participation details if user is participating in the event.
+ */
 export const GET_USER_PARTICIPATION = gql`
     query GetUserParticipation($userId: Int!, $eventId: Int!) {
         userParticipation(userId: $userId, eventId: $eventId) {
@@ -336,14 +420,20 @@ export const GET_USER_PARTICIPATION = gql`
     }
 `;
 
-// Get user balance
+/**
+ * Query to fetch current user balance.
+ * Returns the numerical balance for the specified user.
+ */
 export const GET_USER_BALANCE = gql`
     query GetUserBalance($userId: Int!) {
         userBalance(userId: $userId)
     }
 `;
 
-// Get user achievements
+/**
+ * Query to fetch user achievements and progress.
+ * Returns achievement data with completion status and progress tracking.
+ */
 export const GET_USER_ACHIEVEMENTS = gql`
     query GetUserAchievements($userId: Int!) {
         userAchievements(userId: $userId) {
@@ -372,7 +462,14 @@ export const GET_USER_ACHIEVEMENTS = gql`
     }
 `;
 
-// Create event
+// =============================================================================
+// EVENT AND PARTICIPATION MUTATIONS
+// =============================================================================
+
+/**
+ * Mutation to create a new event.
+ * Accepts complete event configuration including end conditions and participants.
+ */
 export const CREATE_EVENT = gql`
     mutation CreateEvent($input: CreateEventInput!) {
         createEvent(input: $input) {
@@ -415,7 +512,10 @@ export const CREATE_EVENT = gql`
     }
 `;
 
-// Create transaction
+/**
+ * Mutation to create financial transactions.
+ * Handles balance changes, event deposits, and transfers.
+ */
 export const CREATE_TRANSACTION = gql`
     mutation CreateTransaction($input: CreateTransactionInput!) {
         createTransaction(input: $input) {
@@ -427,7 +527,10 @@ export const CREATE_TRANSACTION = gql`
     }
 `;
 
-// Create or update participation (single operation)
+/**
+ * Mutation to create or update user participation in an event.
+ * Handles both new participations and deposit updates for existing ones.
+ */
 export const UPSERT_PARTICIPATION = gql`
     mutation UpsertParticipation($input: UpsertParticipationInput!) {
         upsertParticipation(input: $input) {
@@ -458,7 +561,10 @@ export const UPSERT_PARTICIPATION = gql`
     }
 `;
 
-// Update user profile
+/**
+ * Mutation to update user profile information.
+ * Allows modification of username, email, balance, and profile image.
+ */
 export const UPDATE_USER = gql`
     mutation UpdateUser($id: Int!, $input: UpdateUserInput!) {
         updateUser(id: $id, input: $input) {
@@ -471,11 +577,14 @@ export const UPDATE_USER = gql`
     }
 `;
 
-/**
- * GraphQL Subscriptions (Subscriptions)
- */
+// =============================================================================
+// REAL-TIME SUBSCRIPTIONS
+// =============================================================================
 
-// Subscription for event updates
+/**
+ * Subscription for real-time event updates.
+ * Notifies clients when event status, conditions, or bank amount changes.
+ */
 export const EVENT_UPDATED_SUBSCRIPTION = gql`
     subscription EventUpdated($eventId: Int!) {
         eventUpdated(eventId: $eventId) {
@@ -518,7 +627,10 @@ export const EVENT_UPDATED_SUBSCRIPTION = gql`
     }
 `;
 
-// Subscription for new participations
+/**
+ * Subscription for new participations in an event.
+ * Notifies when users join events or make initial deposits.
+ */
 export const PARTICIPATION_CREATED_SUBSCRIPTION = gql`
     subscription ParticipationCreated($eventId: Int!) {
         participationCreated(eventId: $eventId) {
@@ -540,7 +652,10 @@ export const PARTICIPATION_CREATED_SUBSCRIPTION = gql`
     }
 `;
 
-// Subscription for participation updates
+/**
+ * Subscription for participation updates.
+ * Notifies when users change their deposit amounts in events.
+ */
 export const PARTICIPATION_UPDATED_SUBSCRIPTION = gql`
     subscription ParticipationUpdated($eventId: Int!) {
         participationUpdated(eventId: $eventId) {
@@ -562,7 +677,10 @@ export const PARTICIPATION_UPDATED_SUBSCRIPTION = gql`
     }
 `;
 
-// Subscription for user balance updates
+/**
+ * Subscription for user balance changes.
+ * Provides real-time updates when user's balance is modified.
+ */
 export const BALANCE_UPDATED_SUBSCRIPTION = gql`
     subscription BalanceUpdated($userId: Int!) {
         balanceUpdated(userId: $userId) {
@@ -575,7 +693,10 @@ export const BALANCE_UPDATED_SUBSCRIPTION = gql`
     }
 `;
 
-// Subscription for event conditions updates
+/**
+ * Subscription for event condition updates.
+ * Notifies when event end conditions are checked or completed.
+ */
 export const EVENT_CONDITIONS_UPDATED_SUBSCRIPTION = gql`
     subscription EventConditionsUpdated($eventId: Int!) {
         eventConditionsUpdated(eventId: $eventId) {
@@ -588,33 +709,6 @@ export const EVENT_CONDITIONS_UPDATED_SUBSCRIPTION = gql`
                 operator
                 value
                 isCompleted
-            }
-        }
-    }
-`;
-
-// Mutation to link a Discord account
-export const LINK_DISCORD_ACCOUNT_MUTATION = gql`
-    mutation LinkDiscordAccount($code: String!, $redirectUri: String!, $codeVerifier: String) {
-        linkDiscordAccount(code: $code, redirectUri: $redirectUri, codeVerifier: $codeVerifier) {
-            success
-            message
-            user {
-                id
-                username
-                email
-                balance
-                image
-                isActivated
-                createdAt
-                accounts {
-                    id
-                    provider
-                    providerUsername
-                    providerAvatar
-                    providerEmail
-                    providerDiscriminator
-                }
             }
         }
     }

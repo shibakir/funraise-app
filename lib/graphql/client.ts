@@ -10,16 +10,20 @@ import { Observable } from '@apollo/client/utilities';
 import { REFRESH_TOKEN_MUTATION } from './queries';
 
 /**
- * Simple Apollo Client configuration for GraphQL
+ * Apollo Client configuration for GraphQL integration.
  * 
- * This file contains the configuration for the Apollo Client, which is used to interact with the GraphQL server.
- * It includes the configuration for the HTTP and WebSocket links, as well as the configuration for the cache.
- * 
- * The Apollo Client is used to fetch data from the GraphQL server and to execute mutations.
- * 
+ * This module sets up the Apollo Client with complete authentication handling,
+ * automatic token refresh, error handling, and WebSocket support for subscriptions.
+ * Provides HTTP and WebSocket links with proper authentication flow.
  */
 
-// Helper functions for token management using TokenManager
+/**
+ * Handles the token refresh flow when authentication fails.
+ * Attempts to refresh the access token using the stored refresh token.
+ * Clears authentication data if refresh fails or token is invalid.
+ * 
+ * @returns {Promise<boolean>} True if token refresh was successful, false otherwise
+ */
 const refreshTokenFlow = async (): Promise<boolean> => {
     try {
         const refreshToken = await TokenManager.getRefreshToken();
@@ -87,6 +91,10 @@ const refreshTokenFlow = async (): Promise<boolean> => {
     }
 };
 
+/**
+ * Clears all authentication data from secure storage.
+ * Used when authentication fails or user logs out.
+ */
 const clearAuthData = async (): Promise<void> => {
     try {
         await TokenManager.clearTokens();
@@ -96,15 +104,24 @@ const clearAuthData = async (): Promise<void> => {
     }
 };
 
-// Flag to prevent multiple token updates
+/** Flag to prevent multiple concurrent token refresh attempts */
 let isRefreshingToken = false;
 
-// HTTP link to the GraphQL server
+/**
+ * HTTP link configuration for GraphQL requests.
+ * Points to the GraphQL server endpoint for regular queries and mutations.
+ */
 const httpLink = createHttpLink({
     uri: process.env.FUNRAISE_API_URL || 'http://localhost:3000/graphql',
 });
 
-// Function to create a WebSocket link without authentication
+/**
+ * Creates a WebSocket link for GraphQL subscriptions.
+ * Configures connection parameters, retry logic, and error handling.
+ * WebSocket connections don't require authentication in this setup.
+ * 
+ * @returns {GraphQLWsLink} Configured WebSocket link for subscriptions
+ */
 const createWebSocketLink = () => {
     return new GraphQLWsLink(createClient({
         url: process.env.FUNRAISE_WEBSOCKET_URL || 'ws://localhost:3000/graphql',
@@ -130,10 +147,13 @@ const createWebSocketLink = () => {
     }));
 };
 
-// WebSocket link for subscriptions
+/** WebSocket link instance for handling GraphQL subscriptions */
 const wsLink = createWebSocketLink();
 
-// Split between HTTP and WebSocket
+/**
+ * Split link that routes operations to appropriate transport.
+ * Subscriptions go to WebSocket, queries and mutations go to HTTP.
+ */
 const splitLink = split(
     ({ query }) => {
         const definition = getMainDefinition(query);
@@ -146,7 +166,11 @@ const splitLink = split(
     httpLink, // HTTP for regular requests
 );
 
-// Context to add the authorization token using TokenManager
+/**
+ * Authentication link that adds Bearer token to request headers.
+ * Retrieves the current access token from TokenManager and includes it
+ * in the Authorization header for authenticated requests.
+ */
 const authLink = setContext(async (_, { headers }) => {
     const token = await TokenManager.getAccessToken();
     
@@ -159,7 +183,11 @@ const authLink = setContext(async (_, { headers }) => {
     };
 });
 
-// Error handling with automatic token refresh
+/**
+ * Error handling link with automatic token refresh capability.
+ * Intercepts authentication errors and attempts to refresh tokens.
+ * Redirects to login if refresh fails. Handles both GraphQL and network errors.
+ */
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
     console.log(`ERROR LINK TRIGGERED for operation: ${operation.operationName}`);
     
@@ -254,7 +282,11 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
     return;
 });
 
-// Create Apollo Client
+/**
+ * Main Apollo Client instance with complete configuration.
+ * Combines error handling, authentication, and transport links.
+ * Includes optimized cache policies and error handling strategies.
+ */
 export const apolloClient = new ApolloClient({
     link: from([errorLink, authLink, splitLink]),
     cache: new InMemoryCache({
@@ -312,16 +344,25 @@ export const apolloClient = new ApolloClient({
     },
 });
 
-// Utilities for working with the cache
+/**
+ * Clears the Apollo Client cache completely.
+ * Useful for logout or when complete data refresh is needed.
+ */
 export const clearCache = () => {
     apolloClient.cache.reset();
 };
 
+/**
+ * Refetches specific queries by name.
+ * Forces fresh data retrieval for the specified query operations.
+ * 
+ * @param {string[]} queries - Array of query names to refetch
+ */
 export const refetchQueries = (queries: string[]) => {
     apolloClient.refetchQueries({
         include: queries,
     });
 };
 
-// Export the client for compatibility
+/** Legacy export alias for backwards compatibility */
 export const client = apolloClient;
