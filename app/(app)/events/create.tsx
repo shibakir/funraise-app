@@ -19,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 export default function CreateEventScreen() {
 
     const { user } = useAuth();
-
     const { t } = useTranslation();
 
     const sectionBackground = useThemeColor({}, 'sectionBackground');
@@ -56,7 +55,6 @@ export default function CreateEventScreen() {
     };
 
     const handleRecipientNameChange = (name: string) => {
-        //setName(name);
         setRecipientName(name);
     };
 

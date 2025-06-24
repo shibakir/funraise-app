@@ -1,12 +1,11 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { StyleSheet, View, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import { ThemedText } from '@/components/themed/ThemedText';
 import { ThemedView } from '@/components/themed/ThemedView';
 import { useThemeColor } from '@/lib/hooks/ui';
-import { horizontalScale, moderateScale, verticalScale } from '@/lib/utilities/Metrics';
+import { moderateScale, verticalScale } from '@/lib/utilities/Metrics';
 import { useEvents } from '@/lib/hooks/events';
-import { EventStatus, EventType } from '@/lib/graphql';
 import type { Event } from '@/lib/graphql/types';
 import { EventCard } from '@/components/custom/EventCard';
 import { useRefreshableData } from '@/lib/hooks/data';
@@ -39,10 +38,8 @@ export function AllEvents({ limit = 5 }: AllEventsProps) {
     const processedEvents = useMemo((): Event[] => {
         // create a copy of allEvents
         let filtered = [...allEvents];
-
         // sort by
         filtered.sort((a, b) => b.id - a.id);
-
         return filtered.slice(0, limit);
     }, [allEvents, limit]);
 
