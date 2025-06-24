@@ -1,7 +1,8 @@
 import { apolloClient as client } from "@/lib/graphql/client";
 import { LOGIN_MUTATION, REGISTER_MUTATION, DISCORD_AUTH_MUTATION, DISCORD_AUTH_CODE_MUTATION, LINK_DISCORD_ACCOUNT_MUTATION, REFRESH_TOKEN_MUTATION, LOGOUT_MUTATION } from "@/lib/graphql/queries";
 import { AuthResponse } from "@/lib/graphql/types";
-import * as SecureStore from 'expo-secure-store';
+import { TokenManager } from "@/lib/utils/TokenManager";
+import * as AuthSession from 'expo-auth-session';
 
 export default class AuthService {
 
@@ -13,16 +14,16 @@ export default class AuthService {
             });
 
             if (response.data?.login) {
-                // Save tokens to SecureStore
-                await SecureStore.setItemAsync('accessToken', response.data.login.accessToken);
-                await SecureStore.setItemAsync('refreshToken', response.data.login.refreshToken);
-                await SecureStore.setItemAsync('user', JSON.stringify(response.data.login.user));
+                const { accessToken, refreshToken, user } = response.data.login;
+
+                // Save tokens to SecureStore using TokenManager
+                await TokenManager.saveTokens(accessToken, refreshToken, user);
 
                 return {
                     data: {
-                        accessToken: response.data.login.accessToken,
-                        refreshToken: response.data.login.refreshToken,
-                        user: response.data.login.user
+                        accessToken,
+                        refreshToken,
+                        user
                     }
                 };
             } else {
@@ -42,16 +43,16 @@ export default class AuthService {
             });
 
             if (response.data?.register) {
-                // Save tokens to SecureStore
-                await SecureStore.setItemAsync('accessToken', response.data.register.accessToken);
-                await SecureStore.setItemAsync('refreshToken', response.data.register.refreshToken);
-                await SecureStore.setItemAsync('user', JSON.stringify(response.data.register.user));
+                const { accessToken, refreshToken, user } = response.data.register;
+
+                // Save tokens to SecureStore using TokenManager
+                await TokenManager.saveTokens(accessToken, refreshToken, user);
 
                 return {
                     data: {
-                        accessToken: response.data.register.accessToken,
-                        refreshToken: response.data.register.refreshToken,
-                        user: response.data.register.user
+                        accessToken,
+                        refreshToken,
+                        user
                     }
                 };
             } else {
@@ -71,16 +72,16 @@ export default class AuthService {
             });
 
             if (response.data?.discordAuth) {
-                // Save tokens to SecureStore
-                await SecureStore.setItemAsync('accessToken', response.data.discordAuth.accessToken);
-                await SecureStore.setItemAsync('refreshToken', response.data.discordAuth.refreshToken);
-                await SecureStore.setItemAsync('user', JSON.stringify(response.data.discordAuth.user));
+                const { accessToken: newAccessToken, refreshToken, user } = response.data.discordAuth;
+
+                // Save tokens to SecureStore using TokenManager
+                await TokenManager.saveTokens(newAccessToken, refreshToken, user);
 
                 return {
                     data: {
-                        accessToken: response.data.discordAuth.accessToken,
-                        refreshToken: response.data.discordAuth.refreshToken,
-                        user: response.data.discordAuth.user
+                        accessToken: newAccessToken,
+                        refreshToken,
+                        user
                     }
                 };
             } else {
@@ -100,16 +101,16 @@ export default class AuthService {
             });
 
             if (response.data?.discordAuthCode) {
-                // Save tokens to SecureStore
-                await SecureStore.setItemAsync('accessToken', response.data.discordAuthCode.accessToken);
-                await SecureStore.setItemAsync('refreshToken', response.data.discordAuthCode.refreshToken);
-                await SecureStore.setItemAsync('user', JSON.stringify(response.data.discordAuthCode.user));
+                const { accessToken, refreshToken, user } = response.data.discordAuthCode;
+
+                // Save tokens to SecureStore using TokenManager
+                await TokenManager.saveTokens(accessToken, refreshToken, user);
 
                 return {
                     data: {
-                        accessToken: response.data.discordAuthCode.accessToken,
-                        refreshToken: response.data.discordAuthCode.refreshToken,
-                        user: response.data.discordAuthCode.user
+                        accessToken,
+                        refreshToken,
+                        user
                     }
                 };
             } else {
@@ -121,54 +122,143 @@ export default class AuthService {
         }
     }
 
-    static async linkDiscordAccount(code: string, redirectUri: string, codeVerifier?: string) {
+    /**
+     * Discord OAuth login with full flow handling
+     */
+    static async loginWithDiscord(): Promise<{ data: AuthResponse }> {
         try {
-            const response = await client.mutate({
-                mutation: LINK_DISCORD_ACCOUNT_MUTATION,
-                variables: { code, redirectUri, codeVerifier }
+            // Discord OAuth configuration
+            const discovery = {
+                authorizationEndpoint: 'https://discord.com/api/oauth2/authorize',
+                tokenEndpoint: 'https://discord.com/api/oauth2/token',
+            };
+
+            const redirectUri = AuthSession.makeRedirectUri({
+                scheme: 'funraise',
             });
 
-            if (response.data?.linkDiscordAccount) {
-                return {
-                    data: response.data.linkDiscordAccount
-                };
+            const request = new AuthSession.AuthRequest({
+                clientId: process.env.EXPO_PUBLIC_DISCORD_CLIENT_ID!,
+                scopes: ['identify', 'email', 'openid'],
+                responseType: AuthSession.ResponseType.Code,
+                redirectUri,
+                usePKCE: true,
+            });
+
+            const result = await request.promptAsync(discovery);
+
+            if (result.type === 'success' && result.params.code) {
+                return await this.discordAuthCode(
+                    result.params.code,
+                    redirectUri,
+                    request.codeVerifier!
+                );
+            } else if (result.type === 'cancel') {
+                throw new Error('Discord authorization was cancelled');
+            } else if (result.type === 'error') {
+                throw new Error(result.error?.message || 'Discord authorization failed');
             } else {
-                throw new Error('Failed to link Discord account');
+                throw new Error('Discord authorization failed with unexpected result');
             }
         } catch (error: any) {
-            //console.error('AuthService link Discord account error:', error);
+            throw new Error(error.message || 'Discord login failed');
+        }
+    }
+
+    /**
+     * Link Discord account to existing user with full flow handling
+     */
+    static async linkDiscordAccount(): Promise<{ success: boolean; message: string; user?: any }> {
+        try {
+            // Discord OAuth configuration
+            const discovery = {
+                authorizationEndpoint: 'https://discord.com/api/oauth2/authorize',
+                tokenEndpoint: 'https://discord.com/api/oauth2/token',
+            };
+
+            const redirectUri = AuthSession.makeRedirectUri({
+                scheme: 'funraise',
+            });
+
+            const request = new AuthSession.AuthRequest({
+                clientId: process.env.EXPO_PUBLIC_DISCORD_CLIENT_ID!,
+                scopes: ['identify', 'email', 'openid'],
+                responseType: AuthSession.ResponseType.Code,
+                redirectUri,
+                usePKCE: true,
+            });
+
+            // Perform OAuth flow
+            const result = await request.promptAsync(discovery);
+
+            if (result.type === 'success' && result.params.code) {
+                // Send code to backend for linking
+                const response = await client.mutate({
+                    mutation: LINK_DISCORD_ACCOUNT_MUTATION,
+                    variables: { 
+                        code: result.params.code,
+                        redirectUri,
+                        codeVerifier: request.codeVerifier!
+                    }
+                });
+
+                const linkResult = response.data?.linkDiscordAccount;
+
+                if (linkResult?.success) {
+                    // Update stored user data if linking was successful
+                    const currentUser = await TokenManager.getCurrentUser();
+                    if (currentUser && linkResult.user) {
+                        await TokenManager.updateStoredUser(linkResult.user);
+                    }
+                }
+
+                return linkResult;
+            } else if (result.type === 'cancel') {
+                throw new Error('Discord linking was cancelled');
+            } else if (result.type === 'error') {
+                throw new Error(result.error?.message || 'Discord linking failed');
+            } else {
+                throw new Error('Discord linking failed with unexpected result');
+            }
+        } catch (error: any) {
             throw new Error(error.message || 'Failed to link Discord account');
         }
     }
 
     static async logout(): Promise<boolean> {
         try {
-            // Get refresh token from SecureStore
-            const refreshToken = await SecureStore.getItemAsync('refreshToken');
+            // Get refresh token from SecureStore using TokenManager
+            const refreshToken = await TokenManager.getRefreshToken();
             
+            // Only try to invalidate token on server if we have a valid refresh token
             if (refreshToken) {
-                // Send request to server to invalidate token
-                await client.mutate({
-                    mutation: LOGOUT_MUTATION,
-                    variables: { refreshToken }
-                });
+                //console.log('Attempting to invalidate refresh token on server');
+                try {
+                    await client.mutate({
+                        mutation: LOGOUT_MUTATION,
+                        variables: { refreshToken }
+                    });
+                    //console.log('Successfully invalidated refresh token on server');
+                } catch (error) {
+                    // Don't throw error if server logout fails - still clear local data
+                    //console.warn('Failed to invalidate token on server, but continuing with local logout:', error);
+                }
+            } else {
+                //console.log('No refresh token found, skipping server invalidation');
             }
 
-            // Delete tokens from SecureStore
-            await SecureStore.deleteItemAsync('accessToken');
-            await SecureStore.deleteItemAsync('refreshToken');
-            await SecureStore.deleteItemAsync('user');
+            // Delete tokens from SecureStore using TokenManager
+            await TokenManager.clearTokens();
             
             // Clear Apollo Client cache
             await client.clearStore();
             
+            //console.log('Logout completed successfully');
             return true;
         } catch (error) {
-            console.error('AuthService logout error:', error);
+            //console.error('AuthService logout error:', error);
             // Even if the request to the server fails, clear local data
-            await SecureStore.deleteItemAsync('accessToken');
-            await SecureStore.deleteItemAsync('refreshToken');
-            await SecureStore.deleteItemAsync('user');
+            await TokenManager.clearTokens();
             await client.clearStore();
             return true;
         }
@@ -188,16 +278,16 @@ export default class AuthService {
 
                 //console.log('AuthService.refreshToken() response', response);
 
-                // Save new tokens to SecureStore
-                await SecureStore.setItemAsync('accessToken', response.data.refreshToken.accessToken);
-                await SecureStore.setItemAsync('refreshToken', response.data.refreshToken.refreshToken);
-                await SecureStore.setItemAsync('user', JSON.stringify(response.data.refreshToken.user));
+                const { accessToken, refreshToken: newRefreshToken, user } = response.data.refreshToken;
+
+                // Save new tokens to SecureStore using TokenManager
+                await TokenManager.saveTokens(accessToken, newRefreshToken, user);
 
                 return {
                     data: {
-                        accessToken: response.data.refreshToken.accessToken,
-                        refreshToken: response.data.refreshToken.refreshToken,
-                        user: response.data.refreshToken.user
+                        accessToken,
+                        refreshToken: newRefreshToken,
+                        user
                     }
                 };
             } else {
@@ -206,120 +296,10 @@ export default class AuthService {
         } catch (error: any) {
             //console.error('AuthService refresh token error:', error);
             
-            // If there is an error updating the token, delete the old tokens
-            await SecureStore.deleteItemAsync('accessToken');
-            await SecureStore.deleteItemAsync('refreshToken');
-            await SecureStore.deleteItemAsync('user');
+            // If there is an error updating the token, delete the old tokens using TokenManager
+            await TokenManager.clearTokens();
             
             throw new Error(error.message || 'Token refresh failed');
-        }
-    }
-
-    /**
-     * Check if the user is authenticated
-     * @returns {Promise<boolean>} true if the user is authenticated
-     */
-    static async isAuthenticated(): Promise<boolean> {
-        try {
-            const accessToken = await SecureStore.getItemAsync('accessToken');
-            const refreshToken = await SecureStore.getItemAsync('refreshToken');
-            return !!(accessToken && refreshToken);
-        } catch (error) {
-            //console.error('Error checking authentication status:', error);
-            return false;
-        }
-    }
-
-    /**
-     * Get tokens from SecureStore
-     * @returns {Promise<{accessToken: string | null, refreshToken: string | null}>}
-     */
-    static async getTokens(): Promise<{ accessToken: string | null, refreshToken: string | null }> {
-        try {
-            const accessToken = await SecureStore.getItemAsync('accessToken');
-            const refreshToken = await SecureStore.getItemAsync('refreshToken');
-            return { accessToken, refreshToken };
-        } catch (error) {
-            //console.error('Error getting tokens:', error);
-            return { accessToken: null, refreshToken: null };
-        }
-    }
-
-    /**
-     * Get user data from SecureStore
-     * @returns {Promise<any>} user data or null
-     */
-    static async getCurrentUser(): Promise<any> {
-        try {
-            const userString = await SecureStore.getItemAsync('user');
-            return userString ? JSON.parse(userString) : null;
-        } catch (error) {
-            //console.error('Error getting current user:', error);
-            return null;
-        }
-    }
-
-    /**
-     * Refresh token only if needed (expired or about to expire)
-     * @returns {Promise<boolean>} true if the token was refreshed
-     */
-    static async refreshTokenIfNeeded(): Promise<boolean> {
-        //console.log('AuthService.refreshTokenIfNeeded() called');
-        try {
-            const { accessToken, refreshToken } = await this.getTokens();
-            
-            if (!accessToken || !refreshToken) {
-                //console.log('No tokens found');
-                return false;
-            }
-
-            //console.log('Token expired, refreshing...');
-            try {
-                const result = await this.refreshToken(refreshToken);
-                return true;
-            } catch (error: any) {
-                //console.error('Token refresh failed:', error);
-                if (error.message?.includes('Invalid refresh token') ||
-                    error.message?.includes('Refresh token expired') ||
-                    error.message?.includes('Refresh token not found')) {
-
-                    await SecureStore.deleteItemAsync('accessToken');
-                    await SecureStore.deleteItemAsync('refreshToken');
-                    await SecureStore.deleteItemAsync('user');
-                }
-                return false;
-            }
-        } catch (error) {
-            //console.error('Error while checking token refresh:', error);
-            return false;
-        }
-    }
-
-    /**
-     * Safe execution of an operation with automatic token refresh
-     * @param operation - function to execute
-     * @returns result of the operation
-     */
-    static async executeWithTokenRefresh<T>(operation: () => Promise<T>): Promise<T> {
-        try {
-            return await operation();
-        } catch (error: any) {
-            // If the error is related to authorization, try to refresh the token
-            const isAuthError = error.message?.includes('Unauthorized') ||
-                               error.message?.includes('Invalid token') ||
-                               error.message?.includes('Token expired');
-
-            if (isAuthError) {
-                //console.log('Auth error detected, attempting token refresh...');
-                
-                const refreshed = await this.refreshTokenIfNeeded();
-                if (refreshed) {
-                    //console.log('Token refreshed, retrying operation...');
-                    return await operation();
-                }
-            }
-            
-            throw error;
         }
     }
 }   

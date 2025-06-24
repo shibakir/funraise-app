@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import * as SecureStore from 'expo-secure-store';
-import * as AuthSession from 'expo-auth-session';
 import AuthService from '@/services/AuthService';
+import { TokenManager } from '@/lib/utils/TokenManager';
 import { router } from 'expo-router';
 import { Alert } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -36,7 +35,6 @@ interface UpdateProfileData {
 // auth context interface
 interface AuthContextType {
     user: User | null;
-    token: string | null;
     isLoading: boolean;
     error: string | null;
     isAuthenticated: boolean;
@@ -46,7 +44,7 @@ interface AuthContextType {
     linkDiscord: () => Promise<void>;
     logout: () => Promise<void>;
     updateProfile: (data: UpdateProfileData) => Promise<void>;
-    updateUserData: (userData: Partial<User>) => void;
+    updateUserData: (userData: Partial<User>) => Promise<void>;
 }
 
 // create context
@@ -56,37 +54,48 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
 
     const [user, setUser] = useState<User | null>(null);
-    const [token, setToken] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const { t } = useTranslation();
     
     // Computed property to determine if user is authenticated
-    const isAuthenticated = !!user && !!token;
+    const isAuthenticated = !!user;
 
-    // check token presence on app load
+    // check authentication status on app load
     useEffect(() => {
-        const loadToken = async () => {
+        const loadAuthState = async () => {
             try {
-                const storedToken = await SecureStore.getItemAsync('authToken');
-                const storedUser = await SecureStore.getItemAsync('authUser');
+                const isAuth = await TokenManager.isAuthenticated();
+                
+                if (isAuth) {
+                    const storedUser = await TokenManager.getCurrentUser();
 
-                if (storedToken && storedUser) {
-                    const parsedUser = JSON.parse(storedUser);
-                    setToken(storedToken);
-                    setUser(parsedUser);
-
-                    //console.log('Loaded stored auth data from SecureStore');
-                } else {
-                    //console.log('No stored auth data found in SecureStore');
+                    if (storedUser) {
+                        setUser(storedUser);
+                    }
                 }
             } catch (error) {
-                console.error('Error loading auth data from SecureStore:', error);
+                console.error('Error loading auth state:', error);
             } finally {
                 setIsLoading(false);
             }
         };
-        loadToken();
+
+        loadAuthState();
+
+        // Subscribe to token cleared events
+        const handleTokensCleared = () => {
+            console.log('AuthContext: Tokens were cleared, performing local logout');
+            setUser(null);
+            setError(null);
+        };
+
+        TokenManager.onTokensCleared(handleTokensCleared);
+
+        // Cleanup subscription on unmount
+        return () => {
+            TokenManager.removeTokensClearedCallback(handleTokensCleared);
+        };
     }, []);
 
     // login function
@@ -96,26 +105,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setError(null);
 
             const response = await AuthService.login(email, password);
-            const { accessToken, refreshToken, user } = response.data;
-
-            const typedUser: User = {
-                ...user,
-                id: typeof user.id === 'string' ? parseInt(user.id) : user.id
-            };
-
-            // save data to SecureStore
-            await Promise.all([
-                SecureStore.setItemAsync('authToken', accessToken),
-                SecureStore.setItemAsync('refreshToken', refreshToken),
-                SecureStore.setItemAsync('authUser', JSON.stringify(typedUser))
-            ]);
+            const { user } = response.data;
 
             // update state
-            setUser(typedUser);
-            setToken(accessToken);
+            setUser(user);
 
             router.replace('/(app)/(tabs)/home');
-            //console.log('Login successful, saved auth data to SecureStore');
+            //console.log('Login successful');
 
         } catch (error: any) {
             const message = error.message || 'Email or password is incorrect';
@@ -133,26 +129,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setError(null);
 
             const response = await AuthService.registration(email, username, password);
-            const { accessToken, refreshToken, user } = response.data;
-
-            const typedUser: User = {
-                ...user,
-                id: typeof user.id === 'string' ? parseInt(user.id) : user.id
-            };
-
-            // save data to SecureStore
-            await Promise.all([
-                SecureStore.setItemAsync('authToken', accessToken),
-                SecureStore.setItemAsync('refreshToken', refreshToken),
-                SecureStore.setItemAsync('authUser', JSON.stringify(typedUser))
-            ]);
+            const { user } = response.data;
 
             // update state
-            setUser(typedUser);
-            setToken(accessToken);
+            setUser(user);
 
-            //router.replace('/(app)/(tabs)/home');
-            //console.log('Registration successful, saved auth data to SecureStore');
+            //console.log('Registration successful');
         } catch (error: any) {
             const message = error.message || 'Registration failed. Please check your data.';
             setError(message);
@@ -168,13 +150,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsLoading(true);
             setError(null);
             
-            if (!user) {
-                throw new Error('User is not authenticated');
-            }
-
-            // TODO: Реализовать GraphQL мутацию для обновления профиля
-            console.log('Profile update requested:', data);
-            
+            //console.log('Profile update requested:', data);
         } catch (error: any) {
             const message = error.message || 'Error updating profile';
             setError(message);
@@ -189,8 +165,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (user) {
             const updatedUser = { ...user, ...userData };
             setUser(updatedUser);
-            // Update stored user data in SecureStore
-            await SecureStore.setItemAsync('authUser', JSON.stringify(updatedUser));
+            // Update stored user data using TokenManager
+            await TokenManager.updateStoredUser(updatedUser);
         }
     };
 
@@ -200,66 +176,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setIsLoading(true);
             setError(null);
 
-            // Discord OAuth configuration
-            const discovery = {
-                authorizationEndpoint: 'https://discord.com/api/oauth2/authorize',
-                tokenEndpoint: 'https://discord.com/api/oauth2/token',
-            };
+            const response = await AuthService.loginWithDiscord();
+            const { user } = response.data;
 
-            const redirectUri = AuthSession.makeRedirectUri({
-                scheme: 'funraise',
-            });
+            // update state
+            setUser(user);
 
-            const request = new AuthSession.AuthRequest({
-                clientId: process.env.EXPO_PUBLIC_DISCORD_CLIENT_ID!,
-                scopes: ['identify', 'email', 'openid'],
-                responseType: AuthSession.ResponseType.Code,
-                redirectUri,
-                usePKCE: true,
-            });
-
-            const result = await request.promptAsync(discovery);
-            //console.log('OAuth result:', result);
-
-            if (result.type === 'success' && result.params.code) {
-                //console.log('Got authorization code:', result.params.code);
-                //console.log('Code verifier:', request.codeVerifier);
-                
-                const response = await AuthService.discordAuthCode(
-                    result.params.code,
-                    redirectUri,
-                    request.codeVerifier! // Передаём code verifier
-                );
-                const { accessToken, refreshToken, user } = response.data;
-
-                const typedUser: User = {
-                    ...user,
-                    id: typeof user.id === 'string' ? parseInt(user.id) : user.id
-                };
-
-                // save data to SecureStore
-                await Promise.all([
-                    SecureStore.setItemAsync('authToken', accessToken),
-                    SecureStore.setItemAsync('refreshToken', refreshToken),
-                    SecureStore.setItemAsync('authUser', JSON.stringify(typedUser))
-                ]);
-
-                // update state
-                setUser(typedUser);
-                setToken(accessToken);
-
-                router.replace('/(app)/(tabs)/home');
-                //console.log('Discord login successful, saved auth data to SecureStore');
-            } else if (result.type === 'cancel') {
-                //console.log('User cancelled Discord authorization');
-                throw new Error('Discord authorization was cancelled');
-            } else if (result.type === 'error') {
-                //console.error('OAuth error:', result.error);
-                throw new Error(result.error?.message || 'Discord authorization failed');
-            } else {
-                //console.error('Unexpected OAuth result:', result);
-                throw new Error('Discord authorization failed with unexpected result');
-            }
+            router.replace('/(app)/(tabs)/home');
+            //console.log('Discord login successful');
 
         } catch (error: any) {
             const message = error.message || 'Discord login failed';
@@ -280,70 +204,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 throw new Error('You must be logged in to link Discord account');
             }
 
-            // Discord OAuth configuration
-            const discovery = {
-                authorizationEndpoint: 'https://discord.com/api/oauth2/authorize',
-                tokenEndpoint: 'https://discord.com/api/oauth2/token',
-            };
+            const linkResult = await AuthService.linkDiscordAccount();
 
-            const redirectUri = AuthSession.makeRedirectUri({
-                scheme: 'funraise',
-            });
+            if (linkResult.success) {
+                const updatedUser = linkResult.user;
 
-            const request = new AuthSession.AuthRequest({
-                clientId: process.env.EXPO_PUBLIC_DISCORD_CLIENT_ID!,
-                scopes: ['identify', 'email', 'openid'],
-                responseType: AuthSession.ResponseType.Code,
-                redirectUri,
-                usePKCE: true,
-            });
-
-            // Perform OAuth flow
-            const result = await request.promptAsync(discovery);
-            //console.log('Link Discord - OAuth result:', result);
-
-            if (result.type === 'success' && result.params.code) {
-                //console.log('Link Discord - Got authorization code:', result.params.code);
-                //console.log('Link Discord - Code verifier:', request.codeVerifier);
-                
-                // Send code to backend for linking
-                const response = await AuthService.linkDiscordAccount(
-                    result.params.code,
-                    redirectUri,
-                    request.codeVerifier!
-                );
-
-                const linkResult = response.data;
-
-                if (linkResult.success) {
-                    const updatedUser = linkResult.user;
-
-                    // Convert user to the correct type
-                    const typedUser: User = {
-                        ...updatedUser,
-                        id: typeof updatedUser.id === 'string' ? parseInt(updatedUser.id) : updatedUser.id
-                    };
-
-                    // Update user in state and SecureStore
-                    setUser(typedUser);
-                    await SecureStore.setItemAsync('authUser', JSON.stringify(typedUser));
-
-                    //console.log('Discord account linked successfully');
-                    Alert.alert(t('alerts.success'), linkResult.message);
-                } else {
-                    //console.log('Discord linking failed:', linkResult.message);
-                    Alert.alert(t('auth.error'), linkResult.message);
-                    return; // Don't throw error, just return
+                if (updatedUser) {
+                    // Update user in state
+                    setUser(updatedUser);
                 }
-            } else if (result.type === 'cancel') {
-                //console.log('User cancelled Discord linking');
-                throw new Error('Discord linking was cancelled');
-            } else if (result.type === 'error') {
-                //console.error('OAuth error:', result.error);
-                throw new Error(result.error?.message || 'Discord linking failed');
+
+                //console.log('Discord account linked successfully');
+                Alert.alert(t('alerts.success'), linkResult.message);
             } else {
-                //console.error('Unexpected OAuth result:', result);
-                throw new Error('Discord linking failed with unexpected result');
+                //console.log('Discord linking failed:', linkResult.message);
+                Alert.alert(t('auth.error'), linkResult.message);
+                return; // Don't throw error, just return
             }
 
         } catch (error: any) {
@@ -364,18 +240,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             await AuthService.logout();
 
-            // remove data from SecureStore
-            await Promise.all([
-                SecureStore.deleteItemAsync('authToken'),
-                SecureStore.deleteItemAsync('refreshToken'),
-                SecureStore.deleteItemAsync('authUser')
-            ]);
-
             // update state
             setUser(null);
-            setToken(null);
 
-            //console.log('Logout successful, removed auth data from SecureStore');
+            //console.log('Logout successful');
         } catch (error) {
             console.error('Error during logout:', error);
             setError('Error during logout');
@@ -388,7 +256,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         <AuthContext.Provider
             value={{
                 user,
-                token,
                 isLoading,
                 error,
                 isAuthenticated,

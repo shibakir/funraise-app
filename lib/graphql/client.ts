@@ -4,7 +4,7 @@ import { onError } from '@apollo/client/link/error';
 import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 import { createClient } from 'graphql-ws';
 import { getMainDefinition } from '@apollo/client/utilities';
-import * as SecureStore from 'expo-secure-store';
+import { TokenManager } from '@/lib/utils/TokenManager';
 import { router } from "expo-router";
 import { Observable } from '@apollo/client/utilities';
 import { REFRESH_TOKEN_MUTATION } from './queries';
@@ -19,10 +19,10 @@ import { REFRESH_TOKEN_MUTATION } from './queries';
  * 
  */
 
-// Helper functions for token management (to avoid circular dependency)
+// Helper functions for token management using TokenManager
 const refreshTokenFlow = async (): Promise<boolean> => {
     try {
-        const refreshToken = await SecureStore.getItemAsync('refreshToken');
+        const refreshToken = await TokenManager.getRefreshToken();
         
         if (!refreshToken) {
             //console.log('No refresh token found');
@@ -40,28 +40,56 @@ const refreshTokenFlow = async (): Promise<boolean> => {
             variables: { refreshToken }
         });
 
-        if (response.data?.refreshToken) {
-            // Save new tokens
-            await SecureStore.setItemAsync('accessToken', response.data.refreshToken.accessToken);
-            await SecureStore.setItemAsync('refreshToken', response.data.refreshToken.refreshToken);
-            await SecureStore.setItemAsync('user', JSON.stringify(response.data.refreshToken.user));
+        // Check for GraphQL errors
+        if (response.errors && response.errors.length > 0) {
+            const errorMessage = response.errors[0].message;
+            //console.log('GraphQL error during token refresh:', errorMessage);
             
-            //console.log('Token refreshed successfully');
+            // Check if refresh token is invalid/expired
+            if (errorMessage.includes('Invalid or expired refresh token') ||
+                errorMessage.includes('Refresh token expired') ||
+                errorMessage.includes('Invalid refresh token') ||
+                errorMessage.includes('Refresh token not found')) {
+                //console.log('Refresh token is invalid/expired, clearing auth data');
+                await TokenManager.clearTokens();
+            }
+            
+            return false;
+        }
+
+        if (response.data?.refreshToken) {
+            // Save new tokens using TokenManager
+            await TokenManager.saveTokens(
+                response.data.refreshToken.accessToken,
+                response.data.refreshToken.refreshToken,
+                response.data.refreshToken.user
+            );
+            
+            //console.log('Tokens refreshed successfully');
             return true;
         }
         
+        //console.log('No refresh token data in response');
         return false;
     } catch (error: any) {
-        //console.error('Token refresh error:', error);
+        //console.error('Token refresh failed with exception:', error);
+        
+        // If refresh token is invalid/expired, clear all auth data
+        if (error.message?.includes('Invalid or expired refresh token') ||
+            error.message?.includes('Refresh token expired') ||
+            error.message?.includes('Invalid refresh token') ||
+            error.message?.includes('Refresh token not found')) {
+            //console.log('Clearing auth data due to invalid refresh token');
+            await TokenManager.clearTokens();
+        }
+        
         return false;
     }
 };
 
 const clearAuthData = async (): Promise<void> => {
     try {
-        await SecureStore.deleteItemAsync('accessToken');
-        await SecureStore.deleteItemAsync('refreshToken');
-        await SecureStore.deleteItemAsync('user');
+        await TokenManager.clearTokens();
         //console.log('Auth data cleared');
     } catch (error) {
         //console.error('Error clearing auth data:', error);
@@ -118,9 +146,9 @@ const splitLink = split(
     httpLink, // HTTP for regular requests
 );
 
-// Context to add the authorization token
+// Context to add the authorization token using TokenManager
 const authLink = setContext(async (_, { headers }) => {
-    const token = await SecureStore.getItemAsync('accessToken');
+    const token = await TokenManager.getAccessToken();
     
     return {
         headers: {
@@ -133,19 +161,17 @@ const authLink = setContext(async (_, { headers }) => {
 
 // Error handling with automatic token refresh
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
-    //console.log(`ERROR LINK TRIGGERED for operation: ${operation.operationName}`);
+    console.log(`ERROR LINK TRIGGERED for operation: ${operation.operationName}`);
     
     // Log errors for debugging
-    /*
     if (graphQLErrors) {
         graphQLErrors.forEach(({ message, locations, path }) => {
             console.error(`GraphQL error: ${message}, Path: ${path}`);
         });
     }
     if (networkError) {
-        console.error(`Network error: ${networkError.message}, Status: ${(networkError as any).statusCode}`);
+        //console.error(`Network error: ${networkError.message}, Status: ${(networkError as any).statusCode}`);
     }
-    */
 
     const hasAuthError = graphQLErrors?.some(error =>
         error.message.includes('Unauthorized') ||
@@ -158,20 +184,24 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
     const isNetworkAuthError = networkError && 'statusCode' in networkError && 
         (networkError as any).statusCode === 401;
 
+    //console.log(`Auth error detected: ${hasAuthError}, Network auth error: ${isNetworkAuthError}, Is refreshing: ${isRefreshingToken}`);
+
     // If there is an authorization error and not already refreshing, try to update the token
     if ((hasAuthError || isNetworkAuthError) && !isRefreshingToken) {
-       // console.log(`AUTH ERROR DETECTED! Starting token refresh process...`);
+        // console.log(`Starting token refresh process...`);
         isRefreshingToken = true;
 
         return new Observable(observer => {
-            //console.log(`Calling token refresh...`);
+            //console.log(`Calling refreshTokenFlow...`);
             refreshTokenFlow()
                 .then(async (refreshed) => {
+                    //console.log(`Token refresh result: ${refreshed}`);
+                    
                     if (refreshed) {
                         //console.log('Token refreshed successfully, retrying operation...');
                         
-                        // Get a new token for the retry request
-                        const newToken = await SecureStore.getItemAsync('accessToken');
+                        // Get a new token for the retry request using TokenManager
+                        const newToken = await TokenManager.getAccessToken();
                         
                         // Update the authorization header for the retry request
                         const oldHeaders = operation.getContext().headers;
@@ -197,27 +227,30 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
                         });
                     } else {
                         // If the token refresh fails, clear data and redirect to login
-                        //console.log('Failed to refresh token, redirecting to login');
+                        //console.log('Token refresh failed, performing logout...');
                         clearAuthData().then(() => {
+                            //console.log('Auth data cleared, redirecting to login...');
                             router.replace('/(auth)/login');
                         });
-                        observer.error(new Error('Authentication failed'));
+                        observer.error(new Error('Authentication failed - please login again'));
                     }
                 })
                 .catch((error) => {
-                    //console.error('Token refresh failed:', error);
+                    //console.error('Token refresh process failed:', error);
                     clearAuthData().then(() => {
+                        //console.log('Auth data cleared after error, redirecting to login...');
                         router.replace('/(auth)/login');
                     });
                     observer.error(error);
                 })
                 .finally(() => {
+                    //console.log('Token refresh process completed, resetting flag');
                     isRefreshingToken = false;
                 });
         });
     }
-    
     // For non-auth errors or when refresh is already in progress, pass the error through
+    //console.log('Passing error through without refresh attempt');
     return;
 });
 
