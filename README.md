@@ -1,6 +1,6 @@
 # FunRaise Mobile App - Installation & Setup Guide
 
-A comprehensive guide for cloning, installing, and running the FunRaise React Native mobile application using Expo.
+Guide for cloning, installing, and running the FunRaise React Native mobile application using Expo.
 
 ## Table of Contents
 
@@ -35,7 +35,7 @@ A comprehensive guide for cloning, installing, and running the FunRaise React Na
 ```bash
 # Clone the entire project
 git clone <repository-url>
-cd app/client
+cd funraise-client
 
 # Or clone specific client folder if separate
 git clone <repository-url> funraise-client
@@ -46,18 +46,11 @@ cd funraise-client
 ```bash
 # Install all npm packages
 npm install
-
-# For iOS on macOS, also install CocoaPods
-cd ios && pod install && cd ..
 ```
 
 ### 3. Start Development Server
 ```bash
-# Start the Expo development server
-npm start
-
-# Or specific platform command
-npm run ios     # Run on iOS simulator
+npx expo start --clear
 ```
 
 ### 4. Test the Connection
@@ -87,22 +80,13 @@ npm start
 
 ## Environment Configuration
 
-### Default Configuration
-The app is pre-configured to connect to a local development server:
-
-```typescript
-// Default API endpoints (in lib/graphql/client.ts)
-API_URL: process.env.FUNRAISE_API_URL || 'http://localhost:3000/graphql'
-WS_URL: process.env.FUNRAISE_WEBSOCKET_URL || 'ws://localhost:3000/graphql'
-```
-
 ### Custom Environment Variables
 Create a `.env` file in the client root for custom configuration:
 
 ```bash
 # .env file
-FUNRAISE_API_URL=http://your-server-url:3000/graphql
-FUNRAISE_WEBSOCKET_URL=ws://your-server-url:3000/graphql
+FUNRAISE_API_URL=http://localhost:3000/graphql
+FUNRAISE_WEBSOCKET_URL=ws://localhost:3000/graphql
 ```
 
 **Note**: Expo requires environment variables to be prefixed with `EXPO_PUBLIC_` for client-side access in newer versions.
@@ -138,14 +122,9 @@ npm run docs          # Generate and serve docs
    # Open Xcode and install additional simulators
    xcode-select --install
    ```
-3. **Install CocoaPods** (if not already installed):
+3. **Run on iOS**:
    ```bash
-   sudo gem install cocoapods
-   cd ios && pod install
-   ```
-4. **Run on iOS**:
-   ```bash
-   npm run ios
+   npx expo start --clear
    ```
 
 ## Testing
@@ -223,21 +202,13 @@ npx expo start --clear
 npx expo start --reset-cache
 ```
 
-#### 2. Connection to server fails
-- ✅ Ensure the [server is running](../server/README.md) on `localhost:3000`
-- ✅ Check if you're using the correct IP address for physical devices
-- ✅ Disable firewall/antivirus temporarily for testing
-
-#### 3. iOS build issues
+#### 2. iOS build issues
 ```bash
 # Clean iOS build
 cd ios && rm -rf build && cd ..
 npx expo run:ios --clear
-
-# Reinstall pods
-cd ios && pod deintegrate && pod install && cd ..
 ```
-#### 5. Package installation issues
+#### 3. Package installation issues
 ```bash
 # Clear npm cache
 npm cache clean --force
