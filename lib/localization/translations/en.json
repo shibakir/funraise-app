@@ -539,5 +539,20 @@
             "EVENT_TIME": "Event duration",
             "USER_ACTIVITY": "Activity streak"
         }
+    },
+    "ranks": {
+        "title": "Top Users",
+        "backTitle": "Back",
+        "byBalance": "By Balance",
+        "byDonations": "By Donations",
+        "byWinnings": "By Winnings",
+        "loading": "Loading rankings...",
+        "errorLoading": "Error loading data",
+        "noData": "No data to display",
+        "timePeriod": {
+            "now": "Now",
+            "lastWeek": "Last Week",
+            "lastYear": "Last Year"
+        }
     }
 } 

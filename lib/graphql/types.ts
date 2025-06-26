@@ -320,6 +320,28 @@ export interface GetUserAchievementsArgs {
     userId: number;
 }
 
+/** Arguments for fetching users by balance ranking */
+export interface GetUsersByBalanceArgs {
+    /** Maximum number of users to return */
+    limit?: number;
+}
+
+/** Arguments for fetching users by event income ranking */
+export interface GetUsersByEventIncomeArgs {
+    /** ISO date string to filter transactions after (not older than) */
+    afterDate?: string;
+    /** Maximum number of users to return */
+    limit?: number;
+}
+
+/** Arguments for fetching users by event outcome ranking */
+export interface GetUsersByEventOutcomeArgs {
+    /** ISO date string to filter transactions after (not older than) */
+    afterDate?: string;
+    /** Maximum number of users to return */
+    limit?: number;
+}
+
 // =============================================================================
 // MUTATION INPUT TYPES
 // =============================================================================
@@ -425,6 +447,37 @@ export interface SearchUsersResponse {
 export interface UserAchievementsResponse {
     /** Array of user achievement records */
     userAchievements: UserAchievement[];
+}
+
+/**
+ * User ranking information with calculated amount.
+ * Used for leaderboard and ranking displays.
+ */
+export interface UserRanking {
+    /** User identifier */
+    id: number;
+    /** User's display name */
+    username: string;
+    /** Calculated amount (balance or transaction sum) */
+    amount: number;
+}
+
+/** Response type for users by balance ranking queries */
+export interface UsersByBalanceResponse {
+    /** Array of users ranked by balance */
+    usersByBalance: UserRanking[];
+}
+
+/** Response type for users by event income ranking queries */
+export interface UsersByEventIncomeResponse {
+    /** Array of users ranked by event income */
+    usersByEventIncome: UserRanking[];
+}
+
+/** Response type for users by event outcome ranking queries */
+export interface UsersByEventOutcomeResponse {
+    /** Array of users ranked by event outcome */
+    usersByEventOutcome: UserRanking[];
 }
 
 /**

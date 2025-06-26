@@ -194,7 +194,7 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
     // Log errors for debugging
     if (graphQLErrors) {
         graphQLErrors.forEach(({ message, locations, path }) => {
-            console.error(`GraphQL error: ${message}, Path: ${path}`);
+            //console.error(`GraphQL error: ${message}, Path: ${path}`);
         });
     }
     if (networkError) {

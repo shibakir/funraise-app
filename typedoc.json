@@ -1,0 +1,57 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./lib/**/*.ts",
+    "./lib/**/*.tsx",
+    "./components/**/*.tsx",
+    "./app/**/*.tsx"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "./docs",
+  "theme": "default",
+  "name": "FunRaise Mobile App Documentation",
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "defaultCategory": "Other",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "hideGenerator": true,
+  "sort": ["source-order"],
+  "searchInComments": true,
+  "validation": {
+    "notExported": false,
+    "invalidLink": false,
+    "notDocumented": false
+  },
+  "treatWarningsAsErrors": false,
+  "skipErrorChecking": true,
+  "logLevel": "Info",
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx",
+    "**/__tests__/**",
+    "**/node_modules/**",
+    "**/coverage/**",
+    "**/ios/**",
+    "**/android/**",
+    "**/.expo/**",
+    "**/jest.setup.js",
+    "**/jest.config.js"
+  ],
+  "tsconfig": "./tsconfig.json",
+  "readme": "./README.md",
+  "plugin": [],
+  "groupOrder": [
+    "Components",
+    "Hooks", 
+    "Utils",
+    "Types",
+    "Services",
+    "*"
+  ],
+  "navigationLinks": {
+    "GitHub": "https://github.com"
+  }
+} 

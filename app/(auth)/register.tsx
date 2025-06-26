@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useThemeColor } from '@/lib/hooks/ui';
 
@@ -14,9 +14,11 @@ export default function RegisterScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'} 
             style={[styles.container, { backgroundColor }]}
         >
-            <StatusBar style="auto" />
-            <LogoBox/>
-            <RegisterForm/>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <StatusBar style="auto" />
+                <LogoBox/>
+                <RegisterForm/>
+            </ScrollView>
         </KeyboardAvoidingView>
     );
 }

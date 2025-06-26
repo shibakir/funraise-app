@@ -541,5 +541,20 @@
             "EVENT_TIME": "Doba trvání eventu",
             "USER_ACTIVITY": "Aktivní série"
         }
+    },
+    "ranks": {
+        "title": "Nejlepší uživatelé",
+        "backTitle": "Zpět",
+        "byBalance": "Podle banku",
+        "byDonations": "Podle darů",
+        "byWinnings": "Podle výher",
+        "loading": "Načítání žebříčků...",
+        "errorLoading": "Chyba při načítání dat",
+        "noData": "Žádná data k zobrazení",
+        "timePeriod": {
+            "now": "Nyní",
+            "lastWeek": "Minulý týden",
+            "lastYear": "Minulý rok"
+        }
     }
 } 

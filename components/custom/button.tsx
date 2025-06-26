@@ -6,7 +6,7 @@ export interface CustomButtonProps {
   children?: ReactNode;
   title?: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'discord';
   size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   style?: ViewStyle;
@@ -28,6 +28,9 @@ export function CustomButton({
   const placeholderColor = useThemeColor({}, 'placeholder');
   const surfaceHighlightColor = useThemeColor({}, 'surfaceHighlight');
   
+  // Discord brand color
+  const discordColor = '#5865F2';
+  
   const getBackgroundColor = () => {
     if (disabled) {
       return dividerColor;
@@ -39,6 +42,8 @@ export function CustomButton({
         return surfaceHighlightColor;
       case 'outline':
         return 'transparent';
+      case 'discord':
+        return discordColor;
       default:
         return primaryColor;
     }
@@ -50,6 +55,7 @@ export function CustomButton({
     }
     switch (variant) {
       case 'primary':
+      case 'discord':
         return surfaceColor;
       case 'secondary':
       case 'outline':

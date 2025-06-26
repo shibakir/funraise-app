@@ -3,6 +3,7 @@ export * from './auth';
 
 // Users
 export * from './users';
+export * from './users/useUserRankings';
 
 // Events  
 export * from './events';

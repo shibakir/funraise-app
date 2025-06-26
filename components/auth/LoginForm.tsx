@@ -92,7 +92,7 @@ export default function LoginForm() {
                     <CustomButton
                         title={t('auth.discordButton')}
                         onPress={handleDiscordLogin}
-                        variant="secondary"
+                        variant="discord"
                         size="large"
                     />
                 </>

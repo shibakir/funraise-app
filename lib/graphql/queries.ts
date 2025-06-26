@@ -462,6 +462,48 @@ export const GET_USER_ACHIEVEMENTS = gql`
     }
 `;
 
+/**
+ * Query to get users ranked by their current balance.
+ * Returns users sorted by balance in descending order.
+ */
+export const GET_USERS_BY_BALANCE = gql`
+    query GetUsersByBalance($limit: Int) {
+        usersByBalance(limit: $limit) {
+            id
+            username
+            amount
+        }
+    }
+`;
+
+/**
+ * Query to get users ranked by their EVENT_INCOME transaction sum after specified date.
+ * Returns users sorted by income in descending order.
+ */
+export const GET_USERS_BY_EVENT_INCOME = gql`
+    query GetUsersByEventIncome($afterDate: String, $limit: Int) {
+        usersByEventIncome(afterDate: $afterDate, limit: $limit) {
+            id
+            username
+            amount
+        }
+    }
+`;
+
+/**
+ * Query to get users ranked by their EVENT_OUTCOME transaction sum after specified date.
+ * Returns users sorted by outcome in descending order.
+ */
+export const GET_USERS_BY_EVENT_OUTCOME = gql`
+    query GetUsersByEventOutcome($afterDate: String, $limit: Int) {
+        usersByEventOutcome(afterDate: $afterDate, limit: $limit) {
+            id
+            username
+            amount
+        }
+    }
+`;
+
 // =============================================================================
 // EVENT AND PARTICIPATION MUTATIONS
 // =============================================================================

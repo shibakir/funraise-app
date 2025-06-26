@@ -196,7 +196,7 @@ export default function RegisterForm() {
                         <CustomButton
                             title={t('auth.discordRegisterButton')}
                             onPress={handleDiscordRegister}
-                            variant="secondary"
+                            variant="discord"
                             size="large"
                         />
                     </ThemedView>
@@ -220,6 +220,7 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 400,
         alignSelf: 'center',
+        marginBottom: 5,
     },
     input: {
         width: '100%',

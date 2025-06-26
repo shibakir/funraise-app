@@ -21,6 +21,7 @@ export function LogoBox() {
 const styles = StyleSheet.create({
     logoContainer: {
         alignItems: 'center',
+        marginTop: 20,
         marginBottom: 40,
     },
     logo: {

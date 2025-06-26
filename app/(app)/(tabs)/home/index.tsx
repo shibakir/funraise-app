@@ -41,6 +41,10 @@ export default function HomeScreen() {
         router.push('/(app)/documentation');
     };
 
+    const navigateToRanks = () => {
+        router.push('/(app)/ranks');
+    };
+
     const styles = StyleSheet.create({
         container: {
             flex: 1,
@@ -111,6 +115,14 @@ export default function HomeScreen() {
                         >
                             <ThemedText style={styles.profileButtonText}>{t('home.showMyProfile')}</ThemedText>
                         </TouchableOpacity>
+
+                        {/* RANKS BUTTON */}
+                        <TouchableOpacity 
+                            style={styles.docButton}
+                            onPress={navigateToRanks}
+                        >
+                            <ThemedText style={styles.docButtonText}>Top users</ThemedText>
+                        </TouchableOpacity>
                         
                         {/* NEW EVENT SECTION */}
                         <View style={styles.sectionHeader}>
@@ -125,7 +137,6 @@ export default function HomeScreen() {
                         >
                             <ThemedText style={styles.docButtonText}>{t('home.readHelp')}</ThemedText>
                         </TouchableOpacity>
-                        
                         
                         {/* MY ACTIVE EVENTS SECTION */}
                         <View style={styles.sectionHeader}>
