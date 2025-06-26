@@ -1,39 +1,61 @@
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
-import { useThemeColor } from '@/lib/hooks/useThemeColor';
+import { StyleSheet, Text, TouchableOpacity, ViewStyle } from 'react-native';
+import { useThemeColor } from '@/lib/hooks/ui';
+import React, { ReactNode } from 'react';
 
-interface CustomButtonProps {
-  title: string;
+export interface CustomButtonProps {
+  children?: ReactNode;
+  title?: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'discord';
   size?: 'small' | 'medium' | 'large';
+  disabled?: boolean;
+  style?: ViewStyle;
 }
 
 export function CustomButton({ 
+  children,
   title, 
   onPress, 
   variant = 'primary', 
-  size = 'medium' 
+  size = 'medium',
+  disabled = false,
+  style
 }: CustomButtonProps) {
   const primaryColor = useThemeColor({}, 'primary');
   const textColor = useThemeColor({}, 'text');
   const surfaceColor = useThemeColor({}, 'surface');
+  const dividerColor = useThemeColor({}, 'divider');
+  const placeholderColor = useThemeColor({}, 'placeholder');
+  const surfaceHighlightColor = useThemeColor({}, 'surfaceHighlight');
+  
+  // Discord brand color
+  const discordColor = '#5865F2';
   
   const getBackgroundColor = () => {
+    if (disabled) {
+      return dividerColor;
+    }
     switch (variant) {
       case 'primary':
         return primaryColor;
       case 'secondary':
-        return useThemeColor({}, 'surfaceHighlight');
+        return surfaceHighlightColor;
       case 'outline':
         return 'transparent';
+      case 'discord':
+        return discordColor;
       default:
         return primaryColor;
     }
   };
   
   const getTextColor = () => {
+    if (disabled) {
+      return placeholderColor;
+    }
     switch (variant) {
       case 'primary':
+      case 'discord':
         return surfaceColor;
       case 'secondary':
       case 'outline':
@@ -61,19 +83,23 @@ export function CustomButton({
         styles.button,
         { backgroundColor: getBackgroundColor() },
         sizeStyles[size],
-        variant === 'outline' && { borderWidth: 1, borderColor: primaryColor }
+        variant === 'outline' && { borderWidth: 1, borderColor: primaryColor },
+        style
       ]}
       onPress={onPress}
+      disabled={disabled}
       activeOpacity={0.8}
     >
-      <Text
-        style={[
-          styles.text,
-          { color: getTextColor(), fontSize: fontSizes[size] }
-        ]}
-      >
-        {title}
-      </Text>
+      {children || (
+        <Text
+          style={[
+            styles.text,
+            { color: getTextColor(), fontSize: fontSizes[size] }
+          ]}
+        >
+          {title}
+        </Text>
+      )}
     </TouchableOpacity>
   );
 }
