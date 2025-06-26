@@ -10,7 +10,6 @@ Guide for cloning, installing, and running the FunRaise React Native mobile appl
 - [Environment Configuration](#environment-configuration)
 - [Available Commands](#available-commands)
 - [Platform-Specific Setup](#platform-specific-setup)
-- [Testing](#testing)
 - [Documentation](#documentation)
 - [Troubleshooting](#troubleshooting)
 
@@ -99,13 +98,6 @@ npm start           # Start Expo development server
 npm run ios         # Run on iOS simulator (macOS only)
 ```
 
-### Testing Commands
-```bash
-npm test            # Run tests once
-npm run test:watch  # Run tests in watch mode
-npm run test:coverage # Run tests with coverage report
-```
-
 ### Documentation Commands
 ```bash
 npm run docs:generate # Generate TypeDoc documentation
@@ -126,32 +118,6 @@ npm run docs          # Generate and serve docs
    ```bash
    npx expo start --clear
    ```
-
-## Testing
-
-### Running Tests
-```bash
-# Run all tests
-npm test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
-```
-
-### Test Structure
-- **Unit Tests**: `lib/**/*.test.ts`
-- **Component Tests**: `components/**/*.test.tsx`
-- **Hook Tests**: `lib/hooks/**/*.test.tsx`
-- **Integration Tests**: `__tests__/**/*.test.tsx`
-
-### Test Coverage
-Coverage reports are generated in the `coverage/` directory:
-- **HTML Report**: `coverage/lcov-report/index.html`
-- **Console Output**: Shows summary after running tests
-
 ## Documentation
 
 ### TypeDoc Documentation
@@ -185,8 +151,7 @@ client/
 │   ├── graphql/          # GraphQL client and queries
 │   ├── types.ts          # TypeScript type definitions
 │   └── utils/            # Utility functions
-├── assets/               # Images, fonts, and static files
-└── __tests__/           # Test files
+└── assets/               # Images, fonts, and static files
 ```
 
 ## Troubleshooting
